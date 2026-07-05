@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2B2420">
+<title>Miracle Morning · Andrew</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='16' fill='%23EFA736'/%3E%3Cg stroke='%23EFA736' stroke-width='6' stroke-linecap='round'%3E%3Cline x1='50' y1='16' x2='50' y2='28'/%3E%3Cline x1='50' y1='72' x2='50' y2='84'/%3E%3Cline x1='16' y1='50' x2='28' y2='50'/%3E%3Cline x1='72' y1='50' x2='84' y2='50'/%3E%3Cline x1='26' y1='26' x2='34.4' y2='34.4'/%3E%3Cline x1='65.6' y1='65.6' x2='74' y2='74'/%3E%3Cline x1='74' y1='26' x2='65.6' y2='34.4'/%3E%3Cline x1='34.4' y1='65.6' x2='26' y2='74'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EDE3;
+    --bg-elevated:#F8F4EA;
+    --bg-card:#FFFFFF;
+    --border:#E4DBC4;
+    --border-soft:#EBE3CD;
+    --text:#2B2420;
+    --text-dim:#6B6459;
+    --text-faint:#9B9385;
+    --gold:#D9A441;
+    --gold-deep:#A8701C;
+    --gold-soft:rgba(217,164,65,0.14);
+    --on-gold:#3A2A05;
+    --on-gold-dim:rgba(58,42,5,0.62);
+    --danger:#C1553B;
+    --success:#6B9B5E;
+    --radius-lg:22px;
+    --radius-md:13px;
+    --radius-sm:9px;
+    --serif:'Fraunces', Georgia, serif;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow:0 10px 22px rgba(43,36,32,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    min-height:100vh;
+    min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none;
+  }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    min-height:100dvh;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    background:
+      radial-gradient(ellipse 560px 260px at 50% 0%, rgba(217,164,65,0.10), transparent 65%),
+      var(--bg);
+  }
+
+  /* ---------- Header ---------- */
+  #topband{
+    background:transparent;
+    padding:26px 22px 4px;
+    position:relative;
+  }
+  .band-top-row{ display:flex; align-items:flex-start; justify-content:space-between; }
+  .app-logo{ display:flex; align-items:center; gap:8px; }
+  .app-logo svg{ width:20px; height:20px; flex-shrink:0; }
+  .app-logo svg.icon-hidden{ display:none; }
+  .app-logo span{
+    font-family:var(--sans); font-weight:700; font-size:12px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--gold-deep);
+  }
+  .band-title{ font-family:var(--serif); font-weight:600; font-size:28px; margin-top:14px; color:var(--text); line-height:1.15; }
+  .band-sub{ color:var(--text-dim); font-size:13.5px; margin-top:6px; }
+  .band-rule{ width:56px; height:3px; border-radius:3px; background:var(--gold); margin-top:16px; opacity:.7; }
+
+  .cog-btn{ display:none; }
+
+  #appfooter{
+    position:fixed; left:0; right:0; bottom:0; max-width:480px; margin:0 auto;
+    display:flex; justify-content:center; z-index:20;
+    padding:10px 0 calc(10px + env(safe-area-inset-bottom));
+  }
+  .footer-menu-btn{
+    background:none; border:none; color:var(--text-faint);
+    font-family:var(--sans); font-weight:600; font-size:12px; letter-spacing:.02em;
+    display:flex; align-items:center; gap:6px; cursor:pointer; padding:8px 14px;
+  }
+  .footer-menu-btn svg{ width:13px; height:13px; opacity:.7; }
+  .footer-menu-btn:hover{ color:var(--text-dim); }
+  .footer-menu-btn.active{ color:var(--gold-deep); }
+
+  .nav-menu{
+    position:fixed; bottom:52px; left:50%; transform:translateX(-50%);
+    background:var(--bg-card); border:1px solid var(--border);
+    border-radius:var(--radius-md); box-shadow:var(--shadow); padding:6px; display:flex;
+    flex-direction:column; gap:1px; z-index:30; min-width:180px;
+  }
+  .nav-menu.hidden{ display:none; }
+  .nav-menu button{
+    display:flex; align-items:center; gap:11px; background:none; border:none; text-align:left;
+    padding:10px 12px; border-radius:var(--radius-sm); font-family:var(--sans); font-weight:600;
+    font-size:14px; color:var(--text); cursor:pointer; width:100%;
+  }
+  .nav-menu button svg{ width:17px; height:17px; color:var(--text-faint); flex-shrink:0; }
+  .nav-menu button:hover{ background:var(--bg-elevated); }
+  .nav-menu button.active{ background:var(--gold-soft); }
+  .nav-menu button.active svg{ color:var(--gold-deep); }
+
+  .view{ display:none; flex-direction:column; padding:22px 22px 64px; animation:fadeIn .35s ease; }
+  .view.active{ display:flex; flex:1; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- Squared tab rows (duration) ---------- */
+  .tabrow{ display:flex; gap:8px; margin-top:16px; }
+  .tabrow button{
+    flex:1; border:1px solid var(--border); background:var(--bg-card);
+    color:var(--text-dim); font-family:var(--sans); font-weight:700; font-size:13.5px;
+    padding:11px 0; border-radius:var(--radius-md); cursor:pointer; transition:.15s;
+  }
+  .tabrow button.active{ background:var(--gold); color:var(--on-gold); border-color:var(--gold); }
+  .tabrow.small button{ font-size:12.5px; padding:9px 0; }
+
+  /* ---------- Cards ---------- */
+  .card{
+    background:var(--bg-card); border:1px solid var(--border);
+    border-radius:var(--radius-lg); padding:18px;
+  }
+  .plan-preview{ margin-top:18px; flex:1; display:flex; flex-direction:column; min-height:0; }
+  .plan-preview .card{ padding:6px 18px; flex:1; display:flex; flex-direction:column; justify-content:space-around; }
+  .step-row{
+    display:flex; align-items:center; gap:16px;
+    padding:6px 2px; border-bottom:1px solid var(--border-soft);
+  }
+  .step-row:last-child{ border-bottom:none; }
+  .step-letter{
+    width:38px; height:38px; border-radius:10px; background:var(--gold-soft);
+    color:var(--gold-deep); font-family:var(--sans); font-weight:700; font-size:14px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    border:1px solid var(--border);
+  }
+  .step-text{ flex:1; text-align:left; }
+  .step-name{ font-weight:700; font-size:16px; color:var(--text); }
+  .step-sub{ color:var(--text-faint); font-size:13px; margin-top:2px; }
+  .step-dur{ margin-left:auto; font-family:var(--sans); font-variant-numeric:tabular-nums; font-weight:600; color:var(--text-dim); font-size:13.5px; }
+
+  .btn-primary{
+    margin-top:22px; width:100%; padding:16px; border:none; border-radius:var(--radius-md);
+    background:var(--gold);
+    color:var(--on-gold); font-family:var(--sans); font-weight:700; font-size:16px;
+    letter-spacing:.01em; cursor:pointer; box-shadow:var(--shadow);
+  }
+  .btn-secondary{
+    padding:13px 18px; border-radius:var(--radius-md); border:1px solid var(--border);
+    background:var(--bg-card); color:var(--text); font-family:var(--sans); font-weight:700;
+    font-size:14px; cursor:pointer;
+  }
+  .btn-ghost{
+    padding:10px 14px; border-radius:var(--radius-md); border:1px solid var(--border);
+    background:transparent; color:var(--text-dim); font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .btn-danger{ color:var(--danger); border-color:rgba(193,85,59,.35); }
+  .row-gap{ display:flex; gap:10px; margin-top:14px; }
+  .row-gap > *{ flex:1; }
+
+  /* ---------- Session (fullscreen) ---------- */
+  #view-session{
+    position:fixed; inset:0; max-width:480px; margin:0 auto; z-index:50;
+    background:var(--bg);
+    padding:24px 24px 36px;
+    display:none;
+  }
+  #view-session.active{ display:flex; flex-direction:column; }
+  .session-top{ display:flex; justify-content:space-between; align-items:center; }
+  .session-progress-text{ font-family:var(--sans); font-weight:600; font-variant-numeric:tabular-nums; font-size:12.5px; color:var(--text-dim); }
+  .icon-btn{
+    width:36px; height:36px; border-radius:50%; border:1px solid var(--border);
+    background:var(--bg-card); color:var(--text-dim); display:flex; align-items:center;
+    justify-content:center; cursor:pointer;
+  }
+  .icon-btn svg{ width:16px; height:16px; }
+
+  .progress-bar-wrap{
+    margin:20px 0 4px; height:5px; border-radius:999px; background:var(--border);
+    overflow:hidden;
+  }
+  .progress-bar-fill{
+    height:100%; width:0%; background:var(--gold); border-radius:999px;
+    transition:width .2s linear;
+  }
+
+  .session-body{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:flex-start; gap:14px; overflow-y:auto; padding-top:4vh; min-height:0; }
+  .session-eyebrow{ color:var(--gold-deep); letter-spacing:.14em; text-transform:uppercase; font-size:12px; font-weight:700; }
+  .session-title{ font-family:var(--serif); font-size:36px; color:var(--text); }
+  .session-subtitle{ color:var(--text-dim); font-size:15px; max-width:320px; }
+  .session-clock{
+    font-family:var(--sans); font-size:58px; font-weight:800; letter-spacing:.01em;
+    font-variant-numeric:tabular-nums; color:var(--text); margin-top:4px;
+  }
+  .session-instructions{
+    margin-top:6px; color:var(--text-dim); font-size:14.5px; line-height:1.6; max-width:320px;
+  }
+  .step-link-btn{
+    margin-top:10px; display:inline-flex; align-items:center; gap:8px;
+    background:var(--bg-card); border:1px solid var(--border); border-radius:999px;
+    padding:10px 18px; font-family:var(--sans); font-weight:700; font-size:13.5px;
+    color:var(--gold-deep); cursor:pointer; text-decoration:none;
+  }
+  .step-link-btn svg{ width:14px; height:14px; }
+  .step-link-btn.coming-soon{
+    color:var(--text-faint); cursor:default; border-style:dashed;
+  }
+  .exercise-list{ list-style:none; padding:0; margin:8px 0 0; display:flex; flex-direction:column; gap:8px; width:100%; max-width:280px; }
+  .exercise-list li{
+    background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:12px; font-family:var(--serif); font-size:16.5px; color:var(--text);
+  }
+  .affirm-scroll{
+    margin-top:8px; max-height:42vh; overflow-y:auto; width:100%; text-align:left;
+    display:flex; flex-direction:column; gap:12px; padding-right:4px;
+  }
+  .affirm-line{
+    background:var(--bg-card); border:1px solid var(--border-soft); border-radius:var(--radius-sm);
+    padding:14px 16px; font-family:var(--serif); font-size:16.5px; font-style:italic; line-height:1.6; color:var(--text-dim);
+  }
+  .affirm-line strong{ color:var(--gold-deep); font-weight:600; font-style:normal; }
+
+  .session-controls{ display:flex; align-items:center; gap:10px; margin-top:22px; flex-shrink:0; }
+  .session-controls .icon-btn{ width:46px; height:46px; flex-shrink:0; }
+  .session-controls .icon-btn svg{ width:18px; height:18px; }
+  .session-controls .icon-btn:disabled{ opacity:.35; cursor:default; }
+  .btn-next{ flex:1; padding:15px; border-radius:var(--radius-md); font-weight:700; font-family:var(--sans); font-size:15px; cursor:pointer; background:var(--gold); border:none; color:var(--on-gold); }
+
+  .complete-wrap{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:16px; }
+  .complete-wrap h2{ font-size:30px; font-family:var(--serif); }
+  .complete-wrap p{ color:var(--text-dim); max-width:280px; line-height:1.6; }
+
+  /* ---------- Affirmations tab ---------- */
+  .affirm-card-list{
+    background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:2px 18px; margin-top:2px;
+  }
+  .a-row{
+    padding:14px 0; font-size:14px; line-height:1.5; color:var(--text-dim);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .a-row:last-child{ border-bottom:none; }
+  .a-row strong{ color:var(--gold-deep); font-weight:700; }
+  textarea{
+    width:100%; min-height:320px; background:var(--bg-card); border:1px solid var(--border);
+    border-radius:var(--radius-md); color:var(--text); font-family:var(--sans); font-size:14px;
+    padding:14px; line-height:1.6; resize:vertical;
+  }
+  .help-text{ color:var(--text-faint); font-size:12.5px; margin-top:8px; line-height:1.5; }
+
+  /* ---------- Goals tab ---------- */
+  .goals-iframe-card{
+    margin-top:2px; border:1px solid var(--border); border-radius:var(--radius-lg);
+    overflow:hidden; background:var(--bg-card); height:58vh; min-height:400px;
+  }
+  #goals-iframe{ width:100%; height:100%; border:none; display:block; }
+  .goal-card{
+    background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding:16px; margin-top:12px;
+  }
+  .goal-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+  .goal-title{ font-family:var(--serif); font-size:17px; }
+  .goal-horizon{ font-size:11px; color:var(--gold-deep); text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
+  .goal-bar-track{ height:7px; border-radius:999px; background:var(--bg-elevated); border:1px solid var(--border-soft); margin-top:12px; overflow:hidden; }
+  .goal-bar-fill{ height:100%; background:var(--gold); border-radius:999px; }
+  .goal-meta{ font-size:12px; color:var(--text-faint); margin-top:6px; }
+  .empty-state{
+    margin-top:8px; text-align:center; color:var(--text-dim); display:flex; flex-direction:column;
+    align-items:center; gap:12px; padding:20px 4px;
+  }
+  .empty-state svg{ width:34px; height:34px; opacity:.5; }
+
+  /* ---------- More tab ---------- */
+  .settings-block{ margin-top:20px; }
+  .settings-block:first-child{ margin-top:4px; }
+  .settings-label{ font-size:12.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.08em; font-weight:700; margin-bottom:8px; }
+  input[type=text]{
+    width:100%; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm);
+    color:var(--text); font-family:var(--sans); font-size:14.5px; padding:12px 14px;
+  }
+  .toggle-row{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border-soft); }
+  .toggle-row:last-child{ border-bottom:none; }
+  .switch{ position:relative; width:42px; height:24px; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .slider{
+    position:absolute; inset:0; background:var(--bg-elevated); border:1px solid var(--border);
+    border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  .slider:before{
+    content:""; position:absolute; width:18px; height:18px; left:2px; top:2px;
+    background:var(--text-faint); border-radius:50%; transition:.2s;
+  }
+  .switch input:checked + .slider{ background:var(--text); }
+  .switch input:checked + .slider:before{ transform:translateX(18px); background:#FFF; }
+  a.link-row{
+    display:flex; align-items:center; justify-content:space-between; padding:14px 0;
+    border-bottom:1px solid var(--border-soft); color:var(--text); text-decoration:none; font-size:14.5px; font-weight:600;
+  }
+  .about-note{ margin-top:22px; color:var(--text-faint); font-size:12px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="topband">
+    <div class="app-logo">
+      <svg id="logo-sun" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="21" fill="#D9A441"/>
+        <g stroke="#D9A441" stroke-width="7" stroke-linecap="round">
+          <line x1="50" y1="5" x2="50" y2="18"/><line x1="50" y1="82" x2="50" y2="95"/>
+          <line x1="5" y1="50" x2="18" y2="50"/><line x1="82" y1="50" x2="95" y2="50"/>
+          <line x1="17" y1="17" x2="26" y2="26"/><line x1="74" y1="74" x2="83" y2="83"/>
+          <line x1="83" y1="17" x2="74" y2="26"/><line x1="26" y1="74" x2="17" y2="83"/>
+        </g>
+      </svg>
+      <span id="logo-text">Miracle Morning</span>
+    </div>
+    <div class="band-title" id="band-title">Good morning, Andrew</div>
+    <div class="band-sub" id="band-sub"></div>
+    <div class="band-rule"></div>
+  </div>
+
+  <!-- ===================== HOME ===================== -->
+  <section class="view active" id="view-home">
+    <div class="tabrow small" id="duration-toggle"></div>
+
+    <div class="plan-preview">
+      <div class="card" id="plan-preview-list"></div>
+    </div>
+
+    <button class="btn-primary" id="btn-start">Start</button>
+  </section>
+
+  <!-- ===================== AFFIRMATIONS ===================== -->
+  <section class="view" id="view-affirmations">
+    <div id="affirm-display">
+      <div class="affirm-card-list" id="affirm-list"></div>
+      <div class="row-gap">
+        <button class="btn-secondary" id="btn-edit-affirm">Edit</button>
+      </div>
+    </div>
+
+    <div id="affirm-editor" style="display:none;">
+      <textarea id="affirm-textarea" spellcheck="false"></textarea>
+      <div class="help-text">One affirmation per line. Wrap a word in double-asterisks like **honesty** to bold it during your session.</div>
+      <div class="row-gap">
+        <button class="btn-ghost" id="btn-cancel-affirm">Cancel</button>
+        <button class="btn-primary" style="margin-top:0;" id="btn-save-affirm">Save</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GOALS ===================== -->
+  <section class="view" id="view-goals">
+    <div class="goals-iframe-card">
+      <iframe id="goals-iframe" src="https://asbfmckay.github.io/ppp/" loading="lazy" title="PPP Household Planner"></iframe>
+    </div>
+    <div class="row-gap">
+      <input type="text" id="input-goals-url" placeholder="Goals page URL">
+      <button class="btn-ghost" id="btn-load-goals-url">Load</button>
+    </div>
+    <div class="help-text">Log in once here if prompted. If PPP has a direct link to just the Goals section, paste it above and tap Load to jump straight there next time.</div>
+    <div class="settings-label" style="margin-top:24px;">Detected from this device</div>
+    <div id="goals-content"></div>
+  </section>
+
+  <!-- ===================== MORE ===================== -->
+  <section class="view" id="view-more">
+    <div class="settings-block">
+      <div class="settings-label">Your name</div>
+      <input type="text" id="input-name" placeholder="Andrew">
+    </div>
+
+    <div class="settings-block">
+      <div class="toggle-row">
+        <span>Chime at each transition</span>
+        <label class="switch"><input type="checkbox" id="toggle-sound" checked><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-label">Goals source</div>
+      <div class="help-text" id="goals-status">Checking for PPP data on this device…</div>
+      <div style="margin-top:10px;">
+        <input type="text" id="input-goals-key" placeholder="Manual storage key (optional)">
+      </div>
+      <div class="row-gap">
+        <button class="btn-ghost" id="btn-rescan-goals">Rescan</button>
+      </div>
+    </div>
+
+    <div class="settings-block">
+      <a class="link-row" href="https://asbfmckay.github.io/ppp/" target="_blank" rel="noopener">
+        <span>Open PPP · Household Planner</span>
+        <span>↗</span>
+      </a>
+    </div>
+
+    <div class="settings-block">
+      <button class="btn-ghost btn-danger" id="btn-reset-affirm">Restore default affirmations</button>
+    </div>
+
+    <div class="about-note">Miracle Morning · a great morning starts with a routined night before. Data is stored only in this browser.</div>
+  </section>
+
+  <!-- ===================== SESSION (fullscreen) ===================== -->
+  <section id="view-session">
+    <div class="session-top">
+      <button class="icon-btn" id="btn-end-session" title="End session">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="session-progress-text"><span id="step-counter-text">Step 1 of 6</span> <span id="session-total-time">· 00:00</span></div>
+      <button class="icon-btn" id="btn-mute-session" title="Mute">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/></svg>
+      </button>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="session-body" id="session-body">
+      <!-- populated by JS -->
+    </div>
+
+    <div class="session-controls" id="session-controls">
+      <button class="icon-btn" id="btn-back-step" title="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-restart-step" title="Restart this step">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-pause-resume" title="Pause">
+        <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+        <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M7 5l12 7-12 7V5z"/></svg>
+      </button>
+      <button class="btn-next" id="btn-skip-step">Next</button>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav-menu hidden" id="nav-menu">
+  <button data-view="home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+    Home
+  </button>
+  <button data-view="affirmations">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h13v13"/><path d="M3 8h13v13H3z"/></svg>
+    Affirmations
+  </button>
+  <button data-view="goals">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+    Goals
+  </button>
+  <button data-view="more">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+    More
+  </button>
+</div>
+
+<div id="appfooter">
+  <button class="footer-menu-btn" id="btn-menu" title="Settings" aria-haspopup="true" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </svg>
+    Settings
+  </button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Config / data ---------------- */
+  var DEFAULT_AFFIRMATIONS = [
+    "I live in complete **honesty** with everyone, in every situation. Truth governs my words, actions, and intentions.",
+    "I am **trustworthy** and dependable. I guard the trust of my wife and family above all else.",
+    "I walk in **righteousness**. I consistently choose what is right, doing one right thing after another without compromise.",
+    "I treat every person I encounter with **respect**, dignity, and kindness.",
+    "I live **transparently**, with openness and clarity. There is no deceit, confusion, or hidden agenda in my life.",
+    "I am **faithful**. I honour my wife and family first, and I remain faithful to the Testimony.",
+    "I bring **positivity** into my household. My attitude creates peace, joy, and emotional safety in my home.",
+    "I do not **criticise** the Brethren. My words build unity, especially within my household.",
+    "I am content and **satisfied** with what we have today. Gratitude fills my heart and guards me from discontent.",
+    "I live **selflessly**. I serve others with love, humility, and a willing spirit.",
+    "I practise strong **self-discipline**. I use my time well, work efficiently, and reject laziness and distraction.",
+    "I am **diligent** in every task. I pursue excellence and persevere until each responsibility is completed.",
+    "I live in **obedience** to the Word of God and to the Ministries of these Great Men."
+  ];
+
+  var ROUTINES = {
+    morning: {
+      label:"Morning",
+      wordmark:"Miracle Morning",
+      greeting:"Good morning",
+      tagline:"Start the day on your terms.",
+      defaultDuration:"60",
+      durationOrder:["60","10"],
+      durations: {
+        "60": {
+          label:"60 min",
+          steps: [
+            { letter:"S", name:"Silence",       subtitle:"Prayer",                              duration:300,  type:"timer",       instructions:"Sit quietly. Breathe. Bring your requests and your gratitude before God." },
+            { letter:"A", name:"Affirmations",  subtitle:"Speak truth over your life",           duration:300,  type:"affirmations" },
+            { letter:"V", name:"Visualisation", subtitle:"See your goals take shape",              duration:300,  type:"timer",       instructions:"Picture today going well \u2014 the conversations, the work, the way you want to show up.", link:{label:"Open Goals", useGoalsUrl:true} },
+            { letter:"E", name:"Exercise",      subtitle:"Move your body",                        duration:1200, type:"timer",       instructions:"Twenty minutes of movement. Walk, stretch, train \u2014 get the blood moving.", link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
+            { letter:"R", name:"Reading",       subtitle:"Feed your mind",                        duration:1200, type:"timer",       instructions:"Twenty minutes with a book that's building you up.", link:{label:"Reading Program", comingSoon:true} },
+            { letter:"S", name:"Scribing",      subtitle:"Impressions",                           duration:300,  type:"timer",       instructions:"Write what's on your mind, what you're grateful for, and what you're aiming at today." }
+          ]
+        },
+        "10": {
+          label:"10 min · Fast",
+          steps: [
+            { letter:"S", name:"Silence",       subtitle:"Prayer",                              duration:60,  type:"timer",       instructions:"One minute. Breathe. Bring your requests and your gratitude before God." },
+            { letter:"A", name:"Affirmations",  subtitle:"Speak truth over your life",           duration:60,  type:"affirmations" },
+            { letter:"V", name:"Visualisation", subtitle:"See your goals take shape",              duration:60,  type:"timer",       instructions:"One minute. Picture today going well.", link:{label:"Open Goals", useGoalsUrl:true} },
+            { letter:"E", name:"Exercise",      subtitle:"20 push-ups \u00b7 20 sit-ups \u00b7 20 dips", duration:300, type:"list", instructions:["20x Push-ups","20x Sit-ups","20x Dips"], link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
+            { letter:"R", name:"Reading",       subtitle:"Feed your mind",                        duration:60,  type:"timer",       instructions:"One minute with a book that's building you up.", link:{label:"Reading Program", comingSoon:true} },
+            { letter:"S", name:"Scribing",      subtitle:"Impressions",                           duration:60,  type:"timer",       instructions:"One minute. Write one thing you're grateful for and one aim for today." }
+          ]
+        }
+      }
+    }
+  };
+
+  /* ---------------- Storage helpers ---------------- */
+  var LS = window.localStorage;
+  function getName(){ return LS.getItem("mm_name") || "Andrew"; }
+  function setName(v){ LS.setItem("mm_name", v || "Andrew"); }
+  function getSoundOn(){ return LS.getItem("mm_sound") !== "off"; }
+  function setSoundOn(v){ LS.setItem("mm_sound", v ? "on" : "off"); }
+  function getRoutine(){ return "morning"; }
+  function getDurationMap(){ try{ return JSON.parse(LS.getItem("mm_duration_map") || "{}"); }catch(e){ return {}; } }
+  function getDurationKey(routine){
+    var map = getDurationMap();
+    return map[routine] || ROUTINES[routine].defaultDuration;
+  }
+  function setDurationKey(routine, dur){
+    var map = getDurationMap();
+    map[routine] = dur;
+    LS.setItem("mm_duration_map", JSON.stringify(map));
+  }
+  function getAffirmations(){
+    try{
+      var raw = LS.getItem("mm_affirmations");
+      if(raw){ var arr = JSON.parse(raw); if(Array.isArray(arr) && arr.length) return arr; }
+    }catch(e){}
+    return DEFAULT_AFFIRMATIONS.slice();
+  }
+  function setAffirmations(arr){ LS.setItem("mm_affirmations", JSON.stringify(arr)); }
+
+  function mdBold(text){
+    var div = document.createElement("div");
+    div.textContent = text;
+    var escaped = div.innerHTML;
+    return escaped.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  }
+
+  /* ---------------- Sound (Web Audio, synthesized \u2014 no asset files) ---------------- */
+  var audioCtx = null;
+  function ctx(){
+    if(!audioCtx){
+      var AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+    }
+    return audioCtx;
+  }
+  function playChime(kind){
+    if(!getSoundOn()) return;
+    try{
+      var c = ctx();
+      if(c.state === "suspended") c.resume();
+      var now = c.currentTime;
+      var notes = kind === "soft" ? [660] : [523.25, 659.25, 783.99];
+      notes.forEach(function(freq, i){
+        var osc = c.createOscillator();
+        var gain = c.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        var start = now + i * 0.12;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.18, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.9);
+        osc.connect(gain).connect(c.destination);
+        osc.start(start);
+        osc.stop(start + 1);
+      });
+    }catch(e){ /* audio not available \u2014 fail silently */ }
+  }
+
+  /* ---------------- Top band ---------------- */
+  function renderTopBand(view){
+    var title = document.getElementById("band-title");
+    var sub = document.getElementById("band-sub");
+    if(view === "home"){
+      title.textContent = ROUTINES.morning.greeting + ", " + getName();
+      var d = new Date();
+      sub.textContent = d.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+    } else if(view === "affirmations"){
+      title.textContent = "Affirmations";
+      sub.textContent = "Speak truth over your life.";
+    } else if(view === "goals"){
+      title.textContent = "Goals";
+      sub.textContent = "Pulled from the PPP household planner.";
+    } else if(view === "more"){
+      title.textContent = "More";
+      sub.textContent = "Settings & preferences.";
+    }
+  }
+
+  /* ---------------- Navigation ---------------- */
+  var views = ["home","affirmations","goals","more"];
+  function showView(name){
+    views.forEach(function(v){
+      document.getElementById("view-"+v).classList.toggle("active", v === name);
+    });
+    document.querySelectorAll("#nav-menu button").forEach(function(b){
+      b.classList.toggle("active", b.getAttribute("data-view") === name);
+    });
+    renderTopBand(name);
+    if(name === "goals") renderGoals();
+    if(name === "affirmations") renderAffirmationsDisplay();
+    if(name === "more") renderMore();
+    if(name === "home") renderHome();
+  }
+
+  var navMenu = document.getElementById("nav-menu");
+  var menuBtn = document.getElementById("btn-menu");
+  function closeMenu(){
+    navMenu.classList.add("hidden");
+    menuBtn.classList.remove("active");
+    menuBtn.setAttribute("aria-expanded", "false");
+  }
+  function toggleMenu(){
+    var isHidden = navMenu.classList.contains("hidden");
+    navMenu.classList.toggle("hidden", !isHidden);
+    menuBtn.classList.toggle("active", isHidden);
+    menuBtn.setAttribute("aria-expanded", isHidden ? "true" : "false");
+  }
+  menuBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    toggleMenu();
+  });
+  document.querySelectorAll("#nav-menu button").forEach(function(b){
+    b.addEventListener("click", function(){
+      showView(b.getAttribute("data-view"));
+      closeMenu();
+    });
+  });
+  document.addEventListener("click", function(e){
+    if(!navMenu.classList.contains("hidden") && !navMenu.contains(e.target) && e.target !== menuBtn){
+      closeMenu();
+    }
+  });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") closeMenu();
+  });
+
+  /* ---------------- Home view ---------------- */
+  function fmtDur(sec){
+    var m = Math.floor(sec/60), s = sec%60;
+    return s === 0 ? (m + " min") : (m + ":" + (s<10?"0":"")+s);
+  }
+  function renderHome(){
+    var routine = getRoutine();
+    renderDurationToggle(routine);
+    renderTopBand("home");
+  }
+  function renderDurationToggle(routine){
+    var wrap = document.getElementById("duration-toggle");
+    wrap.innerHTML = "";
+    var keys = ROUTINES[routine].durationOrder;
+    var current = getDurationKey(routine);
+    keys.forEach(function(k){
+      var btn = document.createElement("button");
+      btn.textContent = ROUTINES[routine].durations[k].label;
+      btn.className = (k === current) ? "active" : "";
+      btn.addEventListener("click", function(){
+        setDurationKey(routine, k);
+        renderDurationToggle(routine);
+        renderPlanPreview(routine, k);
+      });
+      wrap.appendChild(btn);
+    });
+    renderPlanPreview(routine, current);
+  }
+  function renderPlanPreview(routine, durKey){
+    var wrap = document.getElementById("plan-preview-list");
+    wrap.innerHTML = "";
+    ROUTINES[routine].durations[durKey].steps.forEach(function(step){
+      var row = document.createElement("div");
+      row.className = "step-row";
+      row.innerHTML =
+        '<div class="step-letter">'+step.letter+'</div>'+
+        '<div class="step-text"><div class="step-name">'+step.name+'</div><div class="step-sub">'+step.subtitle+'</div></div>'+
+        '<div class="step-dur">'+fmtDur(step.duration)+'</div>';
+      wrap.appendChild(row);
+    });
+  }
+  document.getElementById("btn-start").addEventListener("click", function(){
+    var routine = getRoutine();
+    startSession(routine, getDurationKey(routine));
+  });
+
+  /* ---------------- Affirmations view ---------------- */
+  function renderAffirmationsDisplay(){
+    var list = document.getElementById("affirm-list");
+    list.innerHTML = "";
+    getAffirmations().forEach(function(line){
+      var row = document.createElement("div");
+      row.className = "a-row";
+      row.innerHTML = mdBold(line);
+      list.appendChild(row);
+    });
+    document.getElementById("affirm-display").style.display = "";
+    document.getElementById("affirm-editor").style.display = "none";
+  }
+  document.getElementById("btn-edit-affirm").addEventListener("click", function(){
+    document.getElementById("affirm-textarea").value = getAffirmations().join("\n");
+    document.getElementById("affirm-display").style.display = "none";
+    document.getElementById("affirm-editor").style.display = "";
+  });
+  document.getElementById("btn-cancel-affirm").addEventListener("click", renderAffirmationsDisplay);
+  document.getElementById("btn-save-affirm").addEventListener("click", function(){
+    var lines = document.getElementById("affirm-textarea").value
+      .split("\n").map(function(l){return l.trim();}).filter(Boolean);
+    setAffirmations(lines.length ? lines : DEFAULT_AFFIRMATIONS);
+    renderAffirmationsDisplay();
+  });
+  document.getElementById("btn-reset-affirm").addEventListener("click", function(){
+    setAffirmations(DEFAULT_AFFIRMATIONS.slice());
+    renderAffirmationsDisplay();
+  });
+
+  /* ---------------- Goals view (reads shared-origin PPP data) ---------------- */
+  function deepFindGoals(obj, depth){
+    depth = depth || 0;
+    if(depth > 4 || !obj || typeof obj !== "object") return null;
+    if(Array.isArray(obj)){
+      if(obj.length && obj.every(function(o){ return o && typeof o === "object" && (o.title || o.name); })){
+        return obj;
+      }
+      for(var i=0;i<obj.length;i++){ var r = deepFindGoals(obj[i], depth+1); if(r) return r; }
+      return null;
+    }
+    if(Array.isArray(obj.goals) && obj.goals.length) return obj.goals;
+    for(var k in obj){
+      if(!Object.prototype.hasOwnProperty.call(obj,k)) continue;
+      if(/goal/i.test(k) && Array.isArray(obj[k]) && obj[k].length) return obj[k];
+    }
+    for(var k2 in obj){
+      if(!Object.prototype.hasOwnProperty.call(obj,k2)) continue;
+      var r2 = deepFindGoals(obj[k2], depth+1);
+      if(r2) return r2;
+    }
+    return null;
+  }
+  function findPPPGoals(){
+    try{
+      var override = LS.getItem("mm_goals_key_override");
+      var keys = override ? [override] : Object.keys(LS);
+      for(var i=0;i<keys.length;i++){
+        var k = keys[i];
+        if(/^mm_/.test(k)) continue; // skip our own keys
+        var raw = LS.getItem(k);
+        if(!raw) continue;
+        var parsed;
+        try{ parsed = JSON.parse(raw); }catch(e){ continue; }
+        var found = deepFindGoals(parsed, 0);
+        if(found && found.length) return { key:k, goals:found };
+      }
+    }catch(e){}
+    return null;
+  }
+  function goalPercent(g){
+    if(typeof g.progress === "number") return Math.max(0, Math.min(100, g.progress <= 1 ? g.progress*100 : g.progress));
+    if(Array.isArray(g.milestones) && g.milestones.length){
+      var done = g.milestones.filter(function(m){ return m.done || m.complete || m.completed || m.checked; }).length;
+      return Math.round(done / g.milestones.length * 100);
+    }
+    return null;
+  }
+  function getGoalsUrl(){
+    return LS.getItem("mm_goals_url") || "https://asbfmckay.github.io/ppp/";
+  }
+  function initGoalsIframe(){
+    var input = document.getElementById("input-goals-url");
+    var frame = document.getElementById("goals-iframe");
+    var saved = LS.getItem("mm_goals_url") || "https://asbfmckay.github.io/ppp/";
+    input.value = saved;
+    if(frame.getAttribute("data-loaded") !== saved){
+      frame.src = saved;
+      frame.setAttribute("data-loaded", saved);
+    }
+    document.getElementById("btn-load-goals-url").onclick = function(){
+      var v = input.value.trim() || "https://asbfmckay.github.io/ppp/";
+      LS.setItem("mm_goals_url", v);
+      frame.src = v;
+      frame.setAttribute("data-loaded", v);
+    };
+  }
+  function renderGoals(){
+    initGoalsIframe();
+    var wrap = document.getElementById("goals-content");
+    var result = findPPPGoals();
+    if(!result){
+      wrap.innerHTML = "";
+      var empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>'+
+        '<div>No goals found yet on this device.</div>'+
+        '<div class="help-text">Open the PPP app at least once in this browser, add your goals there, then come back. Both apps share this browser\u2019s storage on the same domain, so they\u2019ll appear here automatically. You can also set a manual key in More \u2192 Goals source.</div>'+
+        '<button class="btn-secondary" id="btn-open-ppp-empty">Open PPP app</button>';
+      wrap.appendChild(empty);
+      var btn = document.getElementById("btn-open-ppp-empty");
+      if(btn) btn.addEventListener("click", function(){ window.open("https://asbfmckay.github.io/ppp/", "_blank"); });
+      return;
+    }
+    wrap.innerHTML = "";
+    result.goals.forEach(function(g){
+      var pct = goalPercent(g);
+      var card = document.createElement("div");
+      card.className = "goal-card";
+      card.innerHTML =
+        '<div class="goal-top">'+
+          '<div class="goal-title">'+(g.title || g.name || "Untitled goal")+'</div>'+
+          (g.horizon || g.timeframe ? '<div class="goal-horizon">'+(g.horizon||g.timeframe)+'</div>' : '')+
+        '</div>'+
+        (pct !== null ? '<div class="goal-bar-track"><div class="goal-bar-fill" style="width:'+pct+'%"></div></div><div class="goal-meta">'+pct+'% complete</div>' : (g.description ? '<div class="goal-meta">'+g.description+'</div>' : ''));
+      wrap.appendChild(card);
+    });
+  }
+
+  /* ---------------- More view ---------------- */
+  function renderMore(){
+    document.getElementById("input-name").value = getName();
+    document.getElementById("toggle-sound").checked = getSoundOn();
+    document.getElementById("input-goals-key").value = LS.getItem("mm_goals_key_override") || "";
+    var result = findPPPGoals();
+    document.getElementById("goals-status").textContent = result
+      ? ("Found " + result.goals.length + " goal(s) under storage key \u201c" + result.key + "\u201d.")
+      : "No PPP goals data found in this browser yet.";
+  }
+  document.getElementById("input-name").addEventListener("change", function(e){
+    setName(e.target.value); renderHome();
+  });
+  document.getElementById("toggle-sound").addEventListener("change", function(e){
+    setSoundOn(e.target.checked);
+  });
+  document.getElementById("input-goals-key").addEventListener("change", function(e){
+    var v = e.target.value.trim();
+    if(v) LS.setItem("mm_goals_key_override", v); else LS.removeItem("mm_goals_key_override");
+    renderMore();
+  });
+  document.getElementById("btn-rescan-goals").addEventListener("click", renderMore);
+
+  /* ---------------- Session engine ---------------- */
+  var session = null; // { steps, routine, durKey, index, totalDuration, elapsedBefore, endTs, remainingMs, paused, tickHandle, overallStartMs, overallTickHandle }
+
+  function totalDurationOf(steps){
+    return steps.reduce(function(a,s){ return a + s.duration; }, 0);
+  }
+  function durationBefore(steps, idx){
+    var sum = 0;
+    for(var k=0;k<idx;k++){ sum += steps[k].duration; }
+    return sum;
+  }
+
+  function startSession(routine, durKey){
+    var steps = ROUTINES[routine].durations[durKey].steps;
+    session = {
+      steps: steps,
+      routine: routine,
+      durKey: durKey,
+      index: 0,
+      totalDuration: totalDurationOf(steps),
+      elapsedBefore: 0,
+      remainingMs: 0,
+      paused: false,
+      tickHandle: null,
+      endTs: 0,
+      overallStartMs: Date.now(),
+      overallTickHandle: null,
+      stepState: steps.map(function(){ return null; })
+    };
+    document.getElementById("view-session").classList.add("active");
+    session.overallTickHandle = setInterval(updateOverallTime, 1000);
+    updateOverallTime();
+    showStep(0);
+  }
+
+  function snapshotCurrentStep(){
+    if(!session) return;
+    var remaining = session.paused ? session.remainingMs : Math.max(0, session.endTs - Date.now());
+    session.stepState[session.index] = remaining;
+  }
+
+  function updateOverallTime(){
+    if(!session) return;
+    var elapsedSec = Math.max(0, Math.floor((Date.now() - session.overallStartMs)/1000));
+    var m = Math.floor(elapsedSec/60), s = elapsedSec%60;
+    var el = document.getElementById("session-total-time");
+    if(el) el.textContent = "\u00b7 " + (m<10?"0":"")+m + ":" + (s<10?"0":"")+s;
+  }
+
+  function endSessionEarly(){
+    if(session && session.tickHandle) clearInterval(session.tickHandle);
+    if(session && session.overallTickHandle) clearInterval(session.overallTickHandle);
+    session = null;
+    document.getElementById("view-session").classList.remove("active");
+  }
+  document.getElementById("btn-end-session").addEventListener("click", endSessionEarly);
+
+  document.getElementById("btn-mute-session").addEventListener("click", function(){
+    setSoundOn(!getSoundOn());
+    this.style.color = getSoundOn() ? "" : "var(--gold-deep)";
+  });
+
+  function goToStep(newIndex){
+    if(!session) return;
+    if(newIndex < 0) newIndex = 0;
+    session.elapsedBefore = durationBefore(session.steps, newIndex);
+    showStep(newIndex);
+  }
+
+  function showStep(i){
+    if(!session) return;
+    if(i >= session.steps.length){ completeSession(); return; }
+    session.index = i;
+    var step = session.steps[i];
+    document.getElementById("step-counter-text").textContent = "Step " + (i+1) + " of " + session.steps.length;
+    document.getElementById("btn-back-step").disabled = (i === 0);
+
+    var body = document.getElementById("session-body");
+    var html =
+      '<div class="session-eyebrow">'+step.letter+' \u00b7 '+step.name+'</div>'+
+      '<div class="session-title">'+step.name+'</div>'+
+      '<div class="session-subtitle">'+step.subtitle+'</div>'+
+      '<div class="session-clock" id="session-clock">--:--</div>';
+
+    if(step.type === "affirmations"){
+      html += '<div class="affirm-scroll" id="affirm-session-scroll"></div>';
+    } else if(step.type === "list"){
+      html += '<ul class="exercise-list">' + step.instructions.map(function(x){ return "<li>"+x+"</li>"; }).join("") + '</ul>';
+    } else {
+      html += '<div class="session-instructions">'+step.instructions+'</div>';
+    }
+
+    if(step.link){
+      if(step.link.comingSoon){
+        html += '<span class="step-link-btn coming-soon">'+step.link.label+' \u00b7 Coming soon</span>';
+      } else {
+        html += '<a class="step-link-btn" id="step-link-btn" href="#" target="_blank" rel="noopener">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>'+
+          step.link.label+'</a>';
+      }
+    }
+
+    body.innerHTML = html;
+
+    if(step.link && !step.link.comingSoon){
+      var linkUrl = step.link.useGoalsUrl ? getGoalsUrl() : step.link.url;
+      document.getElementById("step-link-btn").href = linkUrl;
+    }
+
+    if(step.type === "affirmations"){
+      var scroll = document.getElementById("affirm-session-scroll");
+      getAffirmations().forEach(function(line){
+        var d = document.createElement("div");
+        d.className = "affirm-line";
+        d.innerHTML = mdBold(line);
+        scroll.appendChild(d);
+      });
+    }
+
+    if(session.tickHandle) clearInterval(session.tickHandle);
+
+    var saved = session.stepState[i];
+    var durMs = step.duration * 1000;
+
+    if(saved != null && saved > 0){
+      session.remainingMs = saved;
+      session.paused = true;
+      document.getElementById("icon-pause").style.display = "none";
+      document.getElementById("icon-play").style.display = "";
+      document.getElementById("btn-pause-resume").title = "Resume";
+      updateClock(session.remainingMs);
+      var elapsedInStep = step.duration - session.remainingMs/1000;
+      updateProgress((session.elapsedBefore + elapsedInStep) / session.totalDuration);
+    } else {
+      document.getElementById("icon-pause").style.display = "";
+      document.getElementById("icon-play").style.display = "none";
+      document.getElementById("btn-pause-resume").title = "Pause";
+      session.paused = false;
+      session.remainingMs = durMs;
+      session.endTs = Date.now() + durMs;
+      session.tickHandle = setInterval(tick, 200);
+      tick();
+    }
+  }
+
+  function tick(){
+    if(!session || session.paused) return;
+    var remaining = session.endTs - Date.now();
+    if(remaining <= 0){
+      clearInterval(session.tickHandle);
+      updateClock(0);
+      updateProgress(1);
+      playChime("main");
+      session.stepState[session.index] = null;
+      setTimeout(function(){
+        if(!session) return;
+        goToStep(session.index + 1);
+      }, 900);
+      return;
+    }
+    updateClock(remaining);
+    var step = session.steps[session.index];
+    var elapsedInStep = step.duration - remaining/1000;
+    var overallElapsed = session.elapsedBefore + elapsedInStep;
+    updateProgress(overallElapsed / session.totalDuration);
+  }
+
+  function updateClock(ms){
+    var totalSec = Math.max(0, Math.ceil(ms/1000));
+    var m = Math.floor(totalSec/60), s = totalSec%60;
+    var el = document.getElementById("session-clock");
+    if(el) el.textContent = (m<10?"0":"")+m + ":" + (s<10?"0":"")+s;
+  }
+
+  function updateProgress(frac){
+    frac = Math.max(0, Math.min(1, frac));
+    var fill = document.getElementById("progress-fill");
+    if(fill) fill.style.width = (frac*100).toFixed(1) + "%";
+  }
+
+  document.getElementById("btn-pause-resume").addEventListener("click", function(){
+    if(!session) return;
+    if(session.paused){
+      session.endTs = Date.now() + session.remainingMs;
+      session.paused = false;
+      document.getElementById("icon-pause").style.display = "";
+      document.getElementById("icon-play").style.display = "none";
+      this.title = "Pause";
+      session.tickHandle = setInterval(tick, 200);
+    } else {
+      session.remainingMs = Math.max(0, session.endTs - Date.now());
+      session.paused = true;
+      document.getElementById("icon-pause").style.display = "none";
+      document.getElementById("icon-play").style.display = "";
+      this.title = "Resume";
+      clearInterval(session.tickHandle);
+    }
+  });
+
+  document.getElementById("btn-back-step").addEventListener("click", function(){
+    if(!session || session.index === 0) return;
+    clearInterval(session.tickHandle);
+    playChime("soft");
+    snapshotCurrentStep();
+    goToStep(session.index - 1);
+  });
+
+  document.getElementById("btn-restart-step").addEventListener("click", function(){
+    if(!session) return;
+    clearInterval(session.tickHandle);
+    session.stepState[session.index] = null;
+    showStep(session.index);
+  });
+
+  document.getElementById("btn-skip-step").addEventListener("click", function(){
+    if(!session) return;
+    clearInterval(session.tickHandle);
+    playChime("soft");
+    snapshotCurrentStep();
+    goToStep(session.index + 1);
+  });
+
+  function completeSession(){
+    document.getElementById("session-controls").style.display = "none";
+    if(session && session.overallTickHandle) clearInterval(session.overallTickHandle);
+    var body = document.getElementById("session-body");
+    var closing = "Well done, " + getName() + ".";
+    var line = "Make today count.";
+    body.innerHTML =
+      '<div class="complete-wrap">'+
+        '<div class="session-eyebrow">Session complete</div>'+
+        '<h2>'+closing+'</h2>'+
+        '<p>'+line+'</p>'+
+        '<button class="btn-primary" id="btn-finish" style="width:220px;">Done</button>'+
+      '</div>';
+    document.getElementById("step-counter-text").textContent = "Complete";
+    updateProgress(1);
+    document.getElementById("btn-finish").addEventListener("click", function(){
+      document.getElementById("session-controls").style.display = "";
+      endSessionEarly();
+    });
+  }
+
+  /* ---------------- Init ---------------- */
+  showView("home");
+})();
+</script>
+</body>
+</html>
