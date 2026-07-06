@@ -260,21 +260,6 @@
     overflow:hidden; background:var(--bg-card); height:58vh; min-height:400px;
   }
   #goals-iframe{ width:100%; height:100%; border:none; display:block; }
-  .goal-card{
-    background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md);
-    padding:16px; margin-top:12px;
-  }
-  .goal-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
-  .goal-title{ font-family:var(--serif); font-size:17px; }
-  .goal-horizon{ font-size:11px; color:var(--gold-deep); text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
-  .goal-bar-track{ height:7px; border-radius:999px; background:var(--bg-elevated); border:1px solid var(--border-soft); margin-top:12px; overflow:hidden; }
-  .goal-bar-fill{ height:100%; background:var(--gold); border-radius:999px; }
-  .goal-meta{ font-size:12px; color:var(--text-faint); margin-top:6px; }
-  .empty-state{
-    margin-top:8px; text-align:center; color:var(--text-dim); display:flex; flex-direction:column;
-    align-items:center; gap:12px; padding:20px 4px;
-  }
-  .empty-state svg{ width:34px; height:34px; opacity:.5; }
 
   /* ---------- More tab ---------- */
   .settings-block{ margin-top:20px; }
@@ -284,6 +269,12 @@
     width:100%; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm);
     color:var(--text); font-family:var(--sans); font-size:14.5px; padding:12px 14px;
   }
+  .dur-edit-input{
+    width:52px; text-align:right; font-family:var(--sans); font-weight:600; font-variant-numeric:tabular-nums;
+    font-size:14px; color:var(--text); background:var(--bg-elevated); border:1px solid var(--border);
+    border-radius:8px; padding:7px 8px; margin-left:auto;
+  }
+  .dur-edit-unit{ font-size:12.5px; color:var(--text-faint); flex-shrink:0; }
   .toggle-row{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border-soft); }
   .toggle-row:last-child{ border-bottom:none; }
   .switch{ position:relative; width:42px; height:24px; }
@@ -366,8 +357,6 @@
       <button class="btn-ghost" id="btn-load-goals-url">Load</button>
     </div>
     <div class="help-text">Log in once here if prompted. If PPP has a direct link to just the Goals section, paste it above and tap Load to jump straight there next time.</div>
-    <div class="settings-label" style="margin-top:24px;">Detected from this device</div>
-    <div id="goals-content"></div>
   </section>
 
   <!-- ===================== MORE ===================== -->
@@ -385,13 +374,14 @@
     </div>
 
     <div class="settings-block">
-      <div class="settings-label">Goals source</div>
-      <div class="help-text" id="goals-status">Checking for PPP data on this device…</div>
-      <div style="margin-top:10px;">
-        <input type="text" id="input-goals-key" placeholder="Manual storage key (optional)">
+      <div class="settings-label">Step durations</div>
+      <div class="tabrow small" id="duration-edit-plan-toggle">
+        <button data-plan="60" class="active">60 min plan</button>
+        <button data-plan="10">10 min plan</button>
       </div>
+      <div class="card" id="duration-edit-list" style="margin-top:12px; padding:2px 16px;"></div>
       <div class="row-gap">
-        <button class="btn-ghost" id="btn-rescan-goals">Rescan</button>
+        <button class="btn-ghost" id="btn-reset-durations">Reset this plan to defaults</button>
       </div>
     </div>
 
@@ -626,7 +616,7 @@
       b.classList.toggle("active", b.getAttribute("data-view") === name);
     });
     renderTopBand(name);
-    if(name === "goals") renderGoals();
+    if(name === "goals") initGoalsIframe();
     if(name === "affirmations") renderAffirmationsDisplay();
     if(name === "more") renderMore();
     if(name === "home") renderHome();
@@ -695,7 +685,7 @@
   function renderPlanPreview(routine, durKey){
     var wrap = document.getElementById("plan-preview-list");
     wrap.innerHTML = "";
-    ROUTINES[routine].durations[durKey].steps.forEach(function(step){
+    getEffectiveSteps(routine, durKey).forEach(function(step){
       var row = document.createElement("div");
       row.className = "step-row";
       row.innerHTML =
@@ -740,61 +730,14 @@
     renderAffirmationsDisplay();
   });
 
-  /* ---------------- Goals view (reads shared-origin PPP data) ---------------- */
-  function deepFindGoals(obj, depth){
-    depth = depth || 0;
-    if(depth > 4 || !obj || typeof obj !== "object") return null;
-    if(Array.isArray(obj)){
-      if(obj.length && obj.every(function(o){ return o && typeof o === "object" && (o.title || o.name); })){
-        return obj;
-      }
-      for(var i=0;i<obj.length;i++){ var r = deepFindGoals(obj[i], depth+1); if(r) return r; }
-      return null;
-    }
-    if(Array.isArray(obj.goals) && obj.goals.length) return obj.goals;
-    for(var k in obj){
-      if(!Object.prototype.hasOwnProperty.call(obj,k)) continue;
-      if(/goal/i.test(k) && Array.isArray(obj[k]) && obj[k].length) return obj[k];
-    }
-    for(var k2 in obj){
-      if(!Object.prototype.hasOwnProperty.call(obj,k2)) continue;
-      var r2 = deepFindGoals(obj[k2], depth+1);
-      if(r2) return r2;
-    }
-    return null;
-  }
-  function findPPPGoals(){
-    try{
-      var override = LS.getItem("mm_goals_key_override");
-      var keys = override ? [override] : Object.keys(LS);
-      for(var i=0;i<keys.length;i++){
-        var k = keys[i];
-        if(/^mm_/.test(k)) continue; // skip our own keys
-        var raw = LS.getItem(k);
-        if(!raw) continue;
-        var parsed;
-        try{ parsed = JSON.parse(raw); }catch(e){ continue; }
-        var found = deepFindGoals(parsed, 0);
-        if(found && found.length) return { key:k, goals:found };
-      }
-    }catch(e){}
-    return null;
-  }
-  function goalPercent(g){
-    if(typeof g.progress === "number") return Math.max(0, Math.min(100, g.progress <= 1 ? g.progress*100 : g.progress));
-    if(Array.isArray(g.milestones) && g.milestones.length){
-      var done = g.milestones.filter(function(m){ return m.done || m.complete || m.completed || m.checked; }).length;
-      return Math.round(done / g.milestones.length * 100);
-    }
-    return null;
-  }
+  /* ---------------- Goals view (iframe embed of the PPP app) ---------------- */
   function getGoalsUrl(){
     return LS.getItem("mm_goals_url") || "https://asbfmckay.github.io/ppp/";
   }
   function initGoalsIframe(){
     var input = document.getElementById("input-goals-url");
     var frame = document.getElementById("goals-iframe");
-    var saved = LS.getItem("mm_goals_url") || "https://asbfmckay.github.io/ppp/";
+    var saved = getGoalsUrl();
     input.value = saved;
     if(frame.getAttribute("data-loaded") !== saved){
       frame.src = saved;
@@ -807,48 +750,75 @@
       frame.setAttribute("data-loaded", v);
     };
   }
-  function renderGoals(){
-    initGoalsIframe();
-    var wrap = document.getElementById("goals-content");
-    var result = findPPPGoals();
-    if(!result){
-      wrap.innerHTML = "";
-      var empty = document.createElement("div");
-      empty.className = "empty-state";
-      empty.innerHTML =
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>'+
-        '<div>No goals found yet on this device.</div>'+
-        '<div class="help-text">Open the PPP app at least once in this browser, add your goals there, then come back. Both apps share this browser\u2019s storage on the same domain, so they\u2019ll appear here automatically. You can also set a manual key in More \u2192 Goals source.</div>'+
-        '<button class="btn-secondary" id="btn-open-ppp-empty">Open PPP app</button>';
-      wrap.appendChild(empty);
-      var btn = document.getElementById("btn-open-ppp-empty");
-      if(btn) btn.addEventListener("click", function(){ window.open("https://asbfmckay.github.io/ppp/", "_blank"); });
-      return;
-    }
-    wrap.innerHTML = "";
-    result.goals.forEach(function(g){
-      var pct = goalPercent(g);
-      var card = document.createElement("div");
-      card.className = "goal-card";
-      card.innerHTML =
-        '<div class="goal-top">'+
-          '<div class="goal-title">'+(g.title || g.name || "Untitled goal")+'</div>'+
-          (g.horizon || g.timeframe ? '<div class="goal-horizon">'+(g.horizon||g.timeframe)+'</div>' : '')+
-        '</div>'+
-        (pct !== null ? '<div class="goal-bar-track"><div class="goal-bar-fill" style="width:'+pct+'%"></div></div><div class="goal-meta">'+pct+'% complete</div>' : (g.description ? '<div class="goal-meta">'+g.description+'</div>' : ''));
-      wrap.appendChild(card);
+
+  /* ---------------- Step duration overrides ---------------- */
+  function getStepOverrides(){
+    try{ return JSON.parse(LS.getItem("mm_step_durations") || "{}"); }catch(e){ return {}; }
+  }
+  function setStepOverrides(obj){ LS.setItem("mm_step_durations", JSON.stringify(obj)); }
+  function getEffectiveSteps(routine, durKey){
+    var base = ROUTINES[routine].durations[durKey].steps;
+    var overrides = getStepOverrides();
+    var planOverrides = overrides[durKey] || {};
+    return base.map(function(s){
+      var dur = (planOverrides[s.name] != null) ? planOverrides[s.name] : s.duration;
+      var copy = {};
+      for(var k in s){ copy[k] = s[k]; }
+      copy.duration = dur;
+      return copy;
     });
   }
+  function fmtMinutesValue(seconds){
+    var mins = seconds/60;
+    return (Math.round(mins*100)/100).toString();
+  }
+  var durationEditPlan = "60";
+  function renderDurationEditor(planKey){
+    durationEditPlan = planKey;
+    document.querySelectorAll("#duration-edit-plan-toggle button").forEach(function(b){
+      b.classList.toggle("active", b.getAttribute("data-plan") === planKey);
+    });
+    var wrap = document.getElementById("duration-edit-list");
+    wrap.innerHTML = "";
+    var effective = getEffectiveSteps("morning", planKey);
+    effective.forEach(function(step){
+      var row = document.createElement("div");
+      row.className = "step-row";
+      row.innerHTML =
+        '<div class="step-letter">'+step.letter+'</div>'+
+        '<div class="step-text"><div class="step-name">'+step.name+'</div><div class="step-sub">'+step.subtitle+'</div></div>'+
+        '<input type="number" class="dur-edit-input" min="0.25" step="0.25" value="'+fmtMinutesValue(step.duration)+'" data-step-name="'+step.name+'">'+
+        '<span class="dur-edit-unit">min</span>';
+      wrap.appendChild(row);
+    });
+    wrap.querySelectorAll(".dur-edit-input").forEach(function(input){
+      input.addEventListener("change", function(){
+        var mins = parseFloat(input.value);
+        if(isNaN(mins) || mins <= 0) mins = 0.25;
+        var seconds = Math.round(mins*60);
+        var overrides = getStepOverrides();
+        overrides[durationEditPlan] = overrides[durationEditPlan] || {};
+        overrides[durationEditPlan][input.getAttribute("data-step-name")] = seconds;
+        setStepOverrides(overrides);
+        input.value = fmtMinutesValue(seconds);
+      });
+    });
+  }
+  document.querySelectorAll("#duration-edit-plan-toggle button").forEach(function(b){
+    b.addEventListener("click", function(){ renderDurationEditor(b.getAttribute("data-plan")); });
+  });
+  document.getElementById("btn-reset-durations").addEventListener("click", function(){
+    var overrides = getStepOverrides();
+    delete overrides[durationEditPlan];
+    setStepOverrides(overrides);
+    renderDurationEditor(durationEditPlan);
+  });
 
   /* ---------------- More view ---------------- */
   function renderMore(){
     document.getElementById("input-name").value = getName();
     document.getElementById("toggle-sound").checked = getSoundOn();
-    document.getElementById("input-goals-key").value = LS.getItem("mm_goals_key_override") || "";
-    var result = findPPPGoals();
-    document.getElementById("goals-status").textContent = result
-      ? ("Found " + result.goals.length + " goal(s) under storage key \u201c" + result.key + "\u201d.")
-      : "No PPP goals data found in this browser yet.";
+    renderDurationEditor(durationEditPlan);
   }
   document.getElementById("input-name").addEventListener("change", function(e){
     setName(e.target.value); renderHome();
@@ -856,12 +826,6 @@
   document.getElementById("toggle-sound").addEventListener("change", function(e){
     setSoundOn(e.target.checked);
   });
-  document.getElementById("input-goals-key").addEventListener("change", function(e){
-    var v = e.target.value.trim();
-    if(v) LS.setItem("mm_goals_key_override", v); else LS.removeItem("mm_goals_key_override");
-    renderMore();
-  });
-  document.getElementById("btn-rescan-goals").addEventListener("click", renderMore);
 
   /* ---------------- Session engine ---------------- */
   var session = null; // { steps, routine, durKey, index, totalDuration, elapsedBefore, endTs, remainingMs, paused, tickHandle, overallStartMs, overallTickHandle }
@@ -876,7 +840,7 @@
   }
 
   function startSession(routine, durKey){
-    var steps = ROUTINES[routine].durations[durKey].steps;
+    var steps = getEffectiveSteps(routine, durKey);
     session = {
       steps: steps,
       routine: routine,
