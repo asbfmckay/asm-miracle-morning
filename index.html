@@ -509,7 +509,7 @@
   var PLANS = {
     "60": { label:"60 min", steps:[
       { id:"silence",  name:"Silence",       subtitle:"Prayer",                      duration:300,  type:"timer", instructions:"Sit quietly. Breathe. Bring your requests and your gratitude before God." },
-      { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming",  duration:300,  type:"affirmations" },
+      { id:"affirm",   name:"Affirmations",  subtitle:"Commit to your goals",  duration:300,  type:"affirmations" },
       { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:300,  type:"timer", instructions:"Picture today going well — the conversations, the work, the way you want to show up.", link:{label:"Open Goals", goals:true} },
       { id:"exercise", name:"Exercise",      subtitle:"Move your body",              duration:1200, type:"timer", instructions:"Twenty minutes of movement. Walk, stretch, train — get the blood moving.", link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
       { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:1200, type:"timer", instructions:"Twenty minutes with a book that's building you up.", link:{label:"Reading Program", soon:true} },
@@ -517,7 +517,7 @@
     ]},
     "10": { label:"10 min · Fast", steps:[
       { id:"silence",  name:"Silence",       subtitle:"Prayer",                      duration:60,  type:"timer", instructions:"One minute. Breathe. Bring your requests and your gratitude before God." },
-      { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming",  duration:60,  type:"affirmations" },
+      { id:"affirm",   name:"Affirmations",  subtitle:"Commit to your goals",  duration:60,  type:"affirmations" },
       { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:60,  type:"timer", instructions:"One minute. Picture today going well.", link:{label:"Open Goals", goals:true} },
       { id:"exercise", name:"Exercise",      subtitle:"20 push-ups · 20 sit-ups · 20 dips", duration:300, type:"list", instructions:["20 × Push-ups","20 × Sit-ups","20 × Dips"], link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
       { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:60,  type:"timer", instructions:"One minute with a book that's building you up.", link:{label:"Reading Program", soon:true} },
@@ -645,7 +645,7 @@
       title.textContent = greet + ", " + getName();
       var done = Object.keys(doneToday()).length;
       sub.textContent = done === 6 ? "All six S.A.V.E.R.S done today. Brilliant." : (done ? done + " of 6 S.A.V.E.R.S done today." : "Win the morning, win the day.");
-    } else if(view === "affirmations"){ title.textContent = "Affirmations"; sub.textContent = "Declare who you're becoming."; }
+    } else if(view === "affirmations"){ title.textContent = "Affirmations"; sub.textContent = "Commit to your goals."; }
     else if(view === "goals"){ title.textContent = "Goals"; sub.textContent = "From the PPP household planner."; }
     else { title.textContent = "Settings"; sub.textContent = "Make it yours."; }
     var streak = getStreak();
