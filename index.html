@@ -66,7 +66,7 @@
   @media (prefers-reduced-motion: reduce){ .aurora i{ animation:none; } }
 
   /* ---------- Header ---------- */
-  .hero{ position:relative; padding:calc(16px + var(--safe-t)) 22px 18px; }
+  .hero{ position:relative; padding:calc(10px + var(--safe-t)) 22px 12px; }
   .hero-top{ display:flex; align-items:center; justify-content:space-between; height:42px; }
   .brand{ display:flex; align-items:center; gap:9px; font-weight:500; font-size:12.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-dim); }
   .brand svg{ width:26px; height:19px; color:var(--accent); }
@@ -77,12 +77,12 @@
   }
   .streak-chip svg{ width:15px; height:15px; color:var(--accent); }
   .streak-chip.gold{ background:var(--accent-soft); }
-  .hero-date{ margin-top:16px; font-weight:400; font-size:13.5px; color:var(--ink-dim); }
-  .hero-title{ font-weight:500; font-size:31px; line-height:1.15; margin-top:4px; letter-spacing:-.02em; }
+  .hero-date{ margin-top:8px; font-weight:400; font-size:13.5px; color:var(--ink-dim); }
+  .hero-title{ font-weight:500; font-size:28px; line-height:1.15; margin-top:4px; letter-spacing:-.02em; }
   .hero-sub{ font-weight:300; font-size:15px; color:var(--ink-dim); margin-top:6px; }
 
   /* ---------- Views ---------- */
-  .view{ display:none; padding:0 18px calc(var(--tabbar-h) + var(--safe-b) + 100px); }
+  .view{ display:none; padding:0 18px calc(var(--tabbar-h) + var(--safe-b) + 84px); }
   .view.active{ display:block; animation:viewIn .55s cubic-bezier(.2,.7,.2,1); }
   #view-affirmations, #view-goals, #view-more{ padding-bottom:calc(var(--tabbar-h) + var(--safe-b) + 28px); }
   @keyframes viewIn{ from{opacity:0; transform:translateY(14px); filter:blur(6px);} to{opacity:1; transform:none; filter:none;} }
@@ -94,24 +94,24 @@
   }
 
   /* Plan card */
-  .plan-card{ padding:14px; }
+  .plan-card{ padding:10px; }
   .seg{ display:flex; background:rgba(46,43,40,.05); border-radius:14px; padding:4px; gap:4px; }
   .seg button{
     flex:1; border:none; background:transparent; color:var(--ink-dim);
     font-weight:400; font-size:14px; padding:10px 0; border-radius:11px; cursor:pointer; transition:all .25s;
   }
   .seg button.active{ background:#fff; color:var(--ink); font-weight:500; box-shadow:0 1px 3px rgba(46,43,40,.08); }
-  .plan-meta{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:14px; padding:0 6px 2px; }
+  .plan-meta{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:10px; padding:0 6px 2px; }
   .plan-meta .big{ font-weight:400; font-size:26px; line-height:1; letter-spacing:-.02em; }
   .plan-meta .lbl{ font-size:11.5px; font-weight:400; color:var(--ink-faint); margin-top:6px; letter-spacing:.06em; text-transform:uppercase; }
   .plan-meta .right{ text-align:right; }
 
   /* SAVERS list */
-  .savers{ margin-top:12px; padding:4px 14px; }
-  .saver{ display:flex; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .savers{ margin-top:10px; padding:2px 14px; }
+  .saver{ display:flex; align-items:center; gap:14px; padding:7px 0; border-bottom:1px solid var(--line); }
   .saver:last-child{ border-bottom:none; }
   .tile{
-    width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    width:40px; height:40px; border-radius:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
     color:var(--c); background:color-mix(in srgb, var(--c) 13%, white);
   }
   .tile svg{ width:23px; height:23px; }
@@ -133,13 +133,13 @@
   /* Start button */
   .start-wrap{
     position:fixed; left:0; right:0; bottom:calc(var(--tabbar-h) + var(--safe-b)); z-index:15;
-    max-width:520px; margin:0 auto; padding:14px 18px 12px;
+    max-width:520px; margin:0 auto; padding:8px 18px 10px;
   }
   .btn-start{
     width:100%; border:none; border-radius:20px; color:var(--ink);
-    background:linear-gradient(180deg, #F6CD3E, #EDBB22);
-    font-weight:500; font-size:16.5px; padding:17px; cursor:pointer; letter-spacing:.01em;
-    box-shadow:0 10px 26px rgba(217,165,32,.32);
+    background:linear-gradient(180deg, #F1DA94, #E8CB78);
+    font-weight:500; font-size:16.5px; padding:15px; cursor:pointer; letter-spacing:.01em;
+    box-shadow:0 6px 18px rgba(200,160,60,.18);
     display:flex; align-items:center; justify-content:center; gap:10px; transition:transform .15s;
   }
   .btn-start:active{ transform:scale(.98); }
@@ -182,11 +182,11 @@
   .help{ font-size:12.5px; font-weight:300; color:var(--ink-dim); line-height:1.5; margin:8px 6px 0; }
   .btn{ border:none; border-radius:16px; padding:14px 16px; font-weight:500; font-size:14.5px; cursor:pointer; transition:transform .15s; }
   .btn:active{ transform:scale(.98); }
-  .btn-ink{ background:linear-gradient(180deg, #F6CD3E, #EDBB22); color:var(--ink); box-shadow:0 10px 26px rgba(217,165,32,.3); }
+  .btn-ink{ background:linear-gradient(180deg, #F1DA94, #E8CB78); color:var(--ink); box-shadow:0 6px 18px rgba(200,160,60,.18); }
   .btn-soft{ background:var(--glass-strong); color:var(--ink); border:1px solid var(--line); }
   .btn-danger{ background:var(--glass); color:var(--danger); border:1px solid var(--line); }
   .btn-row{ display:flex; gap:10px; margin-top:12px; }
-  .btn-install{ flex-shrink:0; padding:10px 18px; border-radius:999px; background:linear-gradient(180deg, #F6CD3E, #EDBB22); color:var(--ink); }
+  .btn-install{ flex-shrink:0; padding:10px 18px; border-radius:999px; background:linear-gradient(180deg, #F1DA94, #E8CB78); color:var(--ink); }
   .btn-row > *{ flex:1; }
 
   .switch{ position:relative; width:48px; height:28px; flex-shrink:0; }
@@ -474,7 +474,7 @@
 <script>
 (function(){
   "use strict";
-  var APP_VERSION = "2.3.1";
+  var APP_VERSION = "2.5.0";
 
   /* ================= Data ================= */
   var DEFAULT_AFFIRMATIONS = [
@@ -494,10 +494,10 @@
   ];
 
   var ICONS = {
-    silence:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.3" fill="currentColor" stroke="none"/><path d="M12 8.5v5"/><path d="M7 11.5l5 2 5-2"/><path d="M4 19c2.5-2.5 5-3 8-3s5.5.5 8 3"/><path d="M8 19.5h8"/></svg>',
-    affirm:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8 8 0 01-11.7 7.1L4 19.8l1.2-4.4A8 8 0 1120.5 11.5z"/><path d="M12.3 14.6l-3-3a1.9 1.9 0 012.7-2.6l.3.3.3-.3a1.9 1.9 0 012.7 2.6z" fill="currentColor" stroke="none"/></svg>',
-    visual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2v1.5M5 4l1 1.2M19 4l-1 1.2M12 20.5V22"/></svg>',
-    exercise:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="4.5" r="2" fill="currentColor" stroke="none"/><path d="M9 21l2.5-5 3 2.5V22"/><path d="M6 11l3.5-3.5 4 .5 2.5 3.5 3 .5"/><path d="M13.5 8l-2 8"/><path d="M3 9h3M2 13h3"/></svg>',
+    silence:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19c3-4 6-6 10-6s7 2 10 6"/><path d="M8.5 13a3.5 3.5 0 017 0"/><path d="M12 5v2M6.5 7.5l1.2 1.2M17.5 7.5l-1.2 1.2"/><path d="M2 21h20"/></svg>',
+    affirm:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="13" r="8"/><circle cx="11" cy="13" r="4.5"/><circle cx="11" cy="13" r="1.2" fill="currentColor"/><path d="M11 13l9-9"/><path d="M17 4h3v3"/></svg>',
+    visual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.6.5 1 1.3 1 2.1V16h5.2v-.1c0-.8.4-1.6 1-2.1A6 6 0 0012 3z"/></svg>',
+    exercise:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.5h17.5a1.5 1.5 0 000-3c-2.5 0-5-.8-6.8-2.6L11 9.5l-2 1.5-2.5-3L4 9.5 3 13z"/><path d="M3 20.5h18"/><path d="M11.5 12.5l-1.5 1M13.5 14l-1.5 1"/></svg>',
     reading:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v13"/></svg>',
     scribing:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 4.5l4 4L9 19l-5 1 1-5z"/><path d="M13 7l4 4"/><path d="M14 20h6"/></svg>'
   };
@@ -509,7 +509,7 @@
   var PLANS = {
     "60": { label:"60 min", steps:[
       { id:"silence",  name:"Silence",       subtitle:"Prayer",                      duration:300,  type:"timer", instructions:"Sit quietly. Breathe. Bring your requests and your gratitude before God." },
-      { id:"affirm",   name:"Affirmations",  subtitle:"Speak truth over your life",  duration:300,  type:"affirmations" },
+      { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming",  duration:300,  type:"affirmations" },
       { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:300,  type:"timer", instructions:"Picture today going well — the conversations, the work, the way you want to show up.", link:{label:"Open Goals", goals:true} },
       { id:"exercise", name:"Exercise",      subtitle:"Move your body",              duration:1200, type:"timer", instructions:"Twenty minutes of movement. Walk, stretch, train — get the blood moving.", link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
       { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:1200, type:"timer", instructions:"Twenty minutes with a book that's building you up.", link:{label:"Reading Program", soon:true} },
@@ -517,7 +517,7 @@
     ]},
     "10": { label:"10 min · Fast", steps:[
       { id:"silence",  name:"Silence",       subtitle:"Prayer",                      duration:60,  type:"timer", instructions:"One minute. Breathe. Bring your requests and your gratitude before God." },
-      { id:"affirm",   name:"Affirmations",  subtitle:"Speak truth over your life",  duration:60,  type:"affirmations" },
+      { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming",  duration:60,  type:"affirmations" },
       { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:60,  type:"timer", instructions:"One minute. Picture today going well.", link:{label:"Open Goals", goals:true} },
       { id:"exercise", name:"Exercise",      subtitle:"20 push-ups · 20 sit-ups · 20 dips", duration:300, type:"list", instructions:["20 × Push-ups","20 × Sit-ups","20 × Dips"], link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
       { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:60,  type:"timer", instructions:"One minute with a book that's building you up.", link:{label:"Reading Program", soon:true} },
@@ -644,8 +644,8 @@
       var greet = h < 12 ? "Good morning" : (h < 18 ? "Good afternoon" : "Good evening");
       title.textContent = greet + ", " + getName();
       var done = Object.keys(doneToday()).length;
-      sub.textContent = done === 6 ? "All six S.A.V.E.R.S done today. Brilliant." : (done ? done + " of 6 S.A.V.E.R.S done today." : "Start the day on your terms.");
-    } else if(view === "affirmations"){ title.textContent = "Affirmations"; sub.textContent = "Speak truth over your life."; }
+      sub.textContent = done === 6 ? "All six S.A.V.E.R.S done today. Brilliant." : (done ? done + " of 6 S.A.V.E.R.S done today." : "Win the morning, win the day.");
+    } else if(view === "affirmations"){ title.textContent = "Affirmations"; sub.textContent = "Declare who you're becoming."; }
     else if(view === "goals"){ title.textContent = "Goals"; sub.textContent = "From the PPP household planner."; }
     else { title.textContent = "Settings"; sub.textContent = "Make it yours."; }
     var streak = getStreak();

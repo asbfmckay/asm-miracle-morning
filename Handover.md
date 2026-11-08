@@ -12,10 +12,19 @@ Miracle Morning App\
   asm-miracle-morning\   ← the GitHub repo (created by GitHub Desktop clone)
 ```
 
+## v2.5.0 (9 Nov 2026) — new step icons
+- Silence = dawn over hills, Affirmations = target, Visualisation = lightbulb, Exercise = running shoe. Reading and Scribing unchanged.
+
+## v2.4.0 (9 Nov 2026) — fit + wording
+- Home screen tightened so all six steps + Start button fit without scrolling on a typical phone.
+- Start/Done/Install buttons now a muted soft yellow.
+- Home subheading: "Win the morning, win the day." Affirmations subheading: "Declare who you're becoming."
+
 ## v2.3.0 (9 Nov 2026) — beige base
 - Background near-white warm cream (#FCFAF6) with only a small yellow glow (v2.3.1).
 - Step colours back (olive, green, teal, blue, purple, berry) — deeper, not pastel. Each session step gets a light wash of its colour.
 - Start/Done buttons stay yellow (single colour).
+- App icon / favicon: muted gold half-sun on white with a straight diagonal soft-yellow fade from the top-left (no round glows, no grey).
 - Settings → "Install on this device" button (Chrome install prompt). Hidden once installed.
 
 ## v2.2.0 (9 Nov 2026) — yellow & charcoal (superseded by v2.3)
