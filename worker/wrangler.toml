@@ -1,0 +1,17 @@
+# Miracle Morning (Life App) — API Worker. Deploy from this folder: npx wrangler deploy
+# Lives on Andrew's own Cloudflare account (andrew.bronnia@gmail.com — the one with Folio and Brighta).
+name = "life-api"
+main = "worker.js"
+account_id = "72e2ed7a97561d89fca4c6d270b96916"
+compatibility_date = "2026-09-01"
+
+# Run once: npx wrangler kv namespace create DB   — then paste the id it prints here.
+[[kv_namespaces]]
+binding = "DB"
+id = "2762b00d622341ac87fd459ae4949c2e"
+
+[vars]
+# Where the app is served from (no trailing slash). Add more, comma-separated, if the address changes.
+ALLOWED_ORIGINS = "https://asbfmckay.github.io"
+# Local testing only. Keep "false".
+ALLOW_LOCALHOST = "false"

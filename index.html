@@ -320,6 +320,140 @@
   }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
   #session.active ~ .toast{ bottom:calc(120px + var(--safe-b)); }
+
+  /* ================= v3 Life App additions ================= */
+  :root{ --ok:#4E9A6A; --miss:#C77A7A; --skip:#C9C3B8; }
+  #view-habits, #view-goals, #view-review{ padding-bottom:calc(var(--tabbar-h) + var(--safe-b) + 28px); }
+  .hero-right{ display:flex; align-items:center; gap:8px; }
+  .icon-chip{
+    width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    background:var(--glass); border:1px solid var(--glass-line); color:var(--ink-dim); padding:0;
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); position:relative;
+  }
+  .icon-chip svg{ width:18px; height:18px; }
+  .icon-chip .dot{ position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:var(--skip); border:1.5px solid #fff; }
+  .icon-chip .dot.on{ background:var(--ok); } .icon-chip .dot.wait{ background:var(--accent); } .icon-chip .dot.err{ background:var(--danger); }
+
+  .tabbar.five button{ font-size:11px; } .tabbar.five .tab-ic{ width:44px; }
+
+  /* generic bits */
+  .muted{ color:var(--ink-dim); font-weight:300; }
+  .small{ font-size:12.5px; }
+  .pill{ display:inline-block; font-size:11px; font-weight:500; letter-spacing:.04em; padding:3px 9px; border-radius:999px; background:rgba(46,43,40,.06); color:var(--ink-dim); }
+  .pill.sug{ background:#F7EBC9; color:#86661A; cursor:pointer; }
+  .link-btn{ background:none; border:none; color:var(--ink-dim); font-size:13px; padding:6px 4px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+  .btn-sm{ padding:9px 14px; border-radius:12px; font-size:13.5px; }
+  .empty{ padding:18px 4px; color:var(--ink-dim); font-weight:300; font-size:14.5px; line-height:1.55; }
+  input[type=email], input[type=password], input[type=number].in, input[type=date], select, textarea.in{
+    width:100%; border:1px solid var(--line); background:rgba(255,255,255,.7); border-radius:14px;
+    padding:12px 14px; font-family:inherit; font-weight:400; font-size:15px; color:var(--ink); outline:none;
+  }
+  textarea.in{ min-height:84px; resize:vertical; line-height:1.5; }
+  .fld{ margin-top:12px; } .fld > label{ display:block; font-size:12.5px; font-weight:500; color:var(--ink-dim); margin:0 2px 6px; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+  /* Today's habits on the Morning screen */
+  .today-habits{ margin-top:10px; padding:4px 14px 6px; }
+  .th-head{ display:flex; justify-content:space-between; align-items:center; padding:10px 2px 4px; }
+  .th-head b{ font-weight:500; font-size:12px; text-transform:uppercase; letter-spacing:.14em; color:var(--ink-faint); }
+  .th-row{ display:flex; align-items:center; gap:12px; padding:9px 0; border-top:1px solid var(--line); }
+  .th-name{ flex:1; font-size:15.5px; min-width:0; }
+  .th-name small{ display:block; font-size:12px; font-weight:300; color:var(--ink-dim); }
+  .th-row .check{ --c:var(--ok); }
+
+  /* Habits */
+  .hb-bar{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .hb-bar .seg{ flex:0 0 auto; } .hb-bar .seg button{ padding:8px 14px; flex:0 0 auto; }
+  .hb-nav{ display:flex; align-items:center; gap:6px; font-size:14px; }
+  .hb-nav button{ width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--glass); cursor:pointer; color:var(--ink); }
+  .hb-nav button:disabled{ opacity:.35; }
+  .hb-card{ padding:14px 14px 12px; margin-bottom:10px; }
+  .hb-title{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .hb-title button{ background:none; border:none; padding:0; font-family:inherit; font-size:16.5px; font-weight:500; color:var(--ink); cursor:pointer; text-align:left; }
+  .hb-meta{ font-size:12.5px; color:var(--ink-dim); font-weight:300; margin-top:3px; }
+  .hb-meta b{ font-weight:500; color:var(--ink); }
+  .hb-row{ display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; margin-top:10px; }
+  .hb-d{
+    border:none; border-radius:12px; background:rgba(46,43,40,.05); color:var(--ink-dim); font-family:inherit; font-size:12px; font-weight:500;
+    padding:7px 0 6px; display:flex; flex-direction:column; align-items:center; gap:1px; cursor:pointer; transition:background .2s;
+  }
+  .hb-d small{ font-size:11px; font-weight:300; }
+  .hb-d:disabled{ cursor:default; opacity:.55; }
+  .hb-d.now{ box-shadow:inset 0 0 0 1.5px var(--accent); }
+  .hb-d.st-g{ background:var(--ok); color:#fff; } .hb-d.st-r{ background:var(--miss); color:#fff; } .hb-d.st-s{ background:var(--skip); color:#fff; }
+  .hb-mgrid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:4px; margin-top:10px; }
+  .hb-mgrid .hb-d{ padding:8px 0; border-radius:10px; }
+  .hb-mh{ text-align:center; font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.08em; }
+  .hb-who{ font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-faint); margin:18px 6px 8px; }
+  .hb-leg{ display:flex; gap:12px; font-size:12px; color:var(--ink-dim); margin-top:10px; }
+  .hb-leg i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
+  .hb-note{ display:flex; gap:10px; padding:8px 0; border-top:1px solid var(--line); font-size:14px; }
+
+  /* Goals */
+  .area{ padding:16px 16px 14px; margin-bottom:12px; border-left:4px solid var(--ac); }
+  .area-h{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .area-h h3{ margin:0; font-weight:500; font-size:19px; letter-spacing:-.01em; }
+  .area .vision{ font-weight:300; font-size:14.5px; line-height:1.55; color:var(--ink-dim); margin-top:6px; white-space:pre-line; }
+  .area .lbl{ font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.14em; color:var(--ink-faint); margin:14px 0 6px; }
+  .goal{ padding:8px 0; border-top:1px solid var(--line); }
+  .goal:first-of-type{ border-top:none; }
+  .goal-t{ display:flex; gap:10px; align-items:flex-start; font-size:14.5px; line-height:1.4; }
+  .goal-t span{ flex:1; }
+  .goal-t b{ font-weight:500; font-variant-numeric:tabular-nums; font-size:13px; color:var(--ink-dim); white-space:nowrap; }
+  .bar{ height:5px; border-radius:999px; background:rgba(46,43,40,.07); overflow:hidden; margin-top:6px; }
+  .bar i{ display:block; height:100%; border-radius:999px; background:var(--ac, var(--ok)); }
+  .ms{ display:flex; align-items:center; gap:10px; padding:6px 0; font-size:14px; }
+  .ms .check{ width:24px; height:24px; --c:var(--ac); } .ms .check svg{ width:12px; height:12px; }
+  .ms span{ flex:1; } .ms.done span{ text-decoration:line-through; color:var(--ink-faint); }
+  .ms small{ font-size:11.5px; color:var(--ink-faint); white-space:nowrap; }
+  .ms.late small{ color:var(--danger); }
+  .score{ font-size:13.5px; margin-top:12px; padding-top:10px; border-top:1px solid var(--line); color:var(--ink-dim); }
+  .score b{ color:var(--ink); font-weight:500; }
+  .quote{ font-weight:300; font-size:14.5px; line-height:1.6; color:var(--ink-dim); border-left:2px solid var(--ac); padding:2px 0 2px 12px; margin-top:4px; }
+  .anchor-card{ padding:16px; margin-bottom:12px; }
+  .anchor-card .quote{ --ac:var(--accent); font-size:15.5px; color:var(--ink); }
+  .add-row{ display:flex; gap:8px; margin-top:8px; }
+  .add-row input[type=text]{ padding:10px 12px; font-size:14px; }
+  .add-row input[type=date]{ width:150px; padding:10px; font-size:13.5px; }
+
+  /* Session extras */
+  .s-vis{ width:100%; display:flex; flex-direction:column; gap:10px; margin-top:16px; text-align:left; }
+  .s-vis .glass{ padding:14px 16px; border-radius:20px; transition:opacity .4s, transform .4s; opacity:.45; }
+  .s-vis .glass.on{ opacity:1; transform:scale(1.01); box-shadow:0 0 0 1.5px var(--step), var(--shadow); }
+  .s-vis h4{ margin:0 0 4px; font-size:12px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); }
+  .s-vis p{ margin:0; font-weight:300; font-size:15.5px; line-height:1.6; color:var(--ink); }
+  .s-scribe{ width:100%; margin-top:14px; text-align:left; display:flex; flex-direction:column; gap:10px; }
+  .s-scribe .glass{ padding:12px 14px; border-radius:20px; }
+  .s-scribe label{ display:block; font-size:12px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px; }
+  .s-scribe input[type=text], .s-scribe textarea{ background:rgba(255,255,255,.8); padding:10px 12px; font-size:15px; border-radius:12px; }
+  .s-scribe input + input{ margin-top:6px; }
+  .s-scribe textarea{ min-height:70px; }
+  .s-saved{ font-size:12px; color:var(--ink-faint); text-align:center; }
+
+  /* Review */
+  .rv-sec{ padding:14px 16px; margin-bottom:12px; }
+  .rv-sec h3{ margin:0 0 8px; font-size:15px; font-weight:500; }
+  .rv-row{ display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-top:1px solid var(--line); font-size:14px; }
+  .rv-row:first-of-type{ border-top:none; }
+  .rv-row b{ font-weight:500; font-variant-numeric:tabular-nums; }
+  .sc-entry{ padding:9px 0; border-top:1px solid var(--line); font-size:14px; line-height:1.5; }
+  .sc-entry:first-of-type{ border-top:none; }
+  .sc-entry b{ font-weight:500; display:block; font-size:12.5px; color:var(--ink-dim); }
+  .callout{ padding:12px 16px; margin-bottom:12px; font-size:14px; line-height:1.5; background:#FBF3DC; border-color:#F1E3B8; }
+
+  /* Sheet (bottom panel for forms) */
+  #sheet-bg{ position:fixed; inset:0; background:rgba(38,36,31,.28); z-index:60; display:none; }
+  #sheet{
+    position:fixed; left:0; right:0; bottom:0; z-index:61; max-width:520px; margin:0 auto; max-height:88dvh; overflow-y:auto;
+    background:#FDFBF7; border-radius:26px 26px 0 0; padding:18px 18px calc(22px + var(--safe-b)); display:none;
+    box-shadow:0 -10px 40px rgba(46,43,40,.15); -webkit-overflow-scrolling:touch;
+  }
+  #sheet.open, #sheet-bg.open{ display:block; }
+  #sheet.open{ animation:sheetIn .35s cubic-bezier(.2,.8,.2,1); }
+  @keyframes sheetIn{ from{ transform:translateY(40px); opacity:0; } to{ transform:none; opacity:1; } }
+  #sheet h2{ margin:0 0 4px; font-weight:500; font-size:21px; letter-spacing:-.01em; }
+  #sheet .sheet-close{ position:absolute; right:14px; top:14px; }
 </style>
 </head>
 <body>
@@ -332,17 +466,20 @@
         <svg viewBox="0 0 56 40" fill="none"><path d="M12 34a16 16 0 0132 0z" fill="currentColor"/><g stroke="currentColor" stroke-width="4" stroke-linecap="round"><line x1="28" y1="4" x2="28" y2="11"/><line x1="12" y1="10" x2="16" y2="15"/><line x1="44" y1="10" x2="40" y2="15"/><line x1="3" y1="22" x2="9" y2="24"/><line x1="53" y1="22" x2="47" y2="24"/></g></svg>
         Miracle Morning
       </div>
-      <div class="streak-chip" id="streak-chip" title="Day streak">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3.5 5 5.8 5 11a5 5 0 01-10 0c0-2.3 1-3.8 2.2-5 .3 1.8 1.2 2.8 2.3 3.2C11 8.6 11.3 5 12 2z"/></svg>
-        <span id="streak-num">0</span>
+      <div class="hero-right">
+        <div class="streak-chip" id="streak-chip" title="Day streak">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3.5 5 5.8 5 11a5 5 0 01-10 0c0-2.3 1-3.8 2.2-5 .3 1.8 1.2 2.8 2.3 3.2C11 8.6 11.3 5 12 2z"/></svg>
+          <span id="streak-num">0</span>
+        </div>
+        <button class="icon-chip" id="btn-settings" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg><span class="dot" id="sync-dot"></span></button>
       </div>
     </div>
     <div class="hero-date" id="hero-date"></div>
-    <div class="hero-title" id="hero-title">Good morning, Andrew</div>
+    <div class="hero-title" id="hero-title">Good morning</div>
     <div class="hero-sub" id="hero-sub"></div>
   </header>
 
-  <!-- HOME -->
+  <!-- TODAY (Morning) -->
   <section class="view active" id="view-home">
     <div class="plan-card glass">
       <div class="seg" id="plan-seg"></div>
@@ -352,6 +489,7 @@
       </div>
     </div>
     <div class="savers glass" id="savers"></div>
+    <div class="today-habits glass" id="today-habits"></div>
     <div class="start-wrap" id="start-wrap">
       <button class="btn-start" id="btn-start">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>
@@ -360,84 +498,17 @@
     </div>
   </section>
 
-  <!-- AFFIRMATIONS -->
-  <section class="view" id="view-affirmations">
-    <div id="aff-display">
-      <div class="card glass" id="aff-list"></div>
-      <div class="btn-row"><button class="btn btn-ink" id="btn-aff-edit">Edit affirmations</button></div>
-    </div>
-    <div id="aff-editor" style="display:none;">
-      <textarea id="aff-text" spellcheck="false"></textarea>
-      <div class="help">One affirmation per line. A short line with no full stop (e.g. Health) shows as a heading. Wrap a word in **double asterisks** to highlight it.</div>
-      <div class="btn-row">
-        <button class="btn btn-soft" id="btn-aff-cancel">Cancel</button>
-        <button class="btn btn-ink" id="btn-aff-save">Save</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- GOALS -->
-  <section class="view" id="view-goals">
-    <div class="goals-frame glass"><iframe id="goals-frame" title="PPP Household Planner" loading="lazy"></iframe></div>
-    <div class="btn-row">
-      <a class="btn btn-soft" id="goals-open" target="_blank" rel="noopener" style="text-align:center; text-decoration:none;">Open full screen ↗</a>
-    </div>
-  </section>
-
-  <!-- SETTINGS -->
-  <section class="view" id="view-more">
-    <div id="install-block">
-      <div class="section-label">App</div>
-      <div class="card glass">
-        <div class="row">
-          <div><div class="row-title">Install on this device</div><div class="row-sub" id="install-sub">Opens full screen from your home screen, like a normal app</div></div>
-          <button class="btn btn-install" id="btn-install">Install</button>
-        </div>
-      </div>
-    </div>
-    <div class="section-label">Screen & sound</div>
-    <div class="card glass">
-      <div class="row">
-        <div><div class="row-title">Keep screen on</div><div class="row-sub" id="wake-sub">Stops your phone dimming while the app is open</div></div>
-        <label class="switch"><input type="checkbox" id="t-wake"><span></span></label>
-      </div>
-      <div class="row">
-        <div><div class="row-title">Chime between steps</div></div>
-        <label class="switch"><input type="checkbox" id="t-sound"><span></span></label>
-      </div>
-      <div class="row">
-        <div><div class="row-title">Vibrate between steps</div></div>
-        <label class="switch"><input type="checkbox" id="t-vibe"><span></span></label>
-      </div>
-    </div>
-
-    <div class="section-label">Step durations</div>
-    <div class="seg light" id="dur-seg"></div>
-    <div class="card glass" id="dur-list" style="margin-top:10px;"></div>
-    <div class="btn-row"><button class="btn btn-soft" id="btn-dur-reset">Reset this plan</button></div>
-
-    <div class="section-label">You</div>
-    <div class="card glass" style="padding:14px 16px;">
-      <div class="row-title" style="margin-bottom:8px;">Your name</div>
-      <input type="text" id="in-name" placeholder="Andrew" autocomplete="off">
-      <div class="row-title" style="margin:16px 0 8px;">Goals page link</div>
-      <input type="url" id="in-goals" placeholder="https://asbfmckay.github.io/ppp/" autocomplete="off">
-    </div>
-
-    <div class="section-label">Reset</div>
-    <div class="btn-row" style="margin-top:0;">
-      <button class="btn btn-danger" id="btn-aff-reset">Restore default affirmations</button>
-    </div>
-
-    <div class="about">Miracle Morning · a great morning starts with a routined night before.<br>Your data is saved on this device only. <span id="app-ver"></span></div>
-  </section>
+  <section class="view" id="view-habits"></section>
+  <section class="view" id="view-goals"></section>
+  <section class="view" id="view-review"></section>
+  <section class="view" id="view-more"></section>
 </div>
 
 <nav class="tabbar" id="tabbar">
   <button data-view="home" class="active"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h16"/><path d="M7 18a5 5 0 0110 0"/><path d="M12 6v3M5.5 9.5l2 2M18.5 9.5l-2 2"/></svg></span>Today</button>
-  <button data-view="affirmations"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg></span>Affirm</button>
+  <button data-view="habits"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.2 2.2 4.8-4.7"/></svg></span>Habits</button>
   <button data-view="goals"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>Goals</button>
-  <button data-view="more"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></span>Settings</button>
+  <button data-view="review"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"/><path d="M8 15l3.5-4 3 2.5L19 8"/></svg></span>Review</button>
 </nav>
 
 <!-- SESSION -->
@@ -471,14 +542,18 @@
   </div>
 </section>
 
+<div id="sheet-bg"></div>
+<div id="sheet" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
   "use strict";
-  var APP_VERSION = "2.5.0";
+  var APP_VERSION = "3.1.0";
+  // The API Worker (Cloudflare). Change in Settings → Account if it ever moves.
+  var DEFAULT_API = "https://life-api.andrew-bronnia.workers.dev";
 
-  /* ================= Data ================= */
+  /* ================= Fixed data ================= */
   var DEFAULT_AFFIRMATIONS = [
     "I live in complete **honesty** with everyone, in every situation. Truth governs my words, actions, and intentions.",
     "I am **trustworthy** and dependable. I guard the trust of my wife and family above all else.",
@@ -503,92 +578,708 @@
     reading:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v13"/></svg>',
     scribing:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 4.5l4 4L9 19l-5 1 1-5z"/><path d="M13 7l4 4"/><path d="M14 20h6"/></svg>'
   };
-  var COLORS = { silence:"var(--c-silence)", affirm:"var(--c-affirm)", visual:"var(--c-visual)", exercise:"var(--c-exercise)", reading:"var(--c-reading)", scribing:"var(--c-scribing)" };
+  var ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   var HEX = { silence:"#7A9A4E", affirm:"#3E9A6E", visual:"#2F91A6", exercise:"#3D70AE", reading:"#6753A6", scribing:"#A64E70" };
-  // Soft companion colours for the drifting background during each step
-  var AURA = { silence:["#D5E2C4","#EADFC2"], affirm:["#C9E2D5","#E3E8C9"], visual:["#C6E0E6","#D6DCEC"], exercise:["#CFDAEC","#DCD5EA"], reading:["#DCD5EC","#ECD6E0"], scribing:["#EDD3DD","#F0DFC8"] };
 
   var PLANS = {
     "60": { label:"60 min", steps:[
       { id:"silence",  name:"Silence",       subtitle:"Prayer",                      duration:300,  type:"timer", instructions:"Sit quietly. Breathe. Bring your requests and your gratitude before God." },
-      { id:"affirm",   name:"Affirmations",  subtitle:"Commit to your goals",  duration:300,  type:"affirmations" },
-      { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:300,  type:"timer", instructions:"Picture today going well — the conversations, the work, the way you want to show up.", link:{label:"Open Goals", goals:true} },
+      { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming", duration:300,  type:"affirmations" },
+      { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:300,  type:"visual", instructions:"Picture today going well — the conversations, the work, the way you want to show up." },
       { id:"exercise", name:"Exercise",      subtitle:"Move your body",              duration:1200, type:"timer", instructions:"Twenty minutes of movement. Walk, stretch, train — get the blood moving.", link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
-      { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:1200, type:"timer", instructions:"Twenty minutes with a book that's building you up.", link:{label:"Reading Program", soon:true} },
-      { id:"scribing", name:"Scribing",      subtitle:"Impressions",                 duration:300,  type:"timer", instructions:"Write what's on your mind, what you're grateful for, and what you're aiming at today." }
+      { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:1200, type:"timer", instructions:"Twenty minutes in the Word and the Ministry.", link:{label:"Reading plans", soon:true} },
+      { id:"scribing", name:"Scribing",      subtitle:"Impressions",                 duration:300,  type:"scribe" }
     ]},
     "10": { label:"10 min · Fast", steps:[
       { id:"silence",  name:"Silence",       subtitle:"Prayer",                      duration:60,  type:"timer", instructions:"One minute. Breathe. Bring your requests and your gratitude before God." },
-      { id:"affirm",   name:"Affirmations",  subtitle:"Commit to your goals",  duration:60,  type:"affirmations" },
-      { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:60,  type:"timer", instructions:"One minute. Picture today going well.", link:{label:"Open Goals", goals:true} },
+      { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming", duration:60,  type:"affirmations" },
+      { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:60,  type:"visual", instructions:"One minute. Picture today going well." },
       { id:"exercise", name:"Exercise",      subtitle:"20 push-ups · 20 sit-ups · 20 dips", duration:300, type:"list", instructions:["20 × Push-ups","20 × Sit-ups","20 × Dips"], link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
-      { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:60,  type:"timer", instructions:"One minute with a book that's building you up.", link:{label:"Reading Program", soon:true} },
-      { id:"scribing", name:"Scribing",      subtitle:"Impressions",                 duration:60,  type:"timer", instructions:"One minute. Write one thing you're grateful for and one aim for today." }
+      { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:60,  type:"timer", instructions:"One minute in the Word.", link:{label:"Reading plans", soon:true} },
+      { id:"scribing", name:"Scribing",      subtitle:"Impressions",                 duration:60,  type:"scribe" }
     ]}
   };
   var PLAN_ORDER = ["60","10"];
+  var PROMPTS = ["What would make today great?", "What am I avoiding, and why?", "Who can I help get ahead today?", "What did yesterday teach me?"];
 
-  /* ================= Storage (same keys as v1, so existing data carries over) ================= */
+  /* Seed: from "Andrew's Miracle Morning — Goals, Affirmations & Visualisations" (9 Nov 2026).
+     Milestones and habits are left for Andrew to add. */
+  var SEED_AREAS = [
+    { id:"area-anchor", anchor:true, name:"Anchor", color:"#C9971C", order:0,
+      affirmation:"I live to be ready for the Lord's Rapture: faithful to God, the Testimony, my wife and my children; disciplined in body; wise with money; and generous in helping others get ahead. Our household will be free of anything that holds us to this earth. Today I commit again to living ready for the Rapture." },
+    { id:"area-faith", name:"Faith", color:"#6753A6", order:1,
+      vision:"A household grounded in God's Word, growing together in knowledge, and ready for the Lord's return.",
+      dailyAction:"Read, note one line that struck me, and act on it.",
+      affirmation:"I am committed to growing daily in the knowledge of God through His Word and Ministry of these Great Men, because everything else I build means nothing without this. I read Scripture each morning, take a Proverb at lunch, read a Psalm with my wife each night, and study the ministry given through our leaders. I lead my household in learning, so that together we are ready for the Lord's coming.",
+      visualisation:"An evening at home, reading a Psalm with my wife, then one of the boys asking a question about what he's been studying. Feel the quiet strength of a household growing together in the Word.",
+      goals:["Morning Bible reading every day as part of the Miracle Morning", "A Proverb every lunchtime", "A Psalm with my wife every night", "Regular reading of the Ministry", "Follow a structured reading plan", ["One subject studied each month and shared with the boys and the household", "suggested"]] },
+    { id:"area-family", name:"Family", color:"#A64E70", order:2,
+      vision:"Remembered as a loving, compassionate husband and father who was always there. My wife always felt loved and supported. My boys were guided in the right direction.",
+      dailyAction:"Get home in good time; phone down when I walk in the door; ask my wife what I can take off her plate.",
+      affirmation:"I am committed to being a loving, present husband and father, because my family is the greatest responsibility the Lord has given me. I lighten my wife's load every day, make sure she always feels loved, and stay faithful to her in every way. I step into my boys' world, share their interests, and guide them toward the right path, starting today.",
+      visualisation:"The boys as grown men, describing their dad as the one who was always there. Then today: walking in the door, putting the phone away, and giving my wife and boys my full attention.",
+      goals:[["Spend more time in the boys' interests: regular one-on-one time with each boy doing what he loves", "suggested: weekly"], "Take specific burdens off my wife each week, including cooking dinner one work night a week (planned ahead) and helping with weekend meals", ["Regular time with my wife, just the two of us", "suggested: a fortnightly date night"], "Remain faithful to her in every way"] },
+    { id:"area-health", name:"Health", color:"#3D70AE", order:3,
+      vision:"Maintain a healthy weight and active lifestyle for life, with the energy to keep up with and be present for my boys.",
+      dailyAction:"Follow the program, train with intent, and make each food choice with understanding.",
+      affirmation:"I am committed to reaching 85kg by April 2027 and staying there for life, because my body is a gift from God to look after, and my wife and boys deserve a husband and father with the energy to be fully present. I follow my program, train with intent, eat with understanding rather than restriction, and build the discipline that carries into every other area of my life.",
+      visualisation:"May 2027 at 85kg. Clothes fitting differently, keeping pace with the boys on a hike, my wife's reaction. Then today: getting up for training and choosing the right meal, and feeling how good it is to follow through.",
+      goals:["Complete the 6-month Elite Executive program", { text:"Reach 85kg by the end of April 2027", kind:"measured", start:104, target:85, unit:"kg", due:"2027-04-30" }, "Maintain 85kg from May to November 2027", "Understand the science of eating and portions, not just follow a diet"] },
+    { id:"area-financial", name:"Financial and purpose", color:"#3E9A6E", order:4,
+      vision:"Greater effort into ENTRO, growing my shareholding from 5% to 10%, and the business built to a strong saleable value and sold within 5–8 years.\nTerakor (a 1/3 share with my brothers) running as a low-touch, AI-driven side hustle that employs our father full time and returns a healthy profit.\nHome mortgage paid off; household free of debt.\nA property development nest egg.\nBoth boys financially stable from a young age.\nHelping church and community members grow their businesses, and helping younger people get ahead.",
+      dailyAction:"One focused step on Terakor or property; weekly budget review with my wife (suggested).",
+      affirmation:"I am committed to stewarding our finances faithfully, because freedom from debt lets our household serve God and others without anything holding us back. By November 2027 I will have launched Terakor with my brothers, be tracking and managing every dollar in our household budget, and own our first development property. Every step moves us toward growing my ENTRO shareholding to 10% and sharing in a strong sale, clearing our mortgage, setting our boys up for life, and helping others get ahead.",
+      visualisation:"November 2027. The first Terakor orders landing while I'm with the boys. A calm budget review with my wife where we're on top of everything. Standing on the block we've bought, picturing what we'll build there.",
+      goals:["Launch Terakor with my brothers, building towards income sustainable enough to employ our father full time and a healthy profit", "Household budget under control, with every expense tracked and managed", "A plan for future growth built into the budget", "First property purchased with a view to developing it"] }
+  ];
+
+  /* ================= Device-only settings ================= */
   function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
   function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
   function lsJSON(k, fb){ try{ var r = lsGet(k); return r ? JSON.parse(r) : fb; }catch(e){ return fb; } }
-
-  function getName(){ return lsGet("mm_name") || "Andrew"; }
-  function setName(v){ lsSet("mm_name", (v||"").trim() || "Andrew"); }
   function getSound(){ return lsGet("mm_sound") !== "off"; }
   function setSound(v){ lsSet("mm_sound", v ? "on" : "off"); }
   function getVibe(){ return lsGet("mm_vibe") !== "off"; }
   function setVibe(v){ lsSet("mm_vibe", v ? "on" : "off"); }
   function getWakePref(){ return lsGet("mm_wake") !== "off"; }
   function setWakePref(v){ lsSet("mm_wake", v ? "on" : "off"); }
-  function getPlanKey(){ var m = lsJSON("mm_duration_map", {}); return PLANS[m.morning] ? m.morning : "60"; }
-  function setPlanKey(k){ var m = lsJSON("mm_duration_map", {}); m.morning = k; lsSet("mm_duration_map", JSON.stringify(m)); }
-  function getAffirmations(){ var a = lsJSON("mm_affirmations", null); return (Array.isArray(a) && a.length) ? a : DEFAULT_AFFIRMATIONS.slice(); }
-  function setAffirmations(a){ lsSet("mm_affirmations", JSON.stringify(a)); }
-  function getGoalsUrl(){ return lsGet("mm_goals_url") || "https://asbfmckay.github.io/ppp/"; }
-  function getOverrides(){ return lsJSON("mm_step_durations", {}); }
-  function setOverrides(o){ lsSet("mm_step_durations", JSON.stringify(o)); }
 
+  /* ================= Store: items, saved on this device and synced ================= */
+  // Every record is an "item": { id, type, space, updatedAt, deleted?, ... }.
+  // space "hh" = the household (shared). space "u:<uid>" = one person's own.
+  var K = { items:"life_items", dirty:"life_dirty", cfg:"life_cfg", migrated:"life_migrated_v3" };
+  var store = lsJSON(K.items, {});
+  var dirty = lsJSON(K.dirty, {});
+  var cfg = lsJSON(K.cfg, {});
+  if(!cfg.api) cfg.api = DEFAULT_API;
+  var saveT = null;
+  function persist(){ clearTimeout(saveT); saveT = setTimeout(function(){ lsSet(K.items, JSON.stringify(store)); lsSet(K.dirty, JSON.stringify(dirty)); }, 120); }
+  function persistNow(){ clearTimeout(saveT); lsSet(K.items, JSON.stringify(store)); lsSet(K.dirty, JSON.stringify(dirty)); }
+  function saveCfg(){ lsSet(K.cfg, JSON.stringify(cfg)); }
+
+  function myUid(){ return (cfg.user && cfg.user.uid) || "me"; }
+  function mySpace(){ return "u:" + myUid(); }
+  function signedIn(){ return !!(cfg.token && cfg.user); }
+  function key(space, id){ return space + "|" + id; }
+  function get(space, id){ var it = store[key(space, id)]; return it && !it.deleted ? it : null; }
+  function all(type, space){
+    var out = [];
+    for(var k in store){ var it = store[k]; if(it.type === type && !it.deleted && (!space || it.space === space)) out.push(it); }
+    return out;
+  }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function put(it, opt){
+    opt = opt || {};
+    var x = Object.assign({}, it);
+    if(!x.space) x.space = mySpace();
+    if(!x.created) x.created = Date.now();
+    x.updatedAt = opt.keepTime && x.updatedAt ? x.updatedAt : Math.max(Date.now(), (store[key(x.space, x.id)] || {}).updatedAt + 1 || 0);
+    store[key(x.space, x.id)] = x;
+    dirty[key(x.space, x.id)] = x.updatedAt;
+    persist(); schedulePush();
+    return x;
+  }
+  function patch(it, changes){ return put(Object.assign({}, it, changes)); }
+  function del(it){ return put(Object.assign({}, it, { deleted:true })); }
+
+  /* Preferences that follow you between devices */
+  function prefs(){ return get(mySpace(), "prefs") || { type:"prefs", id:"prefs", space:mySpace() }; }
+  function setPref(k, v){ var p = Object.assign({}, prefs()); p[k] = v; put(p); }
+  function getName(){ return (cfg.user && cfg.user.name) || prefs().name || "Andrew"; }
+  function getPlanKey(){ var k = prefs().plan; return PLANS[k] ? k : "60"; }
+  function getOverrides(){ return prefs().ov || {}; }
   function getSteps(planKey){
     var ov = getOverrides()[planKey] || {};
-    return PLANS[planKey].steps.map(function(s){
-      var c = {}; for(var k in s) c[k] = s[k];
-      if(ov[s.name] != null) c.duration = ov[s.name];
-      return c;
-    });
+    return PLANS[planKey].steps.map(function(s){ var c = Object.assign({}, s); if(ov[s.name] != null) c.duration = ov[s.name]; return c; });
   }
 
-  /* Daily log: { "2026-11-09": { silence:true, ... } } */
+  /* ================= Dates ================= */
   function dayKey(d){ d = d || new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-  function getLog(){ return lsJSON("mm_log", {}); }
-  function setLog(l){ lsSet("mm_log", JSON.stringify(l)); }
-  function markDone(id, val){
-    var l = getLog(), k = dayKey();
-    l[k] = l[k] || {};
-    if(val === false) delete l[k][id]; else l[k][id] = true;
-    if(!Object.keys(l[k]).length) delete l[k];
-    setLog(l);
+  function today(){ return dayKey(); }
+  function parseDay(s){ return new Date(s + "T00:00"); }
+  function addDays(d, n){ var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function mondayOf(s){ var d = parseDay(s || today()); return dayKey(addDays(d, -((d.getDay() + 6) % 7))); }
+  function weekDates(monday){ var d = parseDay(monday); return Array.from({length:7}, function(_, i){ return dayKey(addDays(d, i)); }); }
+  function fmtDay(s, o){ return parseDay(s).toLocaleDateString("en-AU", o || { weekday:"short", day:"numeric", month:"short" }); }
+  function fmtShort(s){ return parseDay(s).toLocaleDateString("en-AU", { day:"numeric", month:"short" }); }
+  // Review quarters run Dec–Feb, Mar–May, Jun–Aug, Sep–Nov (reviewed in Feb, May, Aug, Nov).
+  function quarterOf(s){
+    var d = parseDay(s || today()), m = d.getMonth(), y = d.getFullYear();
+    var sm = (m === 11 || m <= 1) ? 11 : (m <= 4 ? 2 : (m <= 7 ? 5 : 8));
+    var sy = (m <= 1) ? y - 1 : y;
+    var start = new Date(sy, sm, 1), end = new Date(sy, sm + 3, 0);
+    var names = { 11:"Dec–Feb", 2:"Mar–May", 5:"Jun–Aug", 8:"Sep–Nov" };
+    return { start:dayKey(start), end:dayKey(end), label:names[sm] + " " + end.getFullYear() };
   }
-  function doneToday(){ return getLog()[dayKey()] || {}; }
+
+  /* ================= Morning log (one small item per day) ================= */
+  function dayLog(d){ var it = get(mySpace(), "mm-" + (d || today())); return (it && it.d) || {}; }
+  function markDone(stepId, val){
+    var k = "mm-" + today(), it = get(mySpace(), k) || { type:"mm", id:k, date:today(), d:{} };
+    var d = Object.assign({}, it.d); if(val === false) delete d[stepId]; else d[stepId] = true;
+    put(Object.assign({}, it, { d:d }));
+  }
+  function doneToday(){ return dayLog(); }
   function getStreak(){
-    var l = getLog(), d = new Date(), n = 0;
-    if(!l[dayKey(d)]) d.setDate(d.getDate()-1); // streak still alive if today not yet done
-    while(l[dayKey(d)] && Object.keys(l[dayKey(d)]).length){ n++; d.setDate(d.getDate()-1); }
+    var d = new Date(), n = 0;
+    if(!Object.keys(dayLog(dayKey(d))).length) d.setDate(d.getDate()-1);
+    while(Object.keys(dayLog(dayKey(d))).length){ n++; d.setDate(d.getDate()-1); }
     return n;
+  }
+
+  /* ================= One-off: bring v2 data across, and seed goals ================= */
+  function migrateV2(){
+    if(lsGet(K.migrated)) return;
+    var p = { type:"prefs", id:"prefs", space:mySpace() };
+    if(lsGet("mm_name")) p.name = lsGet("mm_name");
+    var dm = lsJSON("mm_duration_map", {}); if(PLANS[dm.morning]) p.plan = dm.morning;
+    var ov = lsJSON("mm_step_durations", null); if(ov) p.ov = ov;
+    var aff = lsJSON("mm_affirmations", null); if(Array.isArray(aff) && aff.length) p.oldAff = aff;
+    if(!get(mySpace(), "prefs")) put(Object.assign(p, { updatedAt:1000 }), { keepTime:true });
+    var log = lsJSON("mm_log", {});
+    Object.keys(log).forEach(function(day){
+      if(!log[day] || !Object.keys(log[day]).length) return;
+      put({ type:"mm", id:"mm-" + day, date:day, d:log[day], updatedAt:1000 }, { keepTime:true });
+    });
+    lsSet(K.migrated, "1");
+  }
+  function seedGoals(){
+    if(all("area").length || lsGet("life_seeded")) return;
+    SEED_AREAS.forEach(function(a){
+      var area = { type:"area", id:a.id, space:"hh", person:myUid(), name:a.name, color:a.color, order:a.order, anchor:!!a.anchor,
+        vision:a.vision || "", affirmation:a.affirmation || "", visualisation:a.visualisation || "", dailyAction:a.dailyAction || "", updatedAt:1 };
+      put(area, { keepTime:true });
+      (a.goals || []).forEach(function(g, i){
+        var o = typeof g === "string" ? { text:g } : (Array.isArray(g) ? { text:g[0], suggested:g[1] } : g);
+        put(Object.assign({ type:"goal", id:a.id.replace("area-", "g-") + "-" + (i + 1), space:"hh", areaId:a.id, kind:"milestones", due:"2027-11-30", order:i + 1, updatedAt:1 }, o), { keepTime:true });
+      });
+    });
+    lsSet("life_seeded", "1");
+  }
+  // After first sign-in, items made on this device as "me" become the real user.
+  function rekey(newUid){
+    var swap = function(v){ return v === "me" ? newUid : v; };
+    Object.keys(store).forEach(function(k){
+      var it = store[k], x = Object.assign({}, it), changed = false;
+      if(x.space === "u:me"){ x.space = "u:" + newUid; changed = true; }
+      ["owner","uid","person"].forEach(function(f){ if(x[f] === "me"){ x[f] = newUid; changed = true; } });
+      if(x.type === "hm" && /-me-\d{4}-\d{2}$/.test(x.id)){ x.id = x.id.replace(/-me-(\d{4}-\d{2})$/, "-" + newUid + "-$1"); changed = true; }
+      if(!changed) return;
+      delete store[k]; delete dirty[k];
+      store[key(x.space, x.id)] = x; dirty[key(x.space, x.id)] = x.updatedAt;
+    });
+    persistNow();
+  }
+
+  /* ================= Sync with the Worker ================= */
+  var syncState = "off", pushT = null, syncing = false, lastSync = 0, syncErr = "";
+  function setSyncState(s, msg){ syncState = s; syncErr = msg || ""; var d = document.getElementById("sync-dot"); if(d) d.className = "dot " + ({ ok:"on", wait:"wait", err:"err" }[s] || ""); }
+  function api(path, opt){
+    opt = opt || {};
+    var ctl = new AbortController(), t = setTimeout(function(){ ctl.abort(); }, 20000);
+    var h = { "Content-Type":"application/json" }; if(cfg.token) h.Authorization = "Bearer " + cfg.token;
+    return fetch(cfg.api.replace(/\/$/, "") + path, { method:opt.method || "GET", headers:h, body:opt.body ? JSON.stringify(opt.body) : undefined, signal:ctl.signal })
+      .then(function(r){ clearTimeout(t); return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok){ var e = new Error(j.error || ("Error " + r.status)); e.status = r.status; throw e; } return j; }); },
+            function(e){ clearTimeout(t); var x = new Error(navigator.onLine === false ? "You're offline." : "Can't reach the server."); x.status = 0; throw x; });
+  }
+  function schedulePush(){ if(!signedIn()) return; if(syncState === "ok") setSyncState("wait"); clearTimeout(pushT); pushT = setTimeout(sync, 900); }
+  function sync(){
+    if(!signedIn() || syncing) return Promise.resolve();
+    syncing = true;
+    var keys = Object.keys(dirty), items = keys.map(function(k){ return store[k]; }).filter(Boolean);
+    var sent = {}; keys.forEach(function(k){ sent[k] = dirty[k]; });
+    var p = items.length ? api("/sync", { method:"POST", body:{ items:items } }) : Promise.resolve({ refused:[] });
+    return p.then(function(r){
+      Object.keys(sent).forEach(function(k){ if(dirty[k] === sent[k]) delete dirty[k]; });
+      if(r.refused && r.refused.length) console.warn("Server refused", r.refused);
+      persist();
+      return api("/sync?since=" + Math.max(0, (cfg.since || 0) - 3000));
+    }).then(function(r){
+      var changed = false;
+      (r.items || []).forEach(function(it){
+        var k = key(it.space, it.id), cur = store[k];
+        if(!cur || (it.updatedAt || 0) >= (cur.updatedAt || 0)){
+          if(!cur || JSON.stringify(cur) !== JSON.stringify(it)) changed = true;
+          store[k] = it; if(dirty[k] && dirty[k] <= (it.updatedAt || 0)) delete dirty[k];
+        }
+      });
+      cfg.since = r.now || Date.now(); saveCfg(); persist();
+      lastSync = Date.now(); syncing = false;
+      setSyncState(Object.keys(dirty).length ? "wait" : "ok");
+      if(changed) softRender();
+    }).catch(function(e){
+      syncing = false;
+      if(e.status === 401){ cfg.token = ""; saveCfg(); setSyncState("err", "Signed out — please sign in again."); toast("Please sign in again"); }
+      else setSyncState(e.status === 0 ? "wait" : "err", e.message);
+      if(e.status !== 401) setTimeout(function(){ if(Object.keys(dirty).length) sync(); }, 20000);
+    });
+  }
+  function signIn(api_, who, pin){
+    cfg.api = (api_ || DEFAULT_API).trim().replace(/\/$/, ""); saveCfg();
+    return api("/auth/pin", { method:"POST", body:{ uid:who, pin:pin } }).then(function(r){
+      var oldUid = myUid();
+      cfg.token = r.token; cfg.user = r.user; cfg.people = r.people || [r.user]; cfg.since = 0; saveCfg();
+      if(oldUid === "me") rekey(r.user.uid);
+      Object.keys(store).forEach(function(k){ if(!dirty[k]) dirty[k] = store[k].updatedAt; });   // first time: send everything
+      persistNow();
+      return sync();
+    });
+  }
+  function signOut(){
+    if(cfg.token) api("/auth/logout", { method:"POST" }).catch(function(){});
+    store = {}; dirty = {}; persistNow();
+    lsDel("life_seeded"); lsSet(K.migrated, "1");
+    cfg = { api:cfg.api }; saveCfg(); setSyncState("off");
+    seedGoals(); render();
+  }
+  function people(){ return (cfg.people && cfg.people.length) ? cfg.people : [{ uid:myUid(), name:getName() }]; }
+  function personName(u){
+    if(u === myUid()) return getName();
+    var p = people().filter(function(x){ return x.uid === u; })[0];
+    return p ? p.name : (String(u).indexOf("folio:") === 0 ? "From Folio (" + u.slice(6) + ")" : "Someone");
   }
 
   /* ================= Helpers ================= */
   function $(id){ return document.getElementById(id); }
-  function esc(t){ var d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
-  // A short line with no full stop (e.g. "Health") is treated as a heading
+  function esc(t){ return String(t == null ? "" : t).replace(/[&<>"']/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); }
   function isHeading(t){ var x = t.replace(/\*\*/g,"").trim(); return x.length <= 40 && !/[.!?,;:]$/.test(x); }
   function mdBold(t){ return esc(t).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>"); }
   function mmss(sec){ sec = Math.max(0, Math.round(sec)); var m = Math.floor(sec/60), s = sec%60; return (m<10?"0":"")+m+":"+(s<10?"0":"")+s; }
   function fmtDur(sec){ var m = Math.floor(sec/60), s = sec%60; return s ? (m+":"+(s<10?"0":"")+s) : (m+" min"); }
   function clockTime(ms){ return new Date(ms).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}).replace(/\s?(am|pm)/i, function(m){ return m.trim().toLowerCase(); }); }
   function total(steps){ return steps.reduce(function(a,s){ return a+s.duration; }, 0); }
+  function byOrder(a, b){ return (a.order || 0) - (b.order || 0) || (a.created || 0) - (b.created || 0); }
   var toastT;
-  function toast(msg){ var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove("show"); }, 2200); }
+  function toast(msg){ var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove("show"); }, 2400); }
+  function checkBtn(done, act, attrs, label){ return '<button class="check' + (done ? ' done' : '') + '" data-act="' + act + '" ' + (attrs || '') + ' aria-label="' + esc(label || 'Tick') + '">' + ICON_CHECK + '</button>'; }
+
+  /* ================= Goals data ================= */
+  function areas(){ return all("area", "hh").sort(byOrder); }
+  function areaGoals(aId){ return all("goal", "hh").filter(function(g){ return g.areaId === aId; }).sort(byOrder); }
+  function goalMs(gId){ return all("ms", "hh").filter(function(m){ return m.goalId === gId; }).sort(function(a, b){ return (a.due || "").localeCompare(b.due || "") || byOrder(a, b); }); }
+  function goalPct(g){
+    if(g.done) return 100;
+    if(g.kind === "measured"){
+      var s = +g.start, t = +g.target, c = g.current != null && g.current !== "" ? +g.current : s;
+      if(isNaN(s) || isNaN(t) || s === t) return 0;
+      return Math.max(0, Math.min(100, Math.round((c - s) / (t - s) * 100)));
+    }
+    var ms = goalMs(g.id); if(!ms.length) return 0;
+    return Math.round(ms.filter(function(m){ return m.done; }).length / ms.length * 100);
+  }
+  function myAreas(){ return areas().filter(function(a){ return !a.person || a.person === myUid(); }); }
+
+  /* ================= Habits data (same shape as Folio's tracker) ================= */
+  var HB_DAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+  var HB_WORD = { g:"Done", r:"Missed", s:"Skipped" };
+  var HB_NEXT = { "":"g", g:"r", r:"s", s:"" };
+  function habits(){
+    return all("habit").filter(function(h){ return h.space === "hh" || h.space === mySpace(); }).sort(byOrder);
+  }
+  function hbPeople(h){
+    if(h.people !== "all") return [h.owner || myUid()];
+    var u = people().map(function(p){ return p.uid; });
+    all("hm", h.space).forEach(function(x){ if(x.habitId === h.id && u.indexOf(x.uid) < 0) u.push(x.uid); });
+    return u;
+  }
+  function hbTracks(h, u){ return hbPeople(h).indexOf(u) >= 0; }
+  function hbSafe(u){ return String(u).replace(/[^a-z0-9]/gi, "_"); }
+  function hbDocId(h, u, ym){ return "hm-" + h.id + "-" + hbSafe(u) + "-" + ym; }
+  function hbDoc(h, u, ym){ return get(h.space, hbDocId(h, u, ym)); }
+  function hbMark(h, u, date){ var d = hbDoc(h, u, date.slice(0, 7)); return (d && d.d && d.d[date.slice(8, 10)]) || ""; }
+  function hbWrite(h, date, field, val){
+    var ym = date.slice(0, 7), dd = date.slice(8, 10), old = hbDoc(h, myUid(), ym);
+    var base = old || { type:"hm", id:hbDocId(h, myUid(), ym), space:h.space, habitId:h.id, uid:myUid(), ym:ym, d:{}, n:{} };
+    var m = Object.assign({}, base[field] || {}); if(val) m[dd] = val; else delete m[dd];
+    var x = Object.assign({}, base); x[field] = m; put(x);
+  }
+  function hbStats(h, u){
+    var t0 = today(), first = dayKey(new Date(h.created || Date.now()));
+    all("hm", h.space).forEach(function(x){ if(x.habitId === h.id && x.uid === u) Object.keys(x.d || {}).forEach(function(dd){ if(x.ym + "-" + dd < first) first = x.ym + "-" + dd; }); });
+    var g = 0, tot = 0;
+    for(var d = parseDay(first); dayKey(d) <= t0; d = addDays(d, 1)){ var k = dayKey(d), st = hbMark(h, u, k); if(st === "s" || (!st && k === t0)) continue; tot++; if(st === "g") g++; }
+    var streak = 0; d = parseDay(t0); if(!hbMark(h, u, t0)) d = addDays(d, -1);
+    for(var i = 0; i < 3660; i++, d = addDays(d, -1)){ var st2 = hbMark(h, u, dayKey(d)); if(st2 === "s") continue; if(st2 === "g") streak++; else break; }
+    return { streak:streak, pct:tot ? Math.round(g / tot * 100) : null };
+  }
+  function hbWeekCount(h, u, monday){ return weekDates(monday).filter(function(d){ return hbMark(h, u, d) === "g"; }).length; }
+  function hbTarget(h){ return Math.max(1, Math.min(7, +h.perWeek || 7)); }
+  // Weekly habit score for an area: habits linked to that area's goals (or the area itself).
+  function areaScore(a, monday){
+    var gIds = areaGoals(a.id).map(function(g){ return g.id; });
+    var hs = habits().filter(function(h){ return h.areaId === a.id || (h.goalId && gIds.indexOf(h.goalId) >= 0); }).filter(function(h){ return hbTracks(h, myUid()); });
+    if(!hs.length) return null;
+    var got = 0, want = 0;
+    hs.forEach(function(h){ var t = hbTarget(h); want += t; got += Math.min(t, hbWeekCount(h, myUid(), monday)); });
+    return { got:got, want:want, n:hs.length };
+  }
+
+  /* ================= Hero + navigation ================= */
+  function renderHero(view){
+    var now = new Date();
+    $("hero-date").textContent = now.toLocaleDateString(undefined, {weekday:"long", day:"numeric", month:"long"});
+    var t = $("hero-title"), s = $("hero-sub");
+    if(view === "home"){
+      var h = now.getHours();
+      t.textContent = (h < 12 ? "Good morning" : (h < 18 ? "Good afternoon" : "Good evening")) + ", " + getName();
+      var done = Object.keys(doneToday()).length;
+      s.textContent = done === 6 ? "All six S.A.V.E.R.S done today. Brilliant." : (done ? done + " of 6 S.A.V.E.R.S done today." : "Win the morning, win the day.");
+    } else if(view === "habits"){ t.textContent = "Habits"; s.textContent = "Small things, done daily."; }
+    else if(view === "goals"){ t.textContent = "Goals"; s.textContent = "From the 10-year vision down to today."; }
+    else if(view === "review"){ t.textContent = "Weekly review"; s.textContent = "Look back, then set the week up."; }
+    else { t.textContent = "Settings"; s.textContent = "Make it yours."; }
+    $("streak-num").textContent = getStreak();
+    $("streak-chip").classList.toggle("gold", Object.keys(doneToday()).length === 6);
+  }
+  var currentView = "home";
+  function showView(name){
+    currentView = name;
+    ["home","habits","goals","review","more"].forEach(function(v){ $("view-"+v).classList.toggle("active", v === name); });
+    document.querySelectorAll("#tabbar button").forEach(function(b){ b.classList.toggle("active", b.dataset.view === name); });
+    var hero = $("hero"); hero.classList.remove("swap"); void hero.offsetWidth; hero.classList.add("swap");
+    render(); window.scrollTo(0,0);
+  }
+  function render(){
+    renderHero(currentView);
+    if(currentView === "home") renderHome();
+    if(currentView === "habits") renderHabits();
+    if(currentView === "goals") renderGoals();
+    if(currentView === "review") renderReview();
+    if(currentView === "more") renderSettings();
+  }
+  // Re-render after a sync, unless you're typing or in a session.
+  function softRender(){
+    if(session) return;
+    var a = document.activeElement; if(a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return;
+    if($("sheet").classList.contains("open")) return;
+    render();
+  }
+
+  /* ================= Today (Morning) ================= */
+  function renderHome(){
+    var key = getPlanKey();
+    $("plan-seg").innerHTML = PLAN_ORDER.map(function(k){ return '<button data-act="plan" data-k="' + k + '" class="' + (k === key ? "active" : "") + '">' + PLANS[k].label + '</button>'; }).join("");
+    var steps = getSteps(key), t = total(steps);
+    $("plan-total").textContent = fmtDur(t);
+    $("plan-ends").textContent = clockTime(Date.now() + t*1000);
+    var done = doneToday();
+    $("savers").innerHTML = steps.map(function(s){
+      return '<div class="saver"><div class="tile" style="--c:'+HEX[s.id]+'">'+ICONS[s.id]+'</div>'+
+        '<div class="saver-text"' + (s.id === "scribing" ? ' data-act="scribe-open" style="cursor:pointer"' : '') + '><div class="saver-name">'+s.name+'</div><div class="saver-sub">'+esc(s.subtitle)+' · '+fmtDur(s.duration)+'</div></div>'+
+        '<span style="--c:'+HEX[s.id]+'">' + checkBtn(!!done[s.id], "saver-tick", 'data-id="'+s.id+'"', "Mark "+s.name+" done") + '</span></div>';
+    }).join("");
+    var hs = habits().filter(function(h){ return hbTracks(h, myUid()); }), td = today();
+    $("today-habits").innerHTML = '<div class="th-head"><b>Today\'s habits</b><button class="link-btn" data-act="go" data-v="habits">' + (hs.length ? "All habits" : "Add habits") + '</button></div>' +
+      (hs.length ? hs.map(function(h){
+        var st = hbMark(h, myUid(), td), wk = hbWeekCount(h, myUid(), mondayOf());
+        return '<div class="th-row"><div class="th-name">' + esc(h.name) + '<small>' + wk + ' of ' + hbTarget(h) + ' this week</small></div>' + checkBtn(st === "g", "hb-today", 'data-id="' + h.id + '" data-sp="' + h.space + '"', "Tick " + h.name) + '</div>';
+      }).join("") : '<div class="empty" style="padding:6px 2px 12px">No habits yet. Move them across from Folio in Settings, or add one on the Habits tab.</div>');
+  }
+
+  /* ================= Habits screen ================= */
+  var hbMode = "week", hbWeekOff = 0, hbYm = today().slice(0, 7);
+  function hbDayBtn(h, u, date, month){
+    var st = hbMark(h, u, date), fut = date > today(), can = u === myUid() && !fut, d = parseDay(date);
+    var top = month ? String(+date.slice(8)) : HB_DAYS[d.getDay()], sub = month ? "" : "<small>" + (+date.slice(8)) + "</small>";
+    var tip = (HB_WORD[st] || "Not recorded") + " · " + fmtDay(date);
+    return '<button type="button" class="hb-d ' + (st ? "st-" + st : "") + (date === today() ? " now" : "") + '" ' + (can ? 'data-act="hb-cycle" data-id="' + h.id + '" data-sp="' + h.space + '" data-date="' + date + '"' : "disabled") + ' title="' + esc(tip) + '" aria-label="' + esc(tip) + '">' + top + sub + '</button>';
+  }
+  function hbMonthCells(ym){ var p = ym.split("-").map(Number), lead = (new Date(p[0], p[1] - 1, 1).getDay() + 6) % 7, n = new Date(p[0], p[1], 0).getDate(), c = []; for(var i = 0; i < lead; i++) c.push(""); for(i = 1; i <= n; i++) c.push(ym + "-" + String(i).padStart(2, "0")); return c; }
+  function hbMonthGrid(h, u, ym){ var head = ["Mo","Tu","We","Th","Fr","Sa","Su"].map(function(x){ return '<div class="hb-mh">' + x + '</div>'; }).join(""); return '<div class="hb-mgrid">' + head + hbMonthCells(ym).map(function(dt){ return dt ? hbDayBtn(h, u, dt, true) : "<span></span>"; }).join("") + '</div>'; }
+  function monthLabel(ym){ var p = ym.split("-").map(Number); return new Date(p[0], p[1] - 1, 1).toLocaleDateString("en-AU", { month:"long", year:"numeric" }); }
+  function goalName(id){ var g = all("goal", "hh").filter(function(x){ return x.id === id; })[0]; return g ? g.text : ""; }
+  function hbCard(h){
+    var mon = mondayOf(dayKey(addDays(new Date(), hbWeekOff * 7)));
+    var ps = hbPeople(h), body = "";
+    ps.forEach(function(u){
+      var s = hbStats(h, u);
+      if(ps.length > 1) body += '<div class="hb-meta" style="margin-top:10px"><b>' + esc(personName(u)) + '</b> · streak ' + s.streak + (s.pct == null ? "" : " · " + s.pct + "%") + '</div>';
+      body += hbMode === "week" ? '<div class="hb-row">' + weekDates(mon).map(function(d){ return hbDayBtn(h, u, d); }).join("") + '</div>' : hbMonthGrid(h, u, hbYm);
+    });
+    var me = hbStats(h, myUid()), mine = hbTracks(h, myUid());
+    var link = h.goalId ? goalName(h.goalId) : "";
+    return '<div class="hb-card glass"><div class="hb-title"><button data-act="hb-edit" data-id="' + h.id + '" data-sp="' + h.space + '">' + esc(h.name) + '</button>' + (h.space !== "hh" ? '<span class="pill">Private</span>' : (h.people === "all" ? '<span class="pill">Both of us</span>' : "")) + '</div>' +
+      '<div class="hb-meta">' + (mine ? 'Streak <b>' + me.streak + '</b> · Overall <b>' + (me.pct == null ? "–" : me.pct + "%") + '</b> · This week <b>' + hbWeekCount(h, myUid(), mondayOf()) + '/' + hbTarget(h) + '</b>' : esc(personName(h.owner)) + "'s habit") + (link ? ' · ' + esc(link.length > 40 ? link.slice(0, 40) + "…" : link) : "") + '</div>' + body + '</div>';
+  }
+  function renderHabits(){
+    var hs = habits(), nav;
+    if(hbMode === "week"){
+      var d = weekDates(mondayOf(dayKey(addDays(new Date(), hbWeekOff * 7))));
+      nav = '<div class="hb-nav"><button data-act="hb-week" data-d="-1" aria-label="Previous week">‹</button><span>' + (hbWeekOff === 0 ? "This week" : fmtShort(d[0]) + " – " + fmtShort(d[6])) + '</span><button data-act="hb-week" data-d="1" aria-label="Next week" ' + (hbWeekOff >= 0 ? "disabled" : "") + '>›</button></div>';
+    } else nav = '<div class="hb-nav"><button data-act="hb-month" data-d="-1" aria-label="Previous month">‹</button><span>' + monthLabel(hbYm) + '</span><button data-act="hb-month" data-d="1" aria-label="Next month" ' + (hbYm >= today().slice(0, 7) ? "disabled" : "") + '>›</button></div>';
+    // Group: mine first, then each other person's own habits.
+    var groups = {}, order = [];
+    hs.forEach(function(h){ var g = h.people === "all" || h.owner === myUid() ? myUid() : h.owner; if(!groups[g]){ groups[g] = []; order.push(g); } groups[g].push(h); });
+    order.sort(function(a, b){ return a === myUid() ? -1 : b === myUid() ? 1 : 0; });
+    var list = hs.length ? order.map(function(u){ return (order.length > 1 ? '<div class="hb-who">' + esc(u === myUid() ? "Mine" : personName(u) + "'s") + '</div>' : "") + groups[u].map(hbCard).join(""); }).join("")
+      : '<div class="glass empty" style="padding:18px">No habits yet. Tap <b>Add habit</b>, or bring your Folio habits across (with their history) from <b>Settings → Move habits from Folio</b>.</div>';
+    $("view-habits").innerHTML =
+      '<div class="hb-bar"><div class="seg light"><button class="' + (hbMode === "week" ? "active" : "") + '" data-act="hb-mode" data-v="week">Week</button><button class="' + (hbMode === "month" ? "active" : "") + '" data-act="hb-mode" data-v="month">Month</button></div>' + nav + '</div>' +
+      list +
+      '<div class="hb-leg"><span><i style="background:var(--ok)"></i>Done</span><span><i style="background:var(--miss)"></i>Missed</span><span><i style="background:var(--skip)"></i>Skipped</span></div>' +
+      '<div class="btn-row"><button class="btn btn-ink" data-act="hb-new">Add habit</button></div>' +
+      '<p class="help">Tap a day to cycle: done → missed → skipped → clear. Habits can link to a goal, so ticks feed that goal\'s weekly score.</p>';
+  }
+  function goalOptions(sel){
+    return '<option value="">No goal</option>' + myAreas().filter(function(a){ return !a.anchor; }).map(function(a){
+      return '<optgroup label="' + esc(a.name) + '">' + areaGoals(a.id).map(function(g){ return '<option value="' + g.id + '"' + (g.id === sel ? " selected" : "") + '>' + esc(g.text.length > 60 ? g.text.slice(0, 60) + "…" : g.text) + '</option>'; }).join("") + '</optgroup>';
+    }).join("");
+  }
+  function habitSheet(h){
+    var isNew = !h; h = h || { perWeek:7 };
+    var mine = isNew || h.owner === myUid() || (h.owner === "me");
+    var notes = "";
+    if(!isNew){
+      var docs = all("hm", h.space).filter(function(x){ return x.habitId === h.id && x.ym === hbYm; });
+      var ns = []; docs.forEach(function(x){ Object.keys(x.n || {}).forEach(function(dd){ ns.push({ dd:dd, text:x.n[dd], uid:x.uid }); }); });
+      ns.sort(function(a, b){ return b.dd.localeCompare(a.dd); });
+      notes = '<div class="fld"><label>Month</label><div class="hb-nav" style="justify-content:space-between"><button data-act="hb-month" data-d="-1" data-sheet="1">‹</button><span>' + monthLabel(hbYm) + '</span><button data-act="hb-month" data-d="1" data-sheet="1" ' + (hbYm >= today().slice(0, 7) ? "disabled" : "") + '>›</button></div>' + hbMonthGrid(h, myUid(), hbYm) + '</div>' +
+        '<div class="fld"><label>Notes this month</label>' + (ns.length ? ns.map(function(n){ return '<div class="hb-note"><b>' + (+n.dd) + '</b><span style="flex:1">' + esc(n.text) + (n.uid !== myUid() ? ' <span class="muted small">· ' + esc(personName(n.uid)) + '</span>' : "") + '</span></div>'; }).join("") : '<div class="muted small">None yet.</div>') +
+        '<div class="add-row"><input type="date" id="hn-date" value="' + today() + '" max="' + today() + '"><input type="text" id="hn-text" placeholder="Note for that day"><button class="btn btn-soft btn-sm" data-act="hb-note" data-id="' + h.id + '" data-sp="' + h.space + '">Add</button></div></div>';
+    }
+    openSheet('<h2>' + (isNew ? "New habit" : esc(h.name)) + '</h2>' +
+      (mine ? '<div class="fld"><label>Name</label><input type="text" id="hf-name" value="' + esc(h.name || "") + '" placeholder="e.g. Train"></div>' +
+      '<div class="grid2"><div class="fld"><label>Times a week</label><select id="hf-week">' + [1,2,3,4,5,6,7].map(function(n){ return '<option' + (n === hbTarget(h) ? " selected" : "") + '>' + n + '</option>'; }).join("") + '</select></div>' +
+      '<div class="fld"><label>Who</label><select id="hf-who"><option value="me">Just me</option><option value="all"' + (h.people === "all" ? " selected" : "") + '>Both of us (each ticks)</option><option value="private"' + (h.space && h.space !== "hh" ? " selected" : "") + '>Private to me</option></select></div></div>' +
+      '<div class="fld"><label>Links to goal</label><select id="hf-goal">' + goalOptions(h.goalId) + '</select></div>' +
+      '<div class="btn-row"><button class="btn btn-ink" data-act="hb-save" data-id="' + (h.id || "") + '" data-sp="' + (h.space || "") + '">Save</button></div>'
+      : '<p class="muted small">' + esc(personName(h.owner)) + "'s habit. You can see it but not change it.</p>") +
+      notes +
+      (!isNew && mine ? '<div class="btn-row"><button class="btn btn-danger" data-act="hb-del" data-id="' + h.id + '" data-sp="' + h.space + '">Delete habit</button></div>' : ""));
+  }
+
+  /* ================= Goals screen ================= */
+  var editArea = null;
+  function renderGoals(){
+    var as = areas();
+    if(!as.length){ $("view-goals").innerHTML = '<div class="glass empty" style="padding:18px">No goals yet.</div>'; return; }
+    var mon = mondayOf(), q = quarterOf();
+    $("view-goals").innerHTML = as.map(function(a){
+      if(editArea === a.id) return areaEditor(a);
+      if(a.anchor) return '<div class="anchor-card glass"><div class="area-h"><h3 style="font-size:15px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)">Anchor affirmation</h3><button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Edit</button></div><div class="quote">' + esc(a.affirmation) + '</div></div>';
+      var gs = areaGoals(a.id), sc = areaScore(a, mon);
+      var goalsHtml = gs.length ? gs.map(function(g){
+        var pct = goalPct(g), ms = goalMs(g.id);
+        var open = ms.filter(function(m){ return !m.done || (m.doneAt && m.doneAt >= q.start); });
+        var meas = g.kind === "measured" ? '<div class="small muted" style="margin-top:4px">Now ' + esc(g.current != null && g.current !== "" ? g.current : g.start) + (g.unit || "") + ' · target ' + esc(g.target) + (g.unit || "") + (g.due ? ' by ' + fmtShort(g.due) : "") + ' <button class="link-btn" data-act="goal-measure" data-id="' + g.id + '">Update</button></div>' : "";
+        return '<div class="goal"><div class="goal-t"><span>' + esc(g.text) + (g.suggested ? ' <span class="pill sug" data-act="goal-confirm" data-id="' + g.id + '" title="Tap to confirm">' + esc(g.suggested) + '</span>' : "") + '</span><b>' + pct + '%</b></div><div class="bar"><i style="width:' + pct + '%"></i></div>' + meas +
+          open.map(function(m){ var late = !m.done && m.due && m.due < today(); return '<div class="ms' + (m.done ? " done" : "") + (late ? " late" : "") + '">' + checkBtn(m.done, "ms-tick", 'data-id="' + m.id + '"', "Tick milestone") + '<span>' + esc(m.text) + '</span><small>' + (m.due ? fmtShort(m.due) : "") + '</small><button class="link-btn" data-act="ms-del" data-id="' + m.id + '" aria-label="Delete milestone">×</button></div>'; }).join("") +
+          '<div class="add-row" data-goal="' + g.id + '" style="display:none"><input type="text" placeholder="Milestone, e.g. Below 95kg"><input type="date" value="' + q.end + '"><button class="btn btn-soft btn-sm" data-act="ms-add" data-id="' + g.id + '">Add</button></div>' +
+          '<button class="link-btn" data-act="ms-show" data-id="' + g.id + '">+ Milestone</button></div>';
+      }).join("") : '<div class="muted small">No 12-month goals yet.</div>';
+      return '<div class="area glass" style="--ac:' + esc(a.color || "#999") + '"><div class="area-h"><h3>' + esc(a.name) + '</h3><button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Edit</button></div>' +
+        (a.vision ? '<div class="lbl">10-year vision</div><div class="vision">' + esc(a.vision) + '</div>' : "") +
+        '<div class="lbl">12-month goals</div>' + goalsHtml +
+        (a.dailyAction ? '<div class="lbl">Daily action</div><div class="vision" style="margin-top:0">' + esc(a.dailyAction) + '</div>' : "") +
+        '<div class="score">This week\'s habits: ' + (sc ? '<b>' + sc.got + ' of ' + sc.want + '</b>' : '<span class="muted">link a habit to one of these goals</span>') + '</div></div>';
+    }).join("") + '<p class="help">Current quarter: ' + q.label + '. Milestones show until ticked; ticked ones stay for the quarter.</p>';
+  }
+  function areaEditor(a){
+    var gs = areaGoals(a.id);
+    var f = function(id, label, val, rows){ return '<div class="fld"><label>' + label + '</label><textarea class="in" id="' + id + '" rows="' + (rows || 3) + '">' + esc(val || "") + '</textarea></div>'; };
+    return '<div class="area glass" style="--ac:' + esc(a.color || "#999") + '"><h2 style="margin:0;font-weight:500;font-size:18px">Edit ' + esc(a.name) + '</h2>' +
+      (a.anchor ? f("ae-aff", "Anchor affirmation", a.affirmation, 6) :
+      '<div class="fld"><label>Name</label><input type="text" id="ae-name" value="' + esc(a.name) + '"></div>' +
+      f("ae-vision", "10-year vision", a.vision, 4) +
+      '<div class="fld"><label>12-month goals</label>' + gs.map(function(g){
+        return '<div class="glass" style="padding:10px;margin-bottom:8px;border-radius:16px" data-gid="' + g.id + '"><textarea class="in" rows="2" data-f="text">' + esc(g.text) + '</textarea>' +
+          '<div class="grid2" style="margin-top:6px"><select data-f="kind"><option value="milestones">Milestone-based</option><option value="measured"' + (g.kind === "measured" ? " selected" : "") + '>Measured (a number)</option></select><input type="date" data-f="due" value="' + esc(g.due || "") + '"></div>' +
+          '<div class="grid3" style="margin-top:6px' + (g.kind === "measured" ? "" : ";display:none") + '" data-meas><input type="number" class="in" step="any" data-f="start" placeholder="Start" value="' + esc(g.start == null ? "" : g.start) + '"><input type="number" class="in" step="any" data-f="target" placeholder="Target" value="' + esc(g.target == null ? "" : g.target) + '"><input type="text" data-f="unit" placeholder="Unit" value="' + esc(g.unit || "") + '"></div>' +
+          '<button class="link-btn" data-act="goal-del" data-id="' + g.id + '">Delete goal</button></div>';
+      }).join("") + '<button class="btn btn-soft btn-sm" data-act="goal-add" data-id="' + a.id + '">+ Add goal</button></div>' +
+      f("ae-daily", "Daily action", a.dailyAction, 2) +
+      f("ae-aff", "Affirmation", a.affirmation, 6) +
+      f("ae-vis", "Visualisation", a.visualisation, 4)) +
+      '<div class="btn-row"><button class="btn btn-soft" data-act="area-cancel">Cancel</button><button class="btn btn-ink" data-act="area-save" data-id="' + a.id + '">Save</button></div></div>';
+  }
+  function saveAreaEditor(aId){
+    var a = areas().filter(function(x){ return x.id === aId; })[0]; if(!a) return;
+    var v = function(id){ var el = $(id); return el ? el.value.trim() : undefined; };
+    var ch = { affirmation:v("ae-aff") };
+    if(!a.anchor){ ch.name = v("ae-name") || a.name; ch.vision = v("ae-vision"); ch.dailyAction = v("ae-daily"); ch.visualisation = v("ae-vis"); }
+    patch(a, ch);
+    document.querySelectorAll("[data-gid]").forEach(function(box){
+      var g = all("goal", "hh").filter(function(x){ return x.id === box.dataset.gid; })[0]; if(!g) return;
+      var c = {}; box.querySelectorAll("[data-f]").forEach(function(el){ var f = el.dataset.f, val = el.value.trim(); c[f] = (f === "start" || f === "target") ? (val === "" ? null : +val) : val; });
+      if(!c.text) return;
+      var changed = Object.keys(c).some(function(k){ return String(g[k] == null ? "" : g[k]) !== String(c[k] == null ? "" : c[k]); });
+      if(changed) patch(g, c);
+    });
+    editArea = null; renderGoals(); toast("Saved");
+  }
+
+  /* ================= Weekly review ================= */
+  var rvWeek = null, rvView = null;
+  function renderReview(){
+    var mon = rvWeek || mondayOf(), dates = weekDates(mon), sun = dates[6];
+    var rv = get(mySpace(), "rv-" + mon), viewing = rvView;
+    var prev = get(mySpace(), "rv-" + dayKey(addDays(parseDay(mon), -7)));
+    var isSunday = new Date().getDay() === 0;
+    var hs = habits().filter(function(h){ return hbTracks(h, myUid()); });
+    var scribes = dates.map(function(d){ return get(mySpace(), "sc-" + d); }).filter(Boolean);
+    var fam = all("famnote", "hh").filter(function(n){ return n.week === mon; });
+    var myFam = fam.filter(function(n){ return n.owner === myUid(); })[0];
+    var measured = [], openMs = [], q = quarterOf(sun);
+    myAreas().forEach(function(a){ areaGoals(a.id).forEach(function(g){ if(g.kind === "measured") measured.push(g); goalMs(g.id).forEach(function(m){ if(!m.done && (!m.due || m.due <= q.end)) openMs.push({ m:m, a:a }); }); }); });
+    var nav = '<div class="hb-bar"><div class="hb-nav"><button data-act="rv-week" data-d="-1">‹</button><span>' + fmtShort(mon) + " – " + fmtShort(sun) + '</span><button data-act="rv-week" data-d="1" ' + (mon >= mondayOf() ? "disabled" : "") + '>›</button></div>' + (rv && rv.done ? '<span class="pill">Done ' + fmtShort(dayKey(new Date(rv.doneAt || rv.updatedAt))) + '</span>' : "") + '</div>';
+    var html = nav;
+    if(prev && prev.better) html += '<div class="callout glass">Last week you chose: <b>' + esc(prev.better) + '</b></div>';
+    else if(mon === mondayOf() && !isSunday && !(rv && rv.done)) html += '<div class="callout glass">Your weekly review is for Sunday. You can fill it in any time this week.</div>';
+    html += '<div class="rv-sec glass"><h3>Habits this week</h3>' + (hs.length ? hs.map(function(h){ var c = hbWeekCount(h, myUid(), mon), t = hbTarget(h); return '<div class="rv-row"><span>' + esc(h.name) + '</span><b style="color:' + (c >= t ? "var(--ok)" : "var(--ink)") + '">' + c + ' / ' + t + '</b></div>'; }).join("") : '<div class="muted small">No habits yet.</div>') + '</div>';
+    html += '<div class="rv-sec glass"><h3>This week\'s Scribing</h3>' + (scribes.length ? scribes.map(function(s){
+      var bits = [];
+      if((s.g || []).filter(Boolean).length) bits.push("Grateful: " + s.g.filter(Boolean).map(esc).join("; "));
+      if(s.line) bits.push("Line: " + esc(s.line));
+      if((s.t || []).filter(Boolean).length) bits.push("Top 3: " + s.t.filter(Boolean).map(esc).join("; "));
+      if(s.win) bits.push("Win: " + esc(s.win));
+      if(s.reflect) bits.push(esc(s.reflect));
+      if(s.pa) bits.push("<i>" + esc(s.pq || "") + "</i> " + esc(s.pa));
+      return '<div class="sc-entry"><b>' + fmtDay(s.date) + '</b>' + bits.join("<br>") + '</div>';
+    }).join("") : '<div class="muted small">No entries this week.</div>') + '</div>';
+    html += '<div class="rv-sec glass"><h3>Update progress</h3>' +
+      measured.map(function(g){ return '<div class="rv-row"><span>' + esc(g.text) + '</span><span style="display:flex;gap:6px;align-items:center"><input type="number" class="in" step="any" style="width:90px;padding:8px" data-measure="' + g.id + '" value="' + esc(g.current == null ? "" : g.current) + '" placeholder="' + esc(g.start) + '">' + esc(g.unit || "") + '</span></div>'; }).join("") +
+      (openMs.length ? openMs.map(function(o){ return '<div class="ms" style="--ac:' + esc(o.a.color) + '">' + checkBtn(false, "ms-tick", 'data-id="' + o.m.id + '"', "Tick milestone") + '<span>' + esc(o.m.text) + '</span><small>' + (o.m.due ? fmtShort(o.m.due) : "") + '</small></div>'; }).join("") : (measured.length ? "" : '<div class="muted small">Add milestones on the Goals tab to tick them off here.</div>')) + '</div>';
+    html += '<div class="rv-sec glass"><h3>To discuss with the family</h3><div class="muted small" style="margin-bottom:8px">From the week\'s reading. Shared with the household.</div>' +
+      fam.filter(function(n){ return n.owner !== myUid() && n.text; }).map(function(n){ return '<div class="sc-entry"><b>' + esc(personName(n.owner)) + '</b>' + esc(n.text) + '</div>'; }).join("") +
+      '<textarea class="in" id="rv-fam" placeholder="Something from the reading to talk about together">' + esc(myFam ? myFam.text : "") + '</textarea></div>';
+    html += '<div class="rv-sec glass"><h3>One thing to do better next week</h3><textarea class="in" id="rv-better" rows="2">' + esc(rv ? rv.better : "") + '</textarea>' +
+      '<div class="fld"><label>Anything else (patterns from Scribing, notes)</label><textarea class="in" id="rv-notes" rows="3">' + esc(rv ? rv.notes : "") + '</textarea></div></div>';
+    html += '<div class="btn-row"><button class="btn btn-ink" data-act="rv-save" data-week="' + mon + '">' + (rv && rv.done ? "Save changes" : "Finish review") + '</button></div>';
+    var past = all("review", mySpace()).filter(function(r){ return r.done; }).sort(function(a, b){ return b.week.localeCompare(a.week); });
+    if(past.length) html += '<div class="section-label">Past reviews</div><div class="card glass">' + past.slice(0, 12).map(function(r){ return '<div class="row" data-act="rv-open" data-week="' + r.week + '" style="cursor:pointer"><div><div class="row-title">Week of ' + fmtShort(r.week) + '</div><div class="row-sub">' + esc(r.better || "—") + '</div></div><span class="muted">›</span></div>'; }).join("") + '</div>';
+    $("view-review").innerHTML = html;
+  }
+  function saveReview(mon){
+    document.querySelectorAll("[data-measure]").forEach(function(el){
+      var g = all("goal", "hh").filter(function(x){ return x.id === el.dataset.measure; })[0]; if(!g || el.value === "") return;
+      var v = +el.value; if(isNaN(v) || v === +g.current) return;
+      var log = (g.log || []).concat([{ date:today(), v:v }]).slice(-60); patch(g, { current:v, log:log });
+    });
+    var famTxt = $("rv-fam").value.trim(), fid = "fn-" + mon + "-" + hbSafe(myUid()), fam = get("hh", fid);
+    if(famTxt || fam) put(Object.assign({}, fam || { type:"famnote", id:fid, space:"hh", week:mon, owner:myUid() }, { text:famTxt }));
+    var old = get(mySpace(), "rv-" + mon);
+    var scores = habits().filter(function(h){ return hbTracks(h, myUid()); }).map(function(h){ return { id:h.id, name:h.name, got:hbWeekCount(h, myUid(), mon), want:hbTarget(h) }; });
+    put(Object.assign({}, old || { type:"review", id:"rv-" + mon, week:mon }, { better:$("rv-better").value.trim(), notes:$("rv-notes").value.trim(), scores:scores, done:true, doneAt:(old && old.doneAt) || Date.now() }));
+    toast("Review saved"); renderReview(); window.scrollTo(0, 0);
+  }
+
+  /* ================= Scribing (form used in the session and from Today) ================= */
+  function scribeHtml(date){
+    var s = get(mySpace(), "sc-" + date) || {}, doy = Math.floor((parseDay(date) - new Date(parseDay(date).getFullYear(), 0, 0)) / 864e5);
+    var pq = s.pq || PROMPTS[doy % PROMPTS.length], g = s.g || [], t = s.t || [];
+    var inp = function(f, v, ph){ return '<input type="text" data-sc="' + f + '" value="' + esc(v || "") + '" placeholder="' + esc(ph || "") + '">'; };
+    return '<div class="s-scribe" data-date="' + date + '" data-pq="' + esc(pq) + '">' +
+      '<div class="glass"><label>Grateful for</label>' + inp("g0", g[0], "1. One about my wife or the boys") + inp("g1", g[1], "2.") + inp("g2", g[2], "3.") + '</div>' +
+      '<div class="glass"><label>A line that struck me</label>' + inp("line", s.line, "From today's reading") + '</div>' +
+      '<div class="glass"><label>Top 3 for today</label>' + inp("t0", t[0], "Faith or family") + inp("t1", t[1], "Health") + inp("t2", t[2], "Work or finance") + '</div>' +
+      '<div class="glass"><label>Win from yesterday</label>' + inp("win", s.win, "Training, budget, or being present") + '</div>' +
+      '<div class="glass"><label>Open reflection</label><textarea class="in" data-sc="reflect" placeholder="Anything on my mind">' + esc(s.reflect || "") + '</textarea></div>' +
+      '<div class="glass"><label>' + esc(pq) + '</label><textarea class="in" data-sc="pa">' + esc(s.pa || "") + '</textarea></div>' +
+      '<div class="s-saved" id="sc-saved">' + (s.updatedAt ? "Saved" : "Saves as you type") + '</div></div>';
+  }
+  var scT = null;
+  function scribeSave(box){
+    clearTimeout(scT);
+    scT = setTimeout(function(){
+      var date = box.dataset.date, id = "sc-" + date, old = get(mySpace(), id) || { type:"scribe", id:id, date:date };
+      var val = function(f){ var el = box.querySelector('[data-sc="' + f + '"]'); return el ? el.value.trim() : ""; };
+      put(Object.assign({}, old, { g:[val("g0"), val("g1"), val("g2")], line:val("line"), t:[val("t0"), val("t1"), val("t2")], win:val("win"), reflect:val("reflect"), pq:box.dataset.pq, pa:val("pa") }));
+      var s = document.getElementById("sc-saved"); if(s) s.textContent = "Saved " + clockTime(Date.now());
+    }, 500);
+  }
+
+  /* ================= Settings ================= */
+  var durPlan = "60";
+  function renderSettings(){
+    var u = cfg.user, ago = lastSync ? Math.round((Date.now() - lastSync) / 60000) : null;
+    var acct = signedIn()
+      ? '<div class="row"><div><div class="row-title">' + esc(u.name) + '</div><div class="row-sub">' + esc(u.email) + ' · ' + (syncState === "ok" ? "Saved to the cloud" + (ago != null ? (ago < 1 ? " just now" : " " + ago + " min ago") : "") : syncState === "wait" ? "Changes waiting to send" : esc(syncErr || "Not synced")) + '</div></div><button class="btn btn-soft btn-sm" data-act="sync-now">Sync</button></div>' +
+        '<div class="row"><div class="row-title">Sign out of this device</div><button class="btn btn-danger btn-sm" data-act="sign-out">Sign out</button></div>'
+      : (cfg.user && !cfg.token ? '<div class="row"><div><div class="row-title">Signed out</div><div class="row-sub">Enter your PIN again to keep saving to the cloud.</div></div><button class="btn btn-ink btn-sm" data-act="sign-in-sheet">Sign in</button></div>'
+        : '<div class="row"><div><div class="row-title">Not signed in</div><div class="row-sub">Saved on this phone only. Sign in to back it up and use it on any device.</div></div><button class="btn btn-ink btn-sm" data-act="sign-in-sheet">Sign in</button></div>');
+    var steps = getSteps(durPlan), p = prefs();
+    $("view-more").innerHTML =
+      '<div class="section-label">Account</div><div class="card glass">' + acct + '</div>' +
+      '<div id="install-block"><div class="section-label">App</div><div class="card glass"><div class="row"><div><div class="row-title">Install on this device</div><div class="row-sub" id="install-sub"></div></div><button class="btn btn-install" id="btn-install" data-act="install">Install</button></div></div></div>' +
+      '<div class="section-label">Screen & sound</div><div class="card glass">' +
+        '<div class="row"><div><div class="row-title">Keep screen on</div><div class="row-sub" id="wake-sub">Stops your phone dimming while the app is open</div></div><label class="switch"><input type="checkbox" id="t-wake" data-chg="wake"' + (getWakePref() ? " checked" : "") + '><span></span></label></div>' +
+        '<div class="row"><div class="row-title">Chime between steps</div><label class="switch"><input type="checkbox" data-chg="sound"' + (getSound() ? " checked" : "") + '><span></span></label></div>' +
+        '<div class="row"><div class="row-title">Vibrate between steps</div><label class="switch"><input type="checkbox" data-chg="vibe"' + (getVibe() ? " checked" : "") + '><span></span></label></div></div>' +
+      '<div class="section-label">Step durations</div><div class="seg light">' + PLAN_ORDER.map(function(k){ return '<button data-act="dur-plan" data-k="' + k + '" class="' + (k === durPlan ? "active" : "") + '">' + PLANS[k].label + ' plan</button>'; }).join("") + '</div>' +
+      '<div class="card glass" style="margin-top:10px">' + steps.map(function(s){ return '<div class="settings-saver"><div class="tile" style="--c:'+HEX[s.id]+'">'+ICONS[s.id]+'</div><div class="nm">'+s.name+'</div><input class="dur-input" type="number" inputmode="decimal" min="0.25" step="0.25" data-chg="dur" data-name="' + esc(s.name) + '" value="'+(Math.round(s.duration/60*100)/100)+'"><span class="unit">min</span></div>'; }).join("") + '</div>' +
+      '<div class="btn-row"><button class="btn btn-soft" data-act="dur-reset">Reset this plan</button></div>' +
+      '<div class="section-label">You</div><div class="card glass" style="padding:14px 16px;"><div class="row-title" style="margin-bottom:8px;">Your name</div><input type="text" data-chg="name" value="' + esc(getName()) + '" autocomplete="off"></div>' +
+      '<div class="section-label">Affirmations</div><div class="card glass"><div class="row"><div><div class="row-title">Also read my character affirmations</div><div class="row-sub">Your earlier list (honesty, trust…), read after the goal affirmations</div></div><label class="switch"><input type="checkbox" data-chg="oldaff"' + (p.showOldAff ? " checked" : "") + '><span></span></label></div>' +
+        '<div class="row"><div class="row-title">Edit that list</div><button class="btn btn-soft btn-sm" data-act="oldaff-edit">Edit</button></div></div>' +
+      '<div class="section-label">Data</div><div class="card glass">' +
+        '<div class="row"><div><div class="row-title">Move habits from Folio</div><div class="row-sub">Brings your habits and their full history across</div></div><button class="btn btn-soft btn-sm" data-act="folio-sheet">Import</button></div>' +
+        '<div class="row"><div><div class="row-title">Download a backup</div><div class="row-sub">Everything in the app, as a file</div></div><button class="btn btn-soft btn-sm" data-act="export">Download</button></div></div>' +
+      '<div class="about">Miracle Morning · a great morning starts with a routined night before.<br>' + (signedIn() ? "Saved on this device and in the cloud." : "Saved on this device only.") + ' v' + APP_VERSION + '</div>';
+    renderInstall(); renderWakeUI();
+  }
+
+  /* ================= Sheets ================= */
+  function openSheet(html){ var s = $("sheet"); s.innerHTML = '<button class="glass-btn sheet-close" data-act="sheet-close" aria-label="Close">' + ICON_X + '</button>' + html; s.classList.add("open"); $("sheet-bg").classList.add("open"); s.scrollTop = 0; }
+  function closeSheet(){ $("sheet").classList.remove("open"); $("sheet-bg").classList.remove("open"); $("sheet").innerHTML = ""; render(); }
+  var PROFILES = [{ uid:"andrew", name:"Andrew" }, { uid:"bronnia", name:"Bronnia" }];
+  var siWho = null;
+  function signInSheet(){
+    siWho = siWho || (cfg.user && cfg.user.uid) || null;
+    openSheet('<h2>Who\'s this?</h2>' +
+      '<div class="seg light" style="margin-top:12px">' + PROFILES.map(function(p){ return '<button data-act="si-who" data-uid="' + p.uid + '" class="' + (siWho === p.uid ? "active" : "") + '">' + esc(p.name) + '</button>'; }).join("") + '</div>' +
+      '<div class="fld"' + (siWho ? "" : ' style="display:none"') + '><label>PIN</label><input type="password" id="si-pin" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="current-password" style="font-size:24px;letter-spacing:.4em;text-align:center"></div>' +
+      '<details style="margin-top:12px"><summary class="small muted">Server address</summary><div class="fld"><input type="url" id="si-api" value="' + esc(cfg.api) + '"></div></details>' +
+      '<div class="small" id="si-err" style="color:var(--danger);margin-top:10px"></div>' +
+      '<div class="btn-row"><button class="btn btn-ink" data-act="sign-in"' + (siWho ? "" : " disabled") + '>Sign in</button></div>');
+    var pi = $("si-pin"); if(siWho && pi) setTimeout(function(){ pi.focus(); }, 50);
+  }
+  function folioSheet(){
+    openSheet('<h2>Move habits from Folio</h2><p class="muted small">In Folio, go to <b>Settings → Download a backup</b>. Then choose that file here. Your habits, every tick, and the notes come across. Folio itself isn\'t changed.</p>' +
+      '<div class="fld"><input type="file" id="folio-file" accept=".json,application/json"></div><div id="folio-preview"></div>');
+  }
+  var folioData = null;
+  function folioPreview(file){
+    var r = new FileReader();
+    r.onload = function(){
+      var j; try{ j = JSON.parse(r.result); }catch(e){ $("folio-preview").innerHTML = '<p class="small" style="color:var(--danger)">That file isn\'t a Folio backup.</p>'; return; }
+      var spaces = j.spaces || {}, hs = [], marks = [], uids = {};
+      Object.keys(spaces).forEach(function(sp){ var items = spaces[sp] || {}; Object.keys(items).forEach(function(k){ var it = items[k]; if(!it || it.deleted) return;
+        if(it.type === "habit") hs.push(Object.assign({}, it, { _sp:sp }));
+        if(it.type === "hmonth"){ marks.push(Object.assign({}, it, { _sp:sp })); uids[it.uid] = (uids[it.uid] || 0) + Object.keys(it.d || {}).length; } }); });
+      if(!hs.length){ $("folio-preview").innerHTML = '<p class="small" style="color:var(--danger)">No habits found in that backup.</p>'; return; }
+      folioData = { hs:hs, marks:marks };
+      var ul = Object.keys(uids).sort(function(a, b){ return uids[b] - uids[a]; });
+      $("folio-preview").innerHTML = '<div class="fld"><label>Found ' + hs.length + ' habit' + (hs.length > 1 ? "s" : "") + '</label>' + hs.map(function(h){ return '<div class="rv-row"><span>' + esc(h.name) + '</span><span class="muted small">' + (h.shared ? "Shared" : "Private") + '</span></div>'; }).join("") + '</div>' +
+        '<div class="fld"><label>Whose ticks are these?</label>' + ul.map(function(u, i){ return '<div class="rv-row"><span>' + esc(u === "owner" ? "owner (you, in Folio)" : u) + ' <span class="muted small">· ' + uids[u] + ' days</span></span><select data-folio-uid="' + esc(u) + '" style="width:auto;padding:8px 10px">' +
+          '<option value="' + myUid() + '"' + (i === 0 ? " selected" : "") + '>' + esc(getName()) + '</option>' + (signedIn() ? PROFILES.filter(function(p){ return p.uid !== myUid(); }).map(function(p){ return '<option value="' + p.uid + '"' + (i > 0 ? " selected" : "") + '>' + esc(p.name) + '</option>'; }).join("") : "") + '<option value=""' + (i > 0 && !signedIn() ? " selected" : "") + '>Skip</option></select></div>'; }).join("") +
+          (signedIn() ? "" : '<p class="help">Sign in first if you want Bronnia\'s ticks brought across too.</p>') + '</div>' +
+        '<div class="btn-row"><button class="btn btn-ink" data-act="folio-import">Import</button></div>';
+    };
+    r.readAsText(file);
+  }
+  function folioImport(){
+    if(!folioData) return;
+    var who = {}; document.querySelectorAll("[data-folio-uid]").forEach(function(el){ who[el.dataset.folioUid] = el.value; });
+    var map = function(u){ return who[u] || ""; }, n = 0, t = 0;
+    var have = habits().length;
+    folioData.hs.forEach(function(h, i){
+      var shared = !!h.shared || h._sp === "home";
+      put({ type:"habit", id:h.id, space:"hh", owner:myUid(), name:h.name, perWeek:7, people:shared ? "all" : undefined, order:(h.order || (have + i + 1) * 10), created:h.created || Date.now(), from:"folio" });
+      n++;
+    });
+    folioData.marks.forEach(function(m){
+      if(!folioData.hs.some(function(h){ return h.id === m.habitId; })) return;
+      var u = map(m.uid); if(!u) return;
+      if(u !== myUid() && !folioData.hs.some(function(h){ return h.id === m.habitId && (h.shared || h._sp === "home"); })) return;
+      var id = "hm-" + m.habitId + "-" + hbSafe(u) + "-" + m.ym;
+      put({ type:"hm", id:id, space:"hh", habitId:m.habitId, uid:u, ym:m.ym, d:m.d || {}, n:m.n || {}, created:m.created || Date.now(), imp:u !== myUid() });
+      t += Object.keys(m.d || {}).length;
+    });
+    folioData = null; closeSheet(); toast(n + " habits and " + t + " days moved across");
+    lsSet("life_folio_imported", String(Date.now()));
+  }
 
   /* ================= Sound + vibration ================= */
   var actx = null;
@@ -611,173 +1302,22 @@
   function buzz(pattern){ if(getVibe() && navigator.vibrate){ try{ navigator.vibrate(pattern); }catch(e){} } }
 
   /* ================= Keep screen on (Screen Wake Lock) ================= */
-  var wakeLock = null;
-  var wakeSupported = "wakeLock" in navigator;
-  function wakeWanted(){ return getWakePref(); }
+  var wakeLock = null, wakeSupported = "wakeLock" in navigator;
   function acquireWake(){
     if(!wakeSupported || wakeLock || document.visibilityState !== "visible") return;
-    navigator.wakeLock.request("screen").then(function(l){
-      wakeLock = l;
-      l.addEventListener("release", function(){ wakeLock = null; renderWakeUI(); });
-      renderWakeUI();
-    }).catch(function(){ renderWakeUI(); });
+    navigator.wakeLock.request("screen").then(function(l){ wakeLock = l; l.addEventListener("release", function(){ wakeLock = null; renderWakeUI(); }); renderWakeUI(); }).catch(function(){ renderWakeUI(); });
   }
   function releaseWake(){ if(wakeLock){ try{ wakeLock.release(); }catch(e){} wakeLock = null; } renderWakeUI(); }
-  function syncWake(){ if(wakeWanted()) acquireWake(); else releaseWake(); }
+  function syncWake(){ if(getWakePref()) acquireWake(); else releaseWake(); }
   function renderWakeUI(){
-    $("t-wake").checked = getWakePref();
+    var t = $("t-wake"); if(t) t.checked = getWakePref();
     $("s-wake").classList.toggle("on", getWakePref());
-    if(!wakeSupported) $("wake-sub").textContent = "Not supported in this browser — open in Chrome.";
+    var w = $("wake-sub"); if(w && !wakeSupported) w.textContent = "Not supported in this browser — open in Chrome.";
   }
+  function setWake(v){ setWakePref(v); syncWake(); toast(v ? "Screen will stay on" : "Screen can sleep normally"); }
   document.addEventListener("visibilitychange", function(){
-    if(document.visibilityState === "visible"){ syncWake(); if(session && !session.paused) tick(); }
+    if(document.visibilityState === "visible"){ syncWake(); if(session && !session.paused) tick(); if(signedIn()) sync(); }
   });
-  function setWake(v){
-    setWakePref(v); syncWake();
-    toast(v ? "Screen will stay on" : "Screen can sleep normally");
-  }
-
-  /* ================= Hero + navigation ================= */
-  function renderHero(view){
-    var hero = $("hero");
-    var title = $("hero-title"), sub = $("hero-sub"), date = $("hero-date");
-    var now = new Date();
-    date.textContent = now.toLocaleDateString(undefined, {weekday:"long", day:"numeric", month:"long"});
-    if(view === "home"){
-      var h = now.getHours();
-      var greet = h < 12 ? "Good morning" : (h < 18 ? "Good afternoon" : "Good evening");
-      title.textContent = greet + ", " + getName();
-      var done = Object.keys(doneToday()).length;
-      sub.textContent = done === 6 ? "All six S.A.V.E.R.S done today. Brilliant." : (done ? done + " of 6 S.A.V.E.R.S done today." : "Win the morning, win the day.");
-    } else if(view === "affirmations"){ title.textContent = "Affirmations"; sub.textContent = "Commit to your goals."; }
-    else if(view === "goals"){ title.textContent = "Goals"; sub.textContent = "From the PPP household planner."; }
-    else { title.textContent = "Settings"; sub.textContent = "Make it yours."; }
-    var streak = getStreak();
-    $("streak-num").textContent = streak;
-    $("streak-chip").classList.toggle("gold", Object.keys(doneToday()).length === 6);
-  }
-
-  function setAura(el, cols){ if(!el) return; el.querySelectorAll("i").forEach(function(b,i){ b.style.backgroundColor = cols[i % cols.length]; }); }
-
-  var currentView = "home";
-  function showView(name){
-    currentView = name;
-    ["home","affirmations","goals","more"].forEach(function(v){ $("view-"+v).classList.toggle("active", v === name); });
-    document.querySelectorAll("#tabbar button").forEach(function(b){ b.classList.toggle("active", b.dataset.view === name); });
-    renderHero(name);
-    var hero = $("hero"); hero.classList.remove("swap"); void hero.offsetWidth; hero.classList.add("swap");
-    if(name === "home") renderHome();
-    if(name === "affirmations") renderAffirmations();
-    if(name === "goals") renderGoals();
-    if(name === "more") renderSettings();
-    window.scrollTo(0,0);
-  }
-  document.querySelectorAll("#tabbar button").forEach(function(b){
-    b.addEventListener("click", function(){ showView(b.dataset.view); });
-  });
-
-  /* ================= Home ================= */
-  function renderHome(){
-    var key = getPlanKey();
-    var seg = $("plan-seg"); seg.innerHTML = "";
-    PLAN_ORDER.forEach(function(k){
-      var b = document.createElement("button");
-      b.textContent = PLANS[k].label; b.className = k === key ? "active" : "";
-      b.onclick = function(){ setPlanKey(k); renderHome(); };
-      seg.appendChild(b);
-    });
-    var steps = getSteps(key), t = total(steps);
-    $("plan-total").textContent = fmtDur(t);
-    $("plan-ends").textContent = clockTime(Date.now() + t*1000);
-    var done = doneToday();
-    var list = $("savers"); list.innerHTML = "";
-    steps.forEach(function(s){
-      var row = document.createElement("div");
-      row.className = "saver";
-      var isDone = !!done[s.id];
-      row.innerHTML =
-        '<div class="tile" style="--c:'+HEX[s.id]+'">'+ICONS[s.id]+'</div>'+
-        '<div class="saver-text"><div class="saver-name">'+s.name+'</div><div class="saver-sub">'+esc(s.subtitle)+' · '+fmtDur(s.duration)+'</div></div>'+
-        '<button class="check'+(isDone?' done':'')+'" aria-label="Mark '+s.name+' done" style="--c:'+HEX[s.id]+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>';
-      row.querySelector(".check").onclick = function(){
-        markDone(s.id, !isDone); buzz(15); renderHome(); renderHero("home");
-        if(!isDone){ var c = $("savers").querySelectorAll(".check")[steps.indexOf(s)]; if(c) c.classList.add("pop"); }
-      };
-      list.appendChild(row);
-    });
-  }
-  $("btn-start").addEventListener("click", function(){ startSession(getPlanKey()); });
-  setInterval(function(){ if(currentView === "home" && !session) $("plan-ends").textContent = clockTime(Date.now() + total(getSteps(getPlanKey()))*1000); }, 30000);
-
-  /* ================= Affirmations ================= */
-  function renderAffirmations(){
-    var list = $("aff-list"); list.innerHTML = "";
-    getAffirmations().forEach(function(line, i){
-      var d = document.createElement("div"); d.className = "aff-item";
-      if(isHeading(line)) d.className += " aff-head";
-      d.innerHTML = '<span>'+mdBold(line)+'</span>';
-      list.appendChild(d);
-    });
-    $("aff-display").style.display = ""; $("aff-editor").style.display = "none";
-  }
-  $("btn-aff-edit").onclick = function(){
-    $("aff-text").value = getAffirmations().join("\n");
-    $("aff-display").style.display = "none"; $("aff-editor").style.display = "";
-  };
-  $("btn-aff-cancel").onclick = renderAffirmations;
-  $("btn-aff-save").onclick = function(){
-    var lines = $("aff-text").value.split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
-    setAffirmations(lines.length ? lines : DEFAULT_AFFIRMATIONS.slice());
-    renderAffirmations(); toast("Affirmations saved");
-  };
-  $("btn-aff-reset").onclick = function(){
-    if(!confirm("Replace your affirmations with the defaults?")) return;
-    setAffirmations(DEFAULT_AFFIRMATIONS.slice()); toast("Default affirmations restored");
-  };
-
-  /* ================= Goals ================= */
-  function renderGoals(){
-    var url = getGoalsUrl(), f = $("goals-frame");
-    if(f.dataset.loaded !== url){ f.src = url; f.dataset.loaded = url; }
-    $("goals-open").href = url;
-  }
-
-  /* ================= Settings ================= */
-  var durPlan = "60";
-  function renderSettings(){
-    $("in-name").value = getName();
-    $("in-goals").value = lsGet("mm_goals_url") || "";
-    $("t-sound").checked = getSound();
-    $("t-vibe").checked = getVibe();
-    renderWakeUI();
-    var seg = $("dur-seg"); seg.innerHTML = "";
-    PLAN_ORDER.forEach(function(k){
-      var b = document.createElement("button");
-      b.textContent = PLANS[k].label + " plan"; b.className = k === durPlan ? "active" : "";
-      b.onclick = function(){ durPlan = k; renderSettings(); };
-      seg.appendChild(b);
-    });
-    var list = $("dur-list"); list.innerHTML = "";
-    getSteps(durPlan).forEach(function(s){
-      var row = document.createElement("div"); row.className = "settings-saver";
-      row.innerHTML = '<div class="tile" style="--c:'+HEX[s.id]+'">'+ICONS[s.id]+'</div><div class="nm">'+s.name+'</div>'+
-        '<input class="dur-input" type="number" inputmode="decimal" min="0.25" step="0.25" value="'+(Math.round(s.duration/60*100)/100)+'"><span class="unit">min</span>';
-      var inp = row.querySelector("input");
-      inp.onchange = function(){
-        var m = parseFloat(inp.value); if(isNaN(m) || m <= 0) m = 0.25;
-        var sec = Math.round(m*60), o = getOverrides();
-        o[durPlan] = o[durPlan] || {}; o[durPlan][s.name] = sec; setOverrides(o);
-        inp.value = Math.round(sec/60*100)/100;
-      };
-      list.appendChild(row);
-    });
-  }
-  $("btn-dur-reset").onclick = function(){ var o = getOverrides(); delete o[durPlan]; setOverrides(o); renderSettings(); toast("Durations reset"); };
-  $("in-name").onchange = function(e){ setName(e.target.value); renderHero("more"); };
-  $("in-goals").onchange = function(e){ var v = e.target.value.trim(); if(v) lsSet("mm_goals_url", v); else { try{ localStorage.removeItem("mm_goals_url"); }catch(x){} } };
-  $("t-sound").onchange = function(e){ setSound(e.target.checked); if(e.target.checked) playChime("soft"); };
-  $("t-vibe").onchange = function(e){ setVibe(e.target.checked); if(e.target.checked) buzz(60); };
-  $("t-wake").onchange = function(e){ setWake(e.target.checked); };
 
   /* ================= Session engine ================= */
   var RING_C = 2 * Math.PI * 104;
@@ -785,19 +1325,22 @@
   var ICON_PLAY  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 4.8v14.4a1 1 0 001.5.9l11.2-7.2a1 1 0 000-1.7L9.5 3.9A1 1 0 008 4.8z"/></svg>';
   var ICON_SOUND_ON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>';
   var ICON_SOUND_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6"/></svg>';
+  function setAura(el, cols){ if(!el) return; el.querySelectorAll("i").forEach(function(b,i){ b.style.backgroundColor = cols[i % cols.length]; }); }
+
+  // Affirmations in reading order: anchor first, then each area. Pulled live from Goals.
+  function affirmationBlocks(){
+    var out = [];
+    myAreas().forEach(function(a){ if(a.affirmation) out.push({ head:a.anchor ? "Anchor" : a.name, text:a.affirmation }); });
+    if(prefs().showOldAff){ var old = prefs().oldAff || DEFAULT_AFFIRMATIONS; out.push({ head:"Character", lines:old }); }
+    return out;
+  }
+  function visualBlocks(){ return myAreas().filter(function(a){ return !a.anchor && a.visualisation; }); }
 
   var session = null;
-  // { planKey, steps, index, endTs, remainingMs, paused, saved[], startMs, tickH, advancing }
-
   function startSession(planKey){
     var steps = getSteps(planKey);
-    session = { planKey:planKey, steps:steps, index:0, endTs:0, remainingMs:0, paused:false,
-                saved:steps.map(function(){ return null; }), startMs:Date.now(), tickH:null, advancing:false };
-    var bar = $("ov-bar"); bar.innerHTML = "";
-    steps.forEach(function(s){
-      var seg = document.createElement("div"); seg.className = "ov-seg"; seg.style.flex = String(Math.max(s.duration, 30));
-      seg.innerHTML = '<i style="background:linear-gradient(90deg,'+HEX[s.id]+'55,'+HEX[s.id]+')"></i>'; bar.appendChild(seg);
-    });
+    session = { planKey:planKey, steps:steps, index:0, endTs:0, remainingMs:0, paused:false, saved:steps.map(function(){ return null; }), startMs:Date.now(), tickH:null, advancing:false, visIdx:-1 };
+    $("ov-bar").innerHTML = steps.map(function(s){ return '<div class="ov-seg" style="flex:' + Math.max(s.duration, 30) + '"><i style="background:linear-gradient(90deg,'+HEX[s.id]+'55,'+HEX[s.id]+')"></i></div>'; }).join("");
     var el = $("session"); el.classList.remove("finished","is-paused"); el.classList.add("active");
     document.body.style.overflow = "hidden";
     renderSoundBtn(); renderWakeUI(); syncWake();
@@ -805,119 +1348,113 @@
     showStep(0);
     session.tickH = setInterval(tick, 250);
   }
-
-  function stepRemainingMs(){
-    if(!session) return 0;
-    return session.paused ? session.remainingMs : Math.max(0, session.endTs - Date.now());
-  }
+  function stepRemainingMs(){ if(!session) return 0; return session.paused ? session.remainingMs : Math.max(0, session.endTs - Date.now()); }
 
   function showStep(i){
     if(!session) return;
     if(i >= session.steps.length){ completeSession(); return; }
-    session.index = i; session.advancing = false;
-    var s = session.steps[i], color = HEX[s.id];
-    var el = $("session");
+    session.index = i; session.advancing = false; session.visIdx = -1;
+    var s = session.steps[i], color = HEX[s.id], el = $("session");
     el.style.setProperty("--step", color);
     setAura($("s-aurora"), ["#F6EFE2", color + "2E", "#F8F2E8", color + "1C"]);
     $("s-count").textContent = "STEP " + (i+1) + " OF " + session.steps.length;
     $("s-back").disabled = i === 0;
-
-    var compact = s.type === "affirmations";
-    var html =
-      '<div class="s-tile">'+ICONS[s.id]+'</div>'+
-      '<div class="s-name">'+s.name+'</div>'+
-      '<div class="s-sub">'+esc(s.subtitle)+'</div>'+
+    var compact = s.type === "affirmations" || s.type === "visual" || s.type === "scribe";
+    var html = '<div class="s-tile">'+ICONS[s.id]+'</div><div class="s-name">'+s.name+'</div><div class="s-sub">'+esc(s.subtitle)+'</div>'+
       '<div class="ring-wrap'+(compact?' compact':'')+'"><svg viewBox="0 0 240 240"><defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">'+
       '<stop offset="0" stop-color="'+color+'" stop-opacity=".25"/><stop offset=".6" stop-color="'+color+'" stop-opacity=".7"/><stop offset="1" stop-color="'+color+'" stop-opacity="1"/></linearGradient></defs>'+
       '<circle class="ring-track" cx="120" cy="120" r="104" fill="none" stroke-width="8"/>'+
       '<circle class="ring-fill" id="ring-fill" cx="120" cy="120" r="104" fill="none" stroke="url(#ringGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+RING_C.toFixed(2)+'" stroke-dashoffset="0"/></svg>'+
       '<div class="ring-center"><div class="clock" id="clock">--:--</div><div class="clock-of">of '+mmss(s.duration)+'</div><div class="paused-tag">Paused</div></div></div>';
     if(s.type === "affirmations"){
-      html += '<div class="s-aff">' + getAffirmations().map(function(l){ return isHeading(l) ? '<div class="s-aff-head">'+mdBold(l)+'</div>' : '<div class="glass">'+mdBold(l)+"</div>"; }).join("") + '</div>';
+      var blocks = affirmationBlocks();
+      html += '<div class="s-aff">' + (blocks.length ? blocks.map(function(b){
+        return '<div class="s-aff-head">' + esc(b.head) + '</div>' + (b.lines ? b.lines.map(function(l){ return isHeading(l) ? '<div class="s-aff-head">'+mdBold(l)+'</div>' : '<div class="glass">'+mdBold(l)+'</div>'; }).join("") : '<div class="glass">' + esc(b.text) + '</div>');
+      }).join("") : '<div class="glass">Add affirmations on the Goals tab.</div>') + '</div>';
+    } else if(s.type === "visual"){
+      var vs = visualBlocks();
+      html += vs.length ? '<div class="small muted" id="vis-step" style="margin-top:12px"></div><div class="s-vis">' + vs.map(function(a, k){ return '<div class="glass" data-vis="' + k + '"><h4>' + esc(a.name) + '</h4><p>' + esc(a.visualisation) + '</p></div>'; }).join("") + '</div>'
+        : '<div class="s-instr">'+esc(s.instructions)+'</div>';
+    } else if(s.type === "scribe"){
+      html += scribeHtml(today());
     } else if(s.type === "list"){
       html += '<ul class="s-list">' + s.instructions.map(function(x){ return '<li class="glass">'+esc(x)+"</li>"; }).join("") + '</ul>';
-    } else {
-      html += '<div class="s-instr">'+esc(s.instructions)+'</div>';
-    }
+    } else html += '<div class="s-instr">'+esc(s.instructions)+'</div>';
     if(s.link){
-      if(s.link.soon) html += '<span class="s-link soon glass">'+esc(s.link.label)+' · coming soon</span>';
-      else html += '<a class="s-link glass" target="_blank" rel="noopener" href="'+esc(s.link.goals ? getGoalsUrl() : s.link.url)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>'+esc(s.link.label)+'</a>';
+      if(s.link.soon) html += '<span class="s-link soon glass">'+esc(s.link.label)+' · coming in the next update</span>';
+      else html += '<a class="s-link glass" target="_blank" rel="noopener" href="'+esc(s.link.url)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>'+esc(s.link.label)+'</a>';
     }
     var body = $("s-body"); body.classList.remove("enter"); body.innerHTML = html; body.scrollTop = 0; void body.offsetWidth; body.classList.add("enter");
-
     var saved = session.saved[i];
-    if(saved != null && saved > 0){
-      session.remainingMs = saved; setPaused(true);
-    } else {
-      session.remainingMs = s.duration*1000; session.endTs = Date.now() + session.remainingMs; setPaused(false);
-    }
-    render();
+    if(saved != null && saved > 0){ session.remainingMs = saved; setPaused(true); }
+    else { session.remainingMs = s.duration*1000; session.endTs = Date.now() + session.remainingMs; setPaused(false); }
+    sRender();
   }
-
   function setPaused(p){
     if(!session) return;
-    if(p && !session.paused){ session.remainingMs = Math.max(0, session.endTs - Date.now()); }
-    if(!p){ session.endTs = Date.now() + session.remainingMs; }
+    if(p && !session.paused) session.remainingMs = Math.max(0, session.endTs - Date.now());
+    if(!p) session.endTs = Date.now() + session.remainingMs;
     session.paused = p;
     $("session").classList.toggle("is-paused", p);
     $("s-play").innerHTML = p ? ICON_PLAY : ICON_PAUSE;
     $("s-play").setAttribute("aria-label", p ? "Resume" : "Pause");
-    render();
+    sRender();
   }
-
-  function render(){
+  function sRender(){
     if(!session) return;
-    var s = session.steps[session.index];
-    var rem = stepRemainingMs();
-    var frac = 1 - rem / (s.duration*1000);
+    var s = session.steps[session.index], rem = stepRemainingMs(), frac = 1 - rem / (s.duration*1000);
     var clock = $("clock"); if(clock) clock.textContent = mmss(Math.ceil(rem/1000));
     var ring = $("ring-fill"); if(ring) ring.style.strokeDashoffset = (RING_C * Math.max(0, Math.min(1, frac))).toFixed(2);
-    // Overall timer
+    if(s.type === "visual"){
+      var cards = document.querySelectorAll("[data-vis]");
+      if(cards.length){
+        var n = cards.length, per = s.duration / n, idx = Math.min(n - 1, Math.floor(Math.max(0, frac) * n));
+        var left = Math.max(0, per - (Math.max(0, frac) * s.duration - idx * per));
+        var vs = $("vis-step"); if(vs) vs.textContent = (idx + 1) + " of " + n + " · " + mmss(Math.ceil(left));
+        if(idx !== session.visIdx){
+          cards.forEach(function(c, k){ c.classList.toggle("on", k === idx); });
+          if(session.visIdx >= 0){ playChime("soft"); cards[idx].scrollIntoView({ behavior:"smooth", block:"center" }); }
+          session.visIdx = idx;
+        }
+      }
+    }
     var later = 0; for(var k = session.index+1; k < session.steps.length; k++) later += session.steps[k].duration;
     var overallRem = rem/1000 + later;
     $("ov-elapsed").textContent = mmss((Date.now() - session.startMs)/1000);
     $("ov-remaining").textContent = mmss(Math.ceil(overallRem));
     $("ov-ends").textContent = clockTime(Date.now() + overallRem*1000);
-    var segs = document.querySelectorAll("#ov-bar i");
-    segs.forEach(function(seg, idx){
+    document.querySelectorAll("#ov-bar i").forEach(function(seg, idx){
       var w = idx < session.index ? 100 : (idx === session.index ? Math.max(0, Math.min(1, frac))*100 : 0);
       seg.style.width = w.toFixed(1) + "%";
     });
   }
-
   function tick(){
     if(!session) return;
-    render();
+    sRender();
     if(session.paused || session.advancing) return;
     if(session.endTs - Date.now() <= 0){
       session.advancing = true;
       var s = session.steps[session.index];
-      markDone(s.id, true);
-      session.saved[session.index] = null;
+      markDone(s.id, true); session.saved[session.index] = null;
       playChime("main"); buzz([180,90,180]);
+      // On Scribing, don't snatch the page away mid-sentence: just pause at zero.
+      if(s.type === "scribe"){ session.advancing = false; session.remainingMs = 0; setPaused(true); toast("Time's up — tap › when you're done"); return; }
       setTimeout(function(){ if(session) showStep(session.index + 1); }, 900);
     }
   }
-
   function leaveStep(){
-    // Save where you were; count as done if you got at least half way.
     var s = session.steps[session.index], rem = stepRemainingMs();
     if(rem <= s.duration*500) markDone(s.id, true);
     session.saved[session.index] = rem > 0 ? rem : null;
   }
-
   $("s-play").onclick = function(){ if(session){ setPaused(!session.paused); buzz(12); } };
   $("s-next").onclick = function(){ if(!session || session.advancing) return; leaveStep(); playChime("soft"); buzz(25); showStep(session.index+1); };
   $("s-back").onclick = function(){ if(!session || session.index === 0) return; leaveStep(); playChime("soft"); buzz(25); showStep(session.index-1); };
   $("s-restart").onclick = function(){ if(!session) return; session.saved[session.index] = null; buzz(25); showStep(session.index); toast("Step restarted"); };
-  $("s-close").onclick = function(){
-    if(session && !$("session").classList.contains("finished") && !confirm("End this session?")) return;
-    endSession();
-  };
+  $("s-close").onclick = function(){ if(session && !$("session").classList.contains("finished") && !confirm("End this session?")) return; endSession(); };
   $("s-sound").onclick = function(){ setSound(!getSound()); renderSoundBtn(); toast(getSound() ? "Sound on" : "Sound off"); };
   $("s-wake").onclick = function(){ setWake(!getWakePref()); };
-  function renderSoundBtn(){ var b = $("s-sound"); b.innerHTML = getSound() ? ICON_SOUND_ON : ICON_SOUND_OFF; }
-
+  function renderSoundBtn(){ $("s-sound").innerHTML = getSound() ? ICON_SOUND_ON : ICON_SOUND_OFF; }
   function completeSession(){
     var took = (Date.now() - session.startMs)/1000;
     clearInterval(session.tickH);
@@ -925,63 +1462,143 @@
     var el = $("session"); el.classList.add("finished"); el.classList.remove("is-paused");
     setAura($("s-aurora"), ["#F7DE85","#F6EFE2","#F8F2E8","#F4ECDD"]); bubbles();
     var doneN = Object.keys(doneToday()).length;
-    $("s-body").innerHTML =
-      '<div class="complete">'+
-        '<svg class="sunburst" viewBox="0 0 56 40" fill="none"><path d="M12 34a16 16 0 0132 0z" fill="currentColor"/><g stroke="currentColor" stroke-width="4" stroke-linecap="round"><line x1="28" y1="4" x2="28" y2="11"/><line x1="12" y1="10" x2="16" y2="15"/><line x1="44" y1="10" x2="40" y2="15"/><line x1="3" y1="22" x2="9" y2="24"/><line x1="53" y1="22" x2="47" y2="24"/></g></svg>'+
-        '<h2>Well done, '+esc(getName())+'.</h2><p>Make today count.</p>'+
-        '<div class="done-stats"><div class="glass"><b>'+mmss(took)+'</b><span>Time</span></div><div class="glass"><b>'+doneN+'/6</b><span>S.A.V.E.R.S</span></div><div class="glass"><b>'+getStreak()+'</b><span>Day streak</span></div></div>'+
-        '<button class="btn btn-ink" id="s-finish">Done</button>'+
-      '</div>';
+    $("s-body").innerHTML = '<div class="complete"><svg class="sunburst" viewBox="0 0 56 40" fill="none"><path d="M12 34a16 16 0 0132 0z" fill="currentColor"/><g stroke="currentColor" stroke-width="4" stroke-linecap="round"><line x1="28" y1="4" x2="28" y2="11"/><line x1="12" y1="10" x2="16" y2="15"/><line x1="44" y1="10" x2="40" y2="15"/><line x1="3" y1="22" x2="9" y2="24"/><line x1="53" y1="22" x2="47" y2="24"/></g></svg>'+
+      '<h2>Well done, '+esc(getName())+'.</h2><p>Make today count.</p>'+
+      '<div class="done-stats"><div class="glass"><b>'+mmss(took)+'</b><span>Time</span></div><div class="glass"><b>'+doneN+'/6</b><span>S.A.V.E.R.S</span></div><div class="glass"><b>'+getStreak()+'</b><span>Day streak</span></div></div>'+
+      '<button class="btn btn-ink" id="s-finish">Done</button></div>';
     $("s-finish").onclick = endSession;
   }
-
   function bubbles(){
     var host = $("session"), cols = ["#F2D46E","#E6DAC2","#EBC95A","#DDD0B6"];
     for(var n = 0; n < 22; n++){
-      var b = document.createElement("span"); b.className = "bubble";
-      var sz = 14 + Math.random()*46;
+      var b = document.createElement("span"); b.className = "bubble"; var sz = 14 + Math.random()*46;
       b.style.cssText = "width:"+sz+"px;height:"+sz+"px;left:"+(Math.random()*100)+"%;background:"+cols[n%cols.length]+";animation-duration:"+(4+Math.random()*4)+"s;animation-delay:"+(Math.random()*1.8)+"s";
       host.appendChild(b); setTimeout(function(x){ return function(){ x.remove(); }; }(b), 10000);
     }
   }
-
   function endSession(){
     if(session && session.tickH) clearInterval(session.tickH);
     session = null;
-    var el = $("session"); el.classList.remove("active","finished","is-paused");
+    $("session").classList.remove("active","finished","is-paused");
     document.body.style.overflow = "";
     showView("home");
   }
 
-  /* ================= Install (Chrome "Add to Home screen") ================= */
+  /* ================= Install ================= */
   var installEvt = null;
   function isInstalled(){ return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true; }
   function renderInstall(){
-    if(isInstalled()){ $("install-block").style.display = "none"; return; }
-    $("install-block").style.display = "";
-    var btn = $("btn-install");
-    if(installEvt){ btn.style.display = ""; $("install-sub").textContent = "Opens full screen from your home screen, like a normal app"; }
-    else { btn.style.display = "none"; $("install-sub").textContent = "In Chrome, tap ⋮ then “Install app” or “Add to Home screen”"; }
+    var blk = $("install-block"); if(!blk) return;
+    if(isInstalled()){ blk.style.display = "none"; return; }
+    blk.style.display = "";
+    $("btn-install").style.display = installEvt ? "" : "none";
+    $("install-sub").textContent = installEvt ? "Opens full screen from your home screen, like a normal app" : "In Chrome, tap ⋮ then “Install app” or “Add to Home screen”";
   }
   window.addEventListener("beforeinstallprompt", function(e){ e.preventDefault(); installEvt = e; renderInstall(); });
   window.addEventListener("appinstalled", function(){ installEvt = null; renderInstall(); toast("Installed — find it on your home screen"); });
-  $("btn-install").onclick = function(){
-    if(!installEvt) return;
-    installEvt.prompt();
-    installEvt.userChoice.then(function(){ installEvt = null; renderInstall(); });
-  };
 
-  /* ================= Init ================= */
-  renderInstall();
-  $("app-ver").textContent = "v" + APP_VERSION;
+  /* ================= Taps, changes, typing ================= */
+  var actions = {
+    "go": function(el){ showView(el.dataset.v); },
+    "plan": function(el){ setPref("plan", el.dataset.k); renderHome(); },
+    "saver-tick": function(el){ var id = el.dataset.id, was = !!doneToday()[id]; markDone(id, !was); buzz(15); renderHome(); renderHero("home"); if(!was){ var b = document.querySelector('[data-act="saver-tick"][data-id="'+id+'"]'); if(b) b.classList.add("pop"); } },
+    "scribe-open": function(){ openSheet('<h2>Scribing</h2><p class="muted small">' + fmtDay(today(), { weekday:"long", day:"numeric", month:"long" }) + '</p>' + scribeHtml(today())); },
+    "hb-today": function(el){ var h = get(el.dataset.sp, el.dataset.id); if(!h) return; var on = hbMark(h, myUid(), today()) === "g"; hbWrite(h, today(), "d", on ? "" : "g"); buzz(15); renderHome(); },
+    "hb-cycle": function(el){ var h = get(el.dataset.sp, el.dataset.id); if(!h) return; hbWrite(h, el.dataset.date, "d", HB_NEXT[hbMark(h, myUid(), el.dataset.date)]); buzz(10); if($("sheet").classList.contains("open")) habitSheet(h); else renderHabits(); },
+    "hb-mode": function(el){ hbMode = el.dataset.v; renderHabits(); },
+    "hb-week": function(el){ hbWeekOff = Math.min(0, hbWeekOff + (+el.dataset.d)); renderHabits(); },
+    "hb-month": function(el){ var p = hbYm.split("-").map(Number), d = new Date(p[0], p[1] - 1 + (+el.dataset.d), 1); hbYm = dayKey(d).slice(0, 7); if(el.dataset.sheet){ var h = get(document.querySelector("[data-act=hb-note]").dataset.sp, document.querySelector("[data-act=hb-note]").dataset.id); if(h) habitSheet(h); } else renderHabits(); },
+    "hb-new": function(){ habitSheet(null); },
+    "hb-edit": function(el){ hbYm = today().slice(0, 7); var h = get(el.dataset.sp, el.dataset.id); if(h) habitSheet(h); },
+    "hb-save": function(el){
+      var name = $("hf-name").value.trim(); if(!name){ toast("Give it a name"); return; }
+      var who = $("hf-who").value, space = who === "private" ? mySpace() : "hh";
+      var ch = { name:name, perWeek:+$("hf-week").value, goalId:$("hf-goal").value || "", people:who === "all" ? "all" : undefined };
+      var old = el.dataset.id ? get(el.dataset.sp, el.dataset.id) : null;
+      if(old && old.space !== space){
+        // Moving between private and household: copy the habit and my ticks across.
+        var nh = put(Object.assign({}, old, ch, { space:space }));
+        all("hm", old.space).filter(function(x){ return x.habitId === old.id; }).forEach(function(x){ if(x.uid === myUid()) put(Object.assign({}, x, { space:space })); del(x); });
+        del(old); nh = null;
+      } else if(old) patch(old, ch);
+      else put(Object.assign({ type:"habit", id:"hb-" + uid(), space:space, owner:myUid(), order:(habits().length + 1) * 10 }, ch));
+      closeSheet(); toast("Habit saved");
+    },
+    "hb-del": function(el){ var h = get(el.dataset.sp, el.dataset.id); if(!h || !confirm("Delete this habit and all its ticks?")) return; all("hm", h.space).filter(function(x){ return x.habitId === h.id; }).forEach(del); del(h); closeSheet(); },
+    "hb-note": function(el){ var h = get(el.dataset.sp, el.dataset.id), d = $("hn-date").value, t = $("hn-text").value.trim(); if(!h || !d || !t) return; hbWrite(h, d, "n", t); hbYm = d.slice(0, 7); habitSheet(h); },
+    "area-edit": function(el){ editArea = el.dataset.id; renderGoals(); var b = document.querySelector(".area h2, .area textarea"); if(b) b.scrollIntoView({ block:"start" }); },
+    "area-cancel": function(){ editArea = null; renderGoals(); },
+    "area-save": function(el){ saveAreaEditor(el.dataset.id); },
+    "goal-add": function(el){ put({ type:"goal", id:"g-" + uid(), space:"hh", areaId:el.dataset.id, text:"New goal", kind:"milestones", due:dayKey(new Date(new Date().getFullYear() + 1, 10, 30)), order:areaGoals(el.dataset.id).length + 1 }); renderGoals(); },
+    "goal-del": function(el){ var g = all("goal", "hh").filter(function(x){ return x.id === el.dataset.id; })[0]; if(!g || !confirm("Delete this goal and its milestones?")) return; goalMs(g.id).forEach(del); del(g); renderGoals(); },
+    "goal-confirm": function(el){ var g = all("goal", "hh").filter(function(x){ return x.id === el.dataset.id; })[0]; if(g && confirm("Keep this goal as it is? (Edit the wording first if you want to change it.)")){ patch(g, { suggested:"" }); renderGoals(); } },
+    "goal-measure": function(el){ var g = all("goal", "hh").filter(function(x){ return x.id === el.dataset.id; })[0]; if(!g) return; var v = prompt("Current value" + (g.unit ? " (" + g.unit + ")" : ""), g.current != null ? g.current : g.start); if(v == null || v.trim() === "" || isNaN(+v)) return; patch(g, { current:+v, log:(g.log || []).concat([{ date:today(), v:+v }]).slice(-60) }); renderGoals(); },
+    "ms-show": function(el){ var r = document.querySelector('.add-row[data-goal="' + el.dataset.id + '"]'); if(r){ r.style.display = "flex"; el.style.display = "none"; r.querySelector("input").focus(); } },
+    "ms-add": function(el){ var r = document.querySelector('.add-row[data-goal="' + el.dataset.id + '"]'), t = r.querySelector("input[type=text]").value.trim(), d = r.querySelector("input[type=date]").value; if(!t) return; var g = all("goal", "hh").filter(function(x){ return x.id === el.dataset.id; })[0]; put({ type:"ms", id:"ms-" + uid(), space:"hh", goalId:el.dataset.id, areaId:g ? g.areaId : "", text:t, due:d, done:false }); renderGoals(); },
+    "ms-tick": function(el){ var m = get("hh", el.dataset.id); if(!m) return; patch(m, { done:!m.done, doneAt:!m.done ? today() : "" }); buzz(15); render(); },
+    "ms-del": function(el){ var m = get("hh", el.dataset.id); if(m && confirm("Delete this milestone?")){ del(m); renderGoals(); } },
+    "rv-week": function(el){ var cur = rvWeek || mondayOf(); var n = dayKey(addDays(parseDay(cur), 7 * (+el.dataset.d))); rvWeek = n > mondayOf() ? mondayOf() : n; renderReview(); },
+    "rv-open": function(el){ rvWeek = el.dataset.week; renderReview(); window.scrollTo(0, 0); },
+    "rv-save": function(el){ saveReview(el.dataset.week); },
+    "sync-now": function(){ sync().then(function(){ renderSettings(); toast(syncState === "ok" ? "Up to date" : (syncErr || "Couldn't sync")); }); },
+    "sign-in-sheet": function(){ signInSheet(); },
+    "si-who": function(el){ siWho = el.dataset.uid; signInSheet(); },
+    "sign-in": function(){
+      var p = ($("si-pin") || {}).value || "", err = $("si-err");
+      if(!siWho || !/^\d{4,8}$/.test(p)){ err.textContent = "Enter your PIN (4–8 digits)."; return; }
+      err.style.color = "var(--ink-dim)"; err.textContent = "Signing in…";
+      signIn($("si-api").value, siWho, p).then(function(){ closeSheet(); toast("Signed in — saving to the cloud"); }, function(x){ err.style.color = "var(--danger)"; err.textContent = x.message; });
+    },
+    "sign-out": function(){ if(confirm("Sign out? Anything not yet sent will be lost from this device.")) signOut(); },
+    "dur-plan": function(el){ durPlan = el.dataset.k; renderSettings(); },
+    "dur-reset": function(){ var o = Object.assign({}, getOverrides()); delete o[durPlan]; setPref("ov", o); renderSettings(); toast("Durations reset"); },
+    "oldaff-edit": function(){ openSheet('<h2>Character affirmations</h2><textarea id="oa-text" spellcheck="false">' + esc((prefs().oldAff || DEFAULT_AFFIRMATIONS).join("\n")) + '</textarea><div class="help">One per line. A short line with no full stop shows as a heading. Wrap a word in **double asterisks** to highlight it.</div><div class="btn-row"><button class="btn btn-soft" data-act="oa-reset">Restore defaults</button><button class="btn btn-ink" data-act="oa-save">Save</button></div>'); },
+    "oa-save": function(){ var l = $("oa-text").value.split("\n").map(function(x){ return x.trim(); }).filter(Boolean); setPref("oldAff", l.length ? l : DEFAULT_AFFIRMATIONS.slice()); closeSheet(); toast("Saved"); },
+    "oa-reset": function(){ $("oa-text").value = DEFAULT_AFFIRMATIONS.join("\n"); },
+    "folio-sheet": function(){ folioSheet(); },
+    "folio-import": function(){ folioImport(); },
+    "export": function(){
+      var data = { app:"Miracle Morning", version:APP_VERSION, exportedAt:new Date().toISOString(), items:Object.keys(store).map(function(k){ return store[k]; }) };
+      var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type:"application/json" })); a.download = "miracle-morning-backup-" + today() + ".json"; a.click();
+    },
+    "install": function(){ if(!installEvt) return; installEvt.prompt(); installEvt.userChoice.then(function(){ installEvt = null; renderInstall(); }); },
+    "sheet-close": function(){ closeSheet(); }
+  };
+  document.addEventListener("click", function(e){
+    var el = e.target.closest("[data-act]"); if(!el) return;
+    var f = actions[el.dataset.act]; if(f){ e.preventDefault(); f(el, e); }
+  });
+  $("sheet-bg").addEventListener("click", closeSheet);
+  document.addEventListener("change", function(e){
+    var el = e.target, c = el.dataset.chg;
+    if(el.id === "folio-file" && el.files[0]) folioPreview(el.files[0]);
+    if(el.matches && el.matches('select[data-f="kind"]')){ var m = el.closest("[data-gid]").querySelector("[data-meas]"); if(m) m.style.display = el.value === "measured" ? "" : "none"; }
+    if(!c) return;
+    if(c === "wake") setWake(el.checked);
+    if(c === "sound"){ setSound(el.checked); if(el.checked) playChime("soft"); }
+    if(c === "vibe"){ setVibe(el.checked); if(el.checked) buzz(60); }
+    if(c === "oldaff") setPref("showOldAff", el.checked);
+    if(c === "name"){ var v = el.value.trim() || "Andrew"; setPref("name", v); if(signedIn()){ cfg.user.name = v; saveCfg(); } renderHero(currentView); }
+    if(c === "dur"){ var mins = parseFloat(el.value); if(isNaN(mins) || mins <= 0) mins = 0.25; var sec = Math.round(mins*60), o = JSON.parse(JSON.stringify(getOverrides())); o[durPlan] = o[durPlan] || {}; o[durPlan][el.dataset.name] = sec; setPref("ov", o); el.value = Math.round(sec/60*100)/100; }
+  });
+  document.addEventListener("keydown", function(e){ if(e.key === "Enter" && e.target.id === "si-pin") actions["sign-in"](); });
+  document.addEventListener("input", function(e){ var box = e.target.closest && e.target.closest(".s-scribe"); if(box && e.target.dataset.sc) scribeSave(box); });
+  document.querySelectorAll("#tabbar button").forEach(function(b){ b.addEventListener("click", function(){ rvWeek = null; showView(b.dataset.view); }); });
+  $("btn-settings").addEventListener("click", function(){ showView("more"); });
+  $("btn-start").addEventListener("click", function(){ startSession(getPlanKey()); });
+  setInterval(function(){ if(currentView === "home" && !session) $("plan-ends").textContent = clockTime(Date.now() + total(getSteps(getPlanKey()))*1000); }, 30000);
+  window.addEventListener("online", function(){ if(signedIn()) sync(); });
+  window.addEventListener("pagehide", persistNow);
+
+  /* ================= Start ================= */
+  migrateV2();
+  seedGoals();
+  setSyncState(signedIn() ? "wait" : "off");
   showView("home");
   syncWake();
-  // Some browsers only grant the wake lock after a tap — retry on first touch.
   document.addEventListener("pointerdown", function once(){ syncWake(); document.removeEventListener("pointerdown", once); }, {passive:true});
-
-  if("serviceWorker" in navigator && location.protocol === "https:"){
-    navigator.serviceWorker.register("sw.js").catch(function(){});
-  }
+  if(signedIn()){ sync(); setInterval(function(){ if(document.visibilityState === "visible") sync(); }, 30000); }
+  if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function(){});
 })();
 </script>
 </body>
