@@ -1,7 +1,7 @@
 # Miracle Morning App — Handover
 
-**Live site:** https://asbfmckay.github.io/asm-miracle-morning/
-**Repo:** github.com/asbfmckay/asm-miracle-morning (GitHub Pages, served from `main`, repo root)
+**Live site:** https://asbfmckay.github.io/life-app/ (was /asm-miracle-morning/ until the v3.1 rename)
+**Repo:** github.com/asbfmckay/life-app (renamed from asm-miracle-morning; GitHub Pages, served from `main`, repo root). The local folder keeps its old name `asm-miracle-morning`, which is fine.
 **API Worker:** `life-api` on your own Cloudflare account (andrew.bronnia@gmail.com, same as Folio/Brighta) → https://life-api.andrew-bronnia.workers.dev
 **Spec:** "Life App — Feature Spec" (Claude Doc). Goals seeded from "Andrew's Miracle Morning — Goals, Affirmations & Visualisations".
 **Local folder:** `App Projects\Miracle Morning App`
@@ -16,7 +16,30 @@ Miracle Morning App\
     worker\worker.js, worker\wrangler.toml   ← the API Worker (deployed separately, see below)
 ```
 
-## Where we are: Phase 1 (Core) built — v3.1.0 (9 Nov 2026). Waiting on your go-ahead for Phase 2.
+## Where we are: Phase 2 (Reading) built — v3.2.0 (10 Nov 2026). Waiting on your go-ahead for Phase 3 (Sharing).
+
+### v3.2.0 (10 Nov 2026) — Phase 2: Reading
+- **New Reading tab** (tabs: Today · Reading · Habits · Goals · Review).
+- **Morning Bible (yours):** pick a plan — the same six as the Holy Bible app (whole Bible in a year, OT & NT together, NT in 90 days, chronological, Gospels in 30 days, Psalms & Proverbs) or book by book at 1–5 chapters a day. Shows today's chapters, chapters done of total, on track / N behind. Tick all, or tap each chapter. Unread chapters roll forward to the next day (nothing is skipped).
+- **Lunchtime Proverb (yours):** a random group of 5–10 verses in a row from Proverbs, new each day, the same all day on every device. Shows on Today from 11am.
+- **Tonight's Psalm (family, shared):** methodical from Psalm 1:1. Short Psalms (15 verses or fewer) are one reading; longer ones split into parts of about 10 verses; Psalm 119 by its 8-verse sections. 260 readings, then starts again. Either of you ticking it ticks it for both. "Start from a different Psalm" to jump ahead. Shows on Today from 5pm.
+- **White Book (yours):** enter the number (e.g. 1034), pages to read, 1 or 2 weeks, and first page number. It splits the pages over the days left and shows today's pages; falls behind or reads ahead, it re-spreads. "Read up to page" to correct. Earlier White Books listed.
+- **Other ministry (yours):** author, volume, pages; tick when read; read list kept with dates.
+- **Subjects for the boys (family, shared):** "Bible reading for the young" (Bible & Gospel Trust) — all 218 passages from the PDF, ticked with who and when. Next three shown; "Show the whole list" by book.
+- **Holy Bible app link:** the book button on each reading opens the Holy Bible app at that passage (verses highlighted). Its **✓ Done · back to Life App** bar brings you back and ticks it (and marks the chapters read in the Bible app too). Address: https://holy-bible-app.pages.dev/ (change at the bottom of the Reading tab).
+- **Today screen:** "Reading today" card (Morning Bible, Proverb after 11am, Psalm after 5pm, White Book). **Session Reading step** shows the morning chapters and today's White Book pages with the same buttons.
+- Reminders are the time-of-day cards above; phone notifications are not built (needs push — later if wanted).
+
+**Holy Bible app v1.7.0** (separate project, `Holy Bible App` folder): adds the Life App link bar (`LifeLink` in `src/js/main.js`). Push that repo in GitHub Desktop; Cloudflare Pages rebuilds it. No API change.
+
+### Your steps for v3.2.0
+1. GitHub Desktop → Holy Bible App repo → commit "1.7.0 Life App link" → Push.
+2. GitHub Desktop → life-app repo → commit "v3.2.0 Reading" → Push.
+3. Open the app → Reading → choose your morning plan.
+
+### v3.1.0 (9 Nov 2026) — repo renamed to life-app; habits removed from Folio
+- Repo renamed to `life-app` (your choice). New address https://asbfmckay.github.io/life-app/. `manifest.json` id is now `/life-app/`, so reinstall the app on the phone. Saved data on this phone carries over (same site).
+- **Phase 1 complete:** Habits removed from Folio (Folio v104, app-only, nothing deleted, Folio's Habits link points here). You hadn't set habits up in Folio, so there was nothing to import.
 
 ### v3.1.0 (9 Nov 2026) — PIN sign-in
 - Sign-in is now: tap **Andrew** or **Bronnia**, enter your PIN. Email/password removed.
@@ -62,23 +85,24 @@ npx wrangler secret put PIN_BRONNIA
 npx wrangler deploy
 ```
    Type each PIN (4–8 digits) when asked. Check https://life-api.andrew-bronnia.workers.dev/health shows `"ok":true` and both PINs `"set":true`.
-3. Push the app: GitHub Desktop → "v3.1.0 Life App phase 1" → Commit to main → Push origin.
-4. In the app: Settings (top right) → Sign in → Andrew → PIN.
-5. Folio → Settings → Download a backup. Then here: Settings → Move habits from Folio → choose the file → check the names under "Whose ticks are these?" → Import.
-6. Check the habits and history look right, then tell me and I'll remove the habit tracker from Folio (the last Phase 1 item).
+3. Rename the repo: github.com/asbfmckay/asm-miracle-morning → **Settings** → Repository name → `life-app` → Rename. GitHub Desktop keeps working (it follows the rename).
+4. Push the app: GitHub Desktop → "v3.1.0 Life App phase 1" → Commit to main → Push origin. Live at https://asbfmckay.github.io/life-app/ in approx 1 minute (check Settings → Pages still shows it switched on).
+5. On your phone: uninstall the old Miracle Morning app, open the new address in Chrome, install it again. Settings → Sign in → Andrew → PIN.
+6. Folio: push it in GitHub Desktop (v104 — Habits removed). No wrangler step.
 
 If the address differs from life-api.andrew-bronnia.workers.dev, enter it under Sign in → Server address and tell me so I update the default.
 
 ### Still to do
-- **Phase 1 last step:** remove Habits from Folio after you've checked the import.
-- Habit reminders (Folio had a daily reminder time) aren't in yet — needs phone notifications; can add with Reading reminders in Phase 2.
-- Phase 2 Reading · Phase 3 Sharing · Phase 4 Links · Phase 5 Brighta and polish (see spec).
+- Phone notifications (habit and reading reminders) not built — needs push; ask if wanted.
+- Phase 3 Sharing · Phase 4 Links · Phase 5 Brighta and polish (see spec).
+- Bronnia's own reading plan, Proverb, White Book and ministry work now under her profile; her own goals/affirmations are Phase 3.
 
 ### Tested (in the cloud, not on your phone)
 - Old v2 data carried over (streak kept), goals seeded, editing saved, milestones, measured goal update.
 - Folio import (private + shared habit, ticks, notes, a second person's ticks kept).
 - Habit linked to a goal feeds the weekly score. Full session incl. Scribing autosave. Weekly review save.
 - Sign-in + sync against a local copy of the Worker; a second "device" signed in and got everything (habits, goals edits, milestones, family note).
+- v3.2: plan picking, Bible app round trip (open → Done → back ticks it, range highlighted), Psalm and Subjects shared between profiles, White Book private.
 - v3.1: wrong PIN refused; Andrew and Bronnia sign in on separate devices; Bronnia can't see Andrew's Scribing; Bronnia's tick on a shared habit shows on Andrew's phone; Folio ticks mapped to Bronnia.
 
 ## How it works (for future changes)
@@ -86,7 +110,9 @@ If the address differs from life-api.andrew-bronnia.workers.dev, enter it under 
 - Saved to localStorage (`life_items`), changes queued in `life_dirty`, pushed to `POST /sync`, pulled from `GET /sync?since=`. Newest `updatedAt` wins per item.
 - Worker rules: you can only read `hh` and your own `u:` space; habits only changed by their owner; habit ticks only by the person ticking. Daily snapshot of each space kept 14 days.
 - Habit tick docs keep Folio's shape: `hm-<habitId>-<uid>-<YYYY-MM>` with `d` (day → g/r/s) and `n` (day → note).
-- Bump `APP_VERSION` (index.html), `WORKER_VERSION` (worker.js) and `CACHE` (sw.js) together.
+- Reading items: `rplan` (u:, plan + `done` map "book:chapter" → date), `proverb` `pv-<date>` (u:), `psread` `ps-<round>-<idx>` (hh; idx into the fixed Psalm sequence `PSEQ`), `wb` (u:, `readTo`, `log` date → [from,to]), `ministry` (u:), `subject` `sj-<idx>` (hh; idx into `SUBJECTS`). Don't reorder `SUBJECTS` or change `PSEQ` rules without migrating ids.
+- Bible app link: `bibleUrl()` builds `<bible>/?ret=<this app>&rid=<id>[&to][&mark]#Book.c.v`; `handleReturn()` reads `#done=<rid>`.
+- Bump `APP_VERSION` (index.html), `WORKER_VERSION` (worker.js) and `CACHE` (sw.js) together. (v3.2.0 had no Worker change.)
 
 ## Files
 | File | Purpose |

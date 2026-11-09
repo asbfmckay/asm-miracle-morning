@@ -442,6 +442,24 @@
   .sc-entry b{ font-weight:500; display:block; font-size:12.5px; color:var(--ink-dim); }
   .callout{ padding:12px 16px; margin-bottom:12px; font-size:14px; line-height:1.5; background:#FBF3DC; border-color:#F1E3B8; }
 
+  /* Reading */
+  .rr{ display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line); }
+  .th-head + .rr, .rv-sec > .rr:first-child, .lbl + .rr, .area-h + .rr{ border-top:none; }
+  .rr-t{ flex:1; min-width:0; }
+  .rr-t b{ display:block; font-weight:500; font-size:15px; }
+  .rr-t > span{ display:block; font-size:13px; font-weight:300; color:var(--ink-dim); margin-top:1px; }
+  .rr.done .rr-t b{ color:var(--ink-dim); }
+  .rr .check{ --c:var(--ok); }
+  .rr-open{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#6753A6; background:color-mix(in srgb, #6753A6 11%, white); }
+  .rr-open svg{ width:19px; height:19px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .chip{ border:1px solid var(--line); background:rgba(255,255,255,.7); border-radius:999px; padding:6px 12px; font-family:inherit; font-size:13px; color:var(--ink-dim); cursor:pointer; }
+  .chip.on{ background:var(--ok); border-color:transparent; color:#fff; }
+  .preset-btn{ display:block; width:100%; text-align:left; border:1px solid var(--line); background:rgba(255,255,255,.7); border-radius:16px; padding:12px 14px; margin-top:8px; font-family:inherit; cursor:pointer; color:var(--ink); }
+  .preset-btn b{ display:block; font-weight:500; font-size:15px; } .preset-btn span{ font-size:12.5px; color:var(--ink-dim); font-weight:300; }
+  .s-read{ width:100%; margin-top:16px; padding:2px 16px; border-radius:20px; text-align:left; }
+  details summary{ cursor:pointer; padding:4px 0; }
+
   /* Sheet (bottom panel for forms) */
   #sheet-bg{ position:fixed; inset:0; background:rgba(38,36,31,.28); z-index:60; display:none; }
   #sheet{
@@ -489,6 +507,7 @@
       </div>
     </div>
     <div class="savers glass" id="savers"></div>
+    <div class="today-habits glass" id="today-reading"></div>
     <div class="today-habits glass" id="today-habits"></div>
     <div class="start-wrap" id="start-wrap">
       <button class="btn-start" id="btn-start">
@@ -498,14 +517,16 @@
     </div>
   </section>
 
+  <section class="view" id="view-reading"></section>
   <section class="view" id="view-habits"></section>
   <section class="view" id="view-goals"></section>
   <section class="view" id="view-review"></section>
   <section class="view" id="view-more"></section>
 </div>
 
-<nav class="tabbar" id="tabbar">
+<nav class="tabbar five" id="tabbar">
   <button data-view="home" class="active"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h16"/><path d="M7 18a5 5 0 0110 0"/><path d="M12 6v3M5.5 9.5l2 2M18.5 9.5l-2 2"/></svg></span>Today</button>
+  <button data-view="reading"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v13"/></svg></span>Reading</button>
   <button data-view="habits"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.2 2.2 4.8-4.7"/></svg></span>Habits</button>
   <button data-view="goals"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>Goals</button>
   <button data-view="review"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"/><path d="M8 15l3.5-4 3 2.5L19 8"/></svg></span>Review</button>
@@ -549,7 +570,7 @@
 <script>
 (function(){
   "use strict";
-  var APP_VERSION = "3.1.0";
+  var APP_VERSION = "3.2.0";
   // The API Worker (Cloudflare). Change in Settings → Account if it ever moves.
   var DEFAULT_API = "https://life-api.andrew-bronnia.workers.dev";
 
@@ -588,7 +609,7 @@
       { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming", duration:300,  type:"affirmations" },
       { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:300,  type:"visual", instructions:"Picture today going well — the conversations, the work, the way you want to show up." },
       { id:"exercise", name:"Exercise",      subtitle:"Move your body",              duration:1200, type:"timer", instructions:"Twenty minutes of movement. Walk, stretch, train — get the blood moving.", link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
-      { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:1200, type:"timer", instructions:"Twenty minutes in the Word and the Ministry.", link:{label:"Reading plans", soon:true} },
+      { id:"reading",  name:"Reading",       subtitle:"The Word and the ministry",   duration:1200, type:"reading" },
       { id:"scribing", name:"Scribing",      subtitle:"Impressions",                 duration:300,  type:"scribe" }
     ]},
     "10": { label:"10 min · Fast", steps:[
@@ -596,7 +617,7 @@
       { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming", duration:60,  type:"affirmations" },
       { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:60,  type:"visual", instructions:"One minute. Picture today going well." },
       { id:"exercise", name:"Exercise",      subtitle:"20 push-ups · 20 sit-ups · 20 dips", duration:300, type:"list", instructions:["20 × Push-ups","20 × Sit-ups","20 × Dips"], link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
-      { id:"reading",  name:"Reading",       subtitle:"Feed your mind",              duration:60,  type:"timer", instructions:"One minute in the Word.", link:{label:"Reading plans", soon:true} },
+      { id:"reading",  name:"Reading",       subtitle:"The Word and the ministry",   duration:60,  type:"reading" },
       { id:"scribing", name:"Scribing",      subtitle:"Impressions",                 duration:60,  type:"scribe" }
     ]}
   };
@@ -926,7 +947,8 @@
       t.textContent = (h < 12 ? "Good morning" : (h < 18 ? "Good afternoon" : "Good evening")) + ", " + getName();
       var done = Object.keys(doneToday()).length;
       s.textContent = done === 6 ? "All six S.A.V.E.R.S done today. Brilliant." : (done ? done + " of 6 S.A.V.E.R.S done today." : "Win the morning, win the day.");
-    } else if(view === "habits"){ t.textContent = "Habits"; s.textContent = "Small things, done daily."; }
+    } else if(view === "reading"){ t.textContent = "Reading"; s.textContent = "The Word and the ministry, day by day."; }
+    else if(view === "habits"){ t.textContent = "Habits"; s.textContent = "Small things, done daily."; }
     else if(view === "goals"){ t.textContent = "Goals"; s.textContent = "From the 10-year vision down to today."; }
     else if(view === "review"){ t.textContent = "Weekly review"; s.textContent = "Look back, then set the week up."; }
     else { t.textContent = "Settings"; s.textContent = "Make it yours."; }
@@ -936,7 +958,7 @@
   var currentView = "home";
   function showView(name){
     currentView = name;
-    ["home","habits","goals","review","more"].forEach(function(v){ $("view-"+v).classList.toggle("active", v === name); });
+    ["home","reading","habits","goals","review","more"].forEach(function(v){ $("view-"+v).classList.toggle("active", v === name); });
     document.querySelectorAll("#tabbar button").forEach(function(b){ b.classList.toggle("active", b.dataset.view === name); });
     var hero = $("hero"); hero.classList.remove("swap"); void hero.offsetWidth; hero.classList.add("swap");
     render(); window.scrollTo(0,0);
@@ -944,6 +966,7 @@
   function render(){
     renderHero(currentView);
     if(currentView === "home") renderHome();
+    if(currentView === "reading") renderReading();
     if(currentView === "habits") renderHabits();
     if(currentView === "goals") renderGoals();
     if(currentView === "review") renderReview();
@@ -970,6 +993,7 @@
         '<div class="saver-text"' + (s.id === "scribing" ? ' data-act="scribe-open" style="cursor:pointer"' : '') + '><div class="saver-name">'+s.name+'</div><div class="saver-sub">'+esc(s.subtitle)+' · '+fmtDur(s.duration)+'</div></div>'+
         '<span style="--c:'+HEX[s.id]+'">' + checkBtn(!!done[s.id], "saver-tick", 'data-id="'+s.id+'"', "Mark "+s.name+" done") + '</span></div>';
     }).join("");
+    renderTodayReading();
     var hs = habits().filter(function(h){ return hbTracks(h, myUid()); }), td = today();
     $("today-habits").innerHTML = '<div class="th-head"><b>Today\'s habits</b><button class="link-btn" data-act="go" data-v="habits">' + (hs.length ? "All habits" : "Add habits") + '</button></div>' +
       (hs.length ? hs.map(function(h){
@@ -1281,6 +1305,305 @@
     lsSet("life_folio_imported", String(Date.now()));
   }
 
+  /* ================= Reading (Phase 2) ================= */
+  // Book names and verse counts per chapter (J. N. Darby New Translation, from the Holy Bible app's data).
+  var BOOKS = [["Genesis",[31,25,24,26,32,22,24,22,29,32,32,20,18,24,21,16,27,33,38,18,34,24,20,67,34,35,46,22,35,43,55,32,20,31,29,43,36,30,23,23,57,38,34,34,28,34,31,22,33,26]],["Exodus",[22,25,22,31,23,30,25,32,35,29,10,51,22,31,27,36,16,27,25,26,36,31,33,18,40,37,21,43,46,38,18,35,23,35,35,38,29,31,43,38]],["Leviticus",[17,16,17,35,19,30,38,36,24,20,47,8,59,57,33,34,16,30,37,27,24,33,44,23,55,46,34]],["Numbers",[54,34,51,49,31,27,89,26,23,36,35,16,33,45,41,50,13,32,22,29,35,41,30,25,18,65,23,31,40,16,54,42,56,29,34,13]],["Deuteronomy",[46,37,29,49,33,25,26,20,29,22,32,32,18,29,23,22,20,22,21,20,23,30,25,22,19,19,26,68,29,20,30,52,29,12]],["Joshua",[18,24,17,24,15,27,26,35,27,43,23,24,33,15,63,10,18,28,51,9,45,34,16,33]],["Judges",[36,23,31,24,31,40,25,35,57,18,40,15,25,20,20,31,13,31,30,48,25]],["Ruth",[22,23,18,22]],["1 Samuel",[28,36,21,22,12,21,17,22,27,27,15,25,23,52,35,23,58,30,24,42,15,23,29,22,44,25,12,25,11,31,13]],["2 Samuel",[27,32,39,12,25,23,29,18,13,19,27,31,39,33,37,23,29,33,43,26,22,51,39,25]],["1 Kings",[53,46,28,34,18,38,51,66,28,29,43,33,34,31,34,34,24,46,21,43,29,53]],["2 Kings",[18,25,27,44,27,33,20,29,37,36,21,21,25,29,38,20,41,37,37,21,26,20,37,20,30]],["1 Chronicles",[54,55,24,43,26,81,40,40,44,14,47,40,14,17,29,43,27,17,19,8,30,19,32,31,31,32,34,21,30]],["2 Chronicles",[17,18,17,22,14,42,22,18,31,19,23,16,22,15,19,14,19,34,11,37,20,12,21,27,28,23,9,27,36,27,21,33,25,33,27,23]],["Ezra",[11,70,13,24,17,22,28,36,15,44]],["Nehemiah",[11,20,32,23,19,19,73,18,38,39,36,47,31]],["Esther",[22,23,15,17,14,14,10,17,32,3]],["Job",[22,13,26,21,27,30,21,22,35,22,20,25,28,22,35,22,16,21,29,29,34,30,17,25,6,14,23,28,25,31,40,22,33,37,16,33,24,41,30,24,34,17]],["Psalms",[6,12,8,8,12,10,17,9,20,18,7,8,6,7,5,11,15,50,14,9,13,31,6,10,22,12,14,9,11,12,24,11,22,22,28,12,40,22,13,17,13,11,5,26,17,11,9,14,20,23,19,9,6,7,23,13,11,11,17,12,8,12,11,10,13,20,7,35,36,5,24,20,28,23,10,12,20,72,13,19,16,8,18,12,13,17,7,18,52,17,16,15,5,23,11,13,12,9,9,5,8,28,22,35,45,48,43,13,31,7,10,10,9,8,18,19,2,29,176,7,8,9,4,8,5,6,5,6,8,8,3,18,3,3,21,26,9,8,24,13,10,7,12,15,21,10,20,14,9,6]],["Proverbs",[33,22,35,27,23,35,27,36,18,32,31,28,25,35,33,33,28,24,29,30,31,29,35,34,28,28,27,28,27,33,31]],["Ecclesiastes",[18,26,22,16,20,12,29,17,18,20,10,14]],["Song of Songs",[17,17,11,16,16,13,13,14]],["Isaiah",[31,22,26,6,30,13,25,22,21,34,16,6,22,32,9,14,14,7,25,6,17,25,18,23,12,21,13,29,24,33,9,20,24,17,10,22,38,22,8,31,29,25,28,28,25,13,15,22,26,11,23,15,12,17,13,12,21,14,21,22,11,12,19,12,25,24]],["Jeremiah",[19,37,25,31,31,30,34,22,26,25,23,17,27,22,21,21,27,23,15,18,14,30,40,10,38,24,22,17,32,24,40,44,26,22,19,32,21,28,18,16,18,22,13,30,5,28,7,47,39,46,64,34]],["Lamentations",[22,22,66,22,22]],["Ezekiel",[28,10,27,17,17,14,27,18,11,22,25,28,23,23,8,63,24,32,14,49,32,31,49,27,17,21,36,26,21,26,18,32,33,31,15,38,28,23,29,49,26,20,27,31,25,24,23,35]],["Daniel",[21,49,30,37,31,28,28,27,27,21,45,13]],["Hosea",[11,23,5,19,15,11,16,14,17,15,12,14,16,9]],["Joel",[20,32,21]],["Amos",[15,16,15,13,27,14,17,14,15]],["Obadiah",[21]],["Jonah",[17,10,10,11]],["Micah",[16,13,12,13,15,16,20]],["Nahum",[15,13,19]],["Habakkuk",[17,20,19]],["Zephaniah",[18,15,20]],["Haggai",[15,23]],["Zechariah",[21,13,10,14,11,15,14,23,17,12,17,14,9,21]],["Malachi",[14,17,18,6]],["Matthew",[25,23,17,25,48,34,29,34,38,42,30,50,58,36,39,28,27,35,30,34,46,46,39,51,46,75,66,20]],["Mark",[45,28,35,41,43,56,37,38,50,52,33,44,37,72,47,20]],["Luke",[80,52,38,44,39,49,50,56,62,42,54,59,35,35,32,31,37,43,48,47,38,71,56,53]],["John",[51,25,36,54,47,71,53,59,41,42,57,50,38,31,27,33,26,40,42,31,25]],["Acts",[26,47,26,37,42,15,60,40,43,48,30,25,52,28,41,40,34,28,41,38,40,30,35,27,27,32,44,31]],["Romans",[32,29,31,25,21,23,25,39,33,21,36,21,14,23,33,27]],["1 Corinthians",[31,16,23,21,13,20,40,13,27,33,34,31,13,40,58,24]],["2 Corinthians",[24,17,18,18,21,18,16,24,15,18,33,21,14]],["Galatians",[24,21,29,31,26,18]],["Ephesians",[23,22,21,32,33,24]],["Philippians",[30,30,21,23]],["Colossians",[29,23,25,18]],["1 Thessalonians",[10,20,13,18,28]],["2 Thessalonians",[12,17,18]],["1 Timothy",[20,15,16,16,25,21]],["2 Timothy",[18,26,17,22]],["Titus",[16,15,15]],["Philemon",[25]],["Hebrews",[14,18,19,16,14,20,28,13,28,39,40,29,25]],["James",[27,26,18,17,20]],["1 Peter",[25,25,22,19,14]],["2 Peter",[21,22,18]],["1 John",[10,29,24,21,21]],["2 John",[13]],["3 John",[14]],["Jude",[25]],["Revelation",[20,29,22,11,14,17,17,13,21,11,19,17,18,20,8,21,18,24,21,15,27,21]]];
+  var BIBLE_DEFAULT = "https://holy-bible-app.pages.dev/";
+  var CHRONO = ['Genesis','Job','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel','1 Chronicles','Psalms','1 Kings','Proverbs','Ecclesiastes','Song of Songs','2 Chronicles','2 Kings','Jonah','Amos','Hosea','Isaiah','Micah','Nahum','Zephaniah','Habakkuk','Joel','Jeremiah','Lamentations','Obadiah','Ezekiel','Daniel','Haggai','Zechariah','Esther','Ezra','Nehemiah','Malachi','Matthew','Mark','Luke','John','Acts','James','Galatians','1 Thessalonians','2 Thessalonians','1 Corinthians','2 Corinthians','Romans','Ephesians','Philippians','Colossians','Philemon','1 Timothy','Titus','1 Peter','Hebrews','2 Timothy','2 Peter','Jude','1 John','2 John','3 John','Revelation'];
+  function range(a, z){ var r = []; for(var i = a; i <= z; i++) r.push(i); return r; }
+  // Same starting plans as the Holy Bible app
+  var RPRESETS = [
+    { k:"bible-year", name:"Whole Bible in a year", sub:"1,189 chapters · about 3–4 a day", books:range(0, 65), days:365 },
+    { k:"blend-year", name:"Old & New Testament together", sub:"A portion of each every day for a year", books:range(0, 65), days:365, order:"blend" },
+    { k:"nt-90", name:"New Testament in 90 days", sub:"260 chapters · about 3 a day", books:range(39, 65), days:90 },
+    { k:"chrono-year", name:"Chronological, in a year", sub:"Books in the order events happened (approximate)", books:range(0, 65), days:365, order:"chrono" },
+    { k:"gospels-30", name:"The four Gospels in 30 days", sub:"89 chapters · about 3 a day", books:[39, 40, 41, 42], days:30 },
+    { k:"psalms-prov", name:"Psalms & Proverbs in two months", sub:"181 chapters · about 3 a day", books:[18, 19], days:60 }
+  ];
+  // "Bible reading for the young" — subject list (© Bible & Gospel Trust, 2017), for family use.
+  var SUBJECTS = [
+    ["Genesis","Adam and Eve","Genesis 3:1–19"],["Genesis","Noah's ark","Genesis 6:9–22"],["Genesis","The flood","Genesis 7:1–24; 8:1–14"],["Genesis","The rainbow","Genesis 9:8–17"],["Genesis","The tower of Babel","Genesis 11:1–9"],["Genesis","Lot and Lot's wife","Genesis 19:12–26"],["Genesis","Abraham and Isaac","Genesis 22:1–14"],["Genesis","Esau and Jacob: the birthright","Genesis 25:19–34"],["Genesis","Esau and Jacob: the blessing","Genesis 27:1–38"],["Genesis","Joseph is sold into Egypt","Genesis 37:3–36"],["Genesis","Pharaoh's dream","Genesis 41:1–45"],
+    ["Exodus","Moses & Pharaoh's daughter","Exodus 2:1–10"],["Exodus","Moses and the thorn-bush","Exodus 3:1–6"],["Exodus","Plagues in Egypt: blood","Exodus 7:14–25"],["Exodus","Plagues in Egypt: frogs","Exodus 8:1–15"],["Exodus","Plagues in Egypt: gnats","Exodus 8:16–19"],["Exodus","Plagues in Egypt: dog-flies","Exodus 8:20–32"],["Exodus","Plagues in Egypt: cattle","Exodus 9:1–7"],["Exodus","Plagues in Egypt: boils","Exodus 9:8–12"],["Exodus","Plagues in Egypt: hail","Exodus 9:13–35"],["Exodus","Plagues in Egypt: locusts","Exodus 10:1–20"],["Exodus","Plagues in Egypt: darkness","Exodus 10:21–29"],["Exodus","The passover lamb","Exodus 12:1–13"],["Exodus","Plagues in Egypt: smiting of the firstborn","Exodus 12:29–36"],["Exodus","The Egyptians' pursuit","Exodus 14:1–14"],["Exodus","Crossing the Red Sea","Exodus 14:15–31"],["Exodus","The manna in the wilderness","Exodus 16:13–31"],["Exodus","The battle with Amalek","Exodus 17:8–16"],["Exodus","The ten commandments","Exodus 20:1–21"],["Exodus","The Hebrew bondman","Exodus 21:1–6"],
+    ["Numbers","The rebellion of Korah","Numbers 16:1–11, 25–35"],["Numbers","The serpent of brass","Numbers 21:4–9"],["Numbers","Balaam and the ass","Numbers 22:21–35"],
+    ["Joshua","Rahab and the spies","Joshua 2:1–21"],["Joshua","Crossing the Jordan","Joshua 3:7–17; 4:1–18"],["Joshua","The walls of Jericho","Joshua 6:1–25"],["Joshua","Achan and the accursed thing","Joshua 7:10–26"],["Joshua","The ambush of Ai","Joshua 8:3–29"],
+    ["Judges","Ehud and Eglon","Judges 3:15–25"],["Judges","Jael and Sisera","Judges 4:14–24"],["Judges","The reduction of Gideon's army","Judges 7:1–8"],["Judges","Gideon defeats Midian","Judges 7:9–25"],["Judges","Samson and the lion","Judges 14:5–9"],["Judges","Samson and Delilah","Judges 16:4–22"],
+    ["1 Samuel","Jehovah calls Samuel","1 Samuel 3:1–18"],["1 Samuel","Samuel anoints David","1 Samuel 16:1–13"],["1 Samuel","David and Goliath","1 Samuel 17:19–54"],["1 Samuel","David spares Saul's life (1)","1 Samuel 24:1–19"],["1 Samuel","David spares Saul's life (2)","1 Samuel 26:1–25"],
+    ["1 Kings","Solomon and the living child","1 Kings 3:16–28"],
+    ["2 Kings","Elisha and the pot of oil","2 Kings 4:1–7"],["2 Kings","Elisha and the Shunammite","2 Kings 4:8–37"],["2 Kings","Naaman and the captive maid","2 Kings 5:1–14"],["2 Kings","The four leprous men","2 Kings 7:3–15"],
+    ["Isaiah","Isaiah sees the Lord","Isaiah 6:1–7"],["Isaiah","The Man of sorrows","Isaiah 52:13–15; 53:1–12"],
+    ["Jeremiah","Jeremiah in the dungeon","Jeremiah 38:1–13"],["Ezekiel","Ezekiel lies upon his side","Ezekiel 4:4–17"],
+    ["Daniel","The burning fiery furnace","Daniel 3:8–30"],["Daniel","Daniel in the lions' den","Daniel 6:4–24"],["Jonah","Jonah and the great fish","Jonah 1:1–17; 2:1, 10"],
+    ["Matthew","The birth of Jesus","Matthew 1:18–25; 2:1–15, 19–23"],["Matthew","The temptations","Matthew 4:1–11"],["Matthew","Jesus calls the disciples","Matthew 4:18–22"],["Matthew","Jesus rebukes the sea","Matthew 8:23–27"],["Matthew","Jesus heals the demoniacs","Matthew 8:28–34"],["Matthew","The parable of the sower","Matthew 13:1–9, 18–23"],["Matthew","The feeding of the five thousand","Matthew 14:13–21"],["Matthew","Jesus walks on the sea","Matthew 14:22–33"],["Matthew","Jesus calls a little child","Matthew 18:1–6"],["Matthew","Jesus enters Jerusalem","Matthew 21:1–11"],["Matthew","The ten virgins","Matthew 25:1–13"],["Matthew","Gethsemane","Matthew 26:36–46"],["Matthew","The betrayal and seizing of Jesus","Matthew 26:47–56"],["Matthew","Jesus before the high priest","Matthew 26:57–68"],["Matthew","Peter's denials","Matthew 26:69–75"],["Matthew","Jesus before Pilate","Matthew 27:11–26"],["Matthew","The soldiers' mockery","Matthew 27:27–31"],["Matthew","The crucifixion of Jesus","Matthew 27:32–54"],["Matthew","The burial of Jesus","Matthew 27:57–61"],["Matthew","The resurrection of Jesus","Matthew 28:1–10"],
+    ["Mark","Jesus heals the man in the synagogue and Peter's mother-in-law","Mark 1:21–31"],["Mark","Jesus heals the paralytic","Mark 2:1–12"],["Mark","The parable of the sower","Mark 4:1–20"],["Mark","Jesus heals the demoniac","Mark 5:1–20"],["Mark","Jesus heals Jairus's daughter and the woman who touched His clothes","Mark 5:21–43"],["Mark","The Syrophenician woman","Mark 7:24–30"],["Mark","The feeding of the four thousand","Mark 8:1–9"],["Mark","The mount of transfiguration","Mark 9:2–13"],["Mark","The father who brought his son to Jesus","Mark 9:14–27"],["Mark","The man who went away grieved","Mark 10:17–31"],["Mark","The parable of the man who planted a vineyard","Mark 12:1–12"],["Mark","The woman with the alabaster flask","Mark 14:1–9"],["Mark","The last supper","Mark 14:12–26"],["Mark","Gethsemane","Mark 14:32–42"],["Mark","The betrayal and seizing of Jesus","Mark 14:43–52"],["Mark","Jesus before the high priest","Mark 14:53–65"],["Mark","Peter's denials","Mark 14:66–72"],["Mark","Jesus before Pilate","Mark 15:1–15"],["Mark","The soldiers' mockery","Mark 15:16–20"],["Mark","The crucifixion of Jesus","Mark 15:21–41"],["Mark","The burial of Jesus","Mark 15:42–47"],["Mark","The young man in white in the tomb","Mark 16:1–8"],
+    ["Luke","Zacharias, Elizabeth and Mary","Luke 1:5–80"],["Luke","The birth of Jesus","Luke 2:1–20"],["Luke","The Child Jesus brought to Jerusalem","Luke 2:22–40"],["Luke","Jesus at the age of twelve","Luke 2:41–52"],["Luke","John the baptist","Luke 3:1–14"],["Luke","The baptism of Jesus","Luke 3:15–22"],["Luke","The temptations","Luke 4:1–13"],["Luke","Jesus' preaching at Nazareth","Luke 4:16–32"],["Luke","Jesus heals the man in the synagogue and Peter's mother-in-law","Luke 4:33–39"],["Luke","Peter and the haul of fishes","Luke 5:1–11"],["Luke","Jesus heals the paralytic","Luke 5:17–26"],["Luke","Jesus heals the man with the withered hand","Luke 6:6–11"],["Luke","Jesus heals the centurion's bondman","Luke 7:1–10"],["Luke","Jesus raises the widow's dead son","Luke 7:11–17"],["Luke","The woman with the alabaster box","Luke 7:36–50"],["Luke","Jesus rebukes the wind","Luke 8:22–25"],["Luke","Jesus heals the demoniac","Luke 8:26–39"],["Luke","Jesus heals Jairus's daughter and the woman who touched His clothes","Luke 8:40–56"],["Luke","The feeding of the five thousand","Luke 9:10–17"],["Luke","The mount of transfiguration","Luke 9:28–36"],["Luke","The good Samaritan","Luke 10:25–37"],["Luke","Jesus teaches the disciples to pray","Luke 11:1–4"],["Luke","Jesus heals the woman who was bent together","Luke 13:10–17"],["Luke","The great supper","Luke 14:15–24"],["Luke","Joy in heaven for repenting sinners","Luke 15:1–10"],["Luke","The prodigal son","Luke 15:11–32"],["Luke","The rich man and the poor man","Luke 16:19–31"],["Luke","The ten leprous men","Luke 17:11–19"],["Luke","The parable of the two men who went up into the temple to pray","Luke 18:9–14"],["Luke","The rich ruler","Luke 18:18–30"],["Luke","Jesus heals the blind beggar","Luke 18:35–43"],["Luke","Zacchæus","Luke 19:1–10"],["Luke","Jesus sends for the colt","Luke 19:28–36"],["Luke","Jesus enters Jerusalem","Luke 19:37–44"],["Luke","Jesus clears the temple","Luke 19:45, 46"],["Luke","Gethsemane","Luke 22:39–46"],["Luke","The betrayal and seizing of Jesus","Luke 22:47–53"],["Luke","Peter's denials","Luke 22:54–62"],["Luke","Jesus before the high priest","Luke 22:66–71"],["Luke","Jesus before Pilate","Luke 23:1–25"],["Luke","The crucifixion of Jesus","Luke 23:26–38"],["Luke","The malefactor saved","Luke 23:39–43"],["Luke","The death of Jesus","Luke 23:44–49"],["Luke","The burial of Jesus","Luke 23:50–56"],["Luke","The women come to the tomb and find the Lord has risen","Luke 24:1–12"],["Luke","The two going to Emmaüs","Luke 24:13–35"],["Luke","The Lord appears to the disciples","Luke 24:36–53"],
+    ["John","The Word became flesh","John 1:1–18"],["John","The disciples abide with Jesus","John 1:35–42"],["John","Nathanael meets Jesus","John 1:43–51"],["John","Jesus makes the water into wine","John 2:1–12"],["John","Jesus clears the temple","John 2:13–22"],["John","Nicodemus comes to Jesus","John 3:1–21"],["John","The woman at the well","John 4:4–30, 39–42"],["John","The courtier in Capernaum","John 4:46–54"],["John","The infirm man at Bethesda","John 5:1–16"],["John","The feeding of the five thousand","John 6:1–13"],["John","Jesus walks on the sea","John 6:16–21"],["John","Jesus heals the blind man","John 9:1–38"],["John","The good Shepherd","John 10:1–16"],["John","The death and resurrection of Lazarus","John 11:1–44"],["John","Mary anoints the feet of Jesus","John 12:1–11"],["John","Jesus washes the disciples' feet","John 13:1–15"],["John","Jesus' prayer to the Father","John 17:1–26"],["John","The betrayal and seizing of Jesus","John 18:1–11"],["John","Peter's denials","John 18:12–27"],["John","Jesus before Pilate","John 18:28–40; 19:1–16"],["John","The crucifixion of Jesus","John 19:17–24"],["John","The death of Jesus","John 19:25–37"],["John","The burial of Jesus","John 19:38–42"],["John","Jesus appears to Mary","John 20:1–18"],["John","Jesus appears to the disciples","John 20:19–29"],["John","Jesus appears to the disciples on the fishing expedition","John 21:1–14"],
+    ["Acts","The forty days and the ascension","Acts 1:1–11"],["Acts","Pentecost","Acts 2:1–13"],["Acts","Peter's first recorded preaching","Acts 2:14–41"],["Acts","The man at the beautiful gate of the temple","Acts 3:1–11"],["Acts","Peter's second preaching","Acts 3:12–26"],["Acts","Peter's third preaching","Acts 4:5–12"],["Acts","Ananias and Sapphira","Acts 5:1–11"],["Acts","Peter's first imprisonment","Acts 5:17–42"],["Acts","The martyrdom of Stephen","Acts 6:9–15; 7:1–60"],["Acts","Philip and the eunuch","Acts 8:26–39"],["Acts","Paul's conversion: first account","Acts 9:1–25"],["Acts","Peter's vision of the sheet","Acts 10:1–16"],["Acts","The conversion of Cornelius and his household","Acts 10:17–48"],["Acts","Peter's second imprisonment and escape","Acts 12:1–19"],["Acts","Paul's preaching at Antioch","Acts 13:13–42"],["Acts","The healing of the lame man in Lystra","Acts 14:8–18"],["Acts","Paul and Silas at Philippi","Acts 16:9–40"],["Acts","Paul's preaching at Athens","Acts 17:16–34"],["Acts","The school of Tyrannus","Acts 19:1–12"],["Acts","The disturbance at Ephesus","Acts 19:21–41"],["Acts","Eutychus falls out the window","Acts 20:7–12"],["Acts","Paul's conversion: second account","Acts 22:1–21"],["Acts","Paul's sister's son","Acts 23:12–24"],["Acts","Paul's conversion: third account","Acts 26:1–32"],["Acts","The shipwreck","Acts 27:1–44"],["Acts","Paul's service at Malta","Acts 28:1–10"],
+    ["1 Corinthians","A woman's covering and hair","1 Corinthians 11:2–16"],["1 Corinthians","The Lord's Supper","1 Corinthians 11:17–34"],["2 Corinthians","Being separate","2 Corinthians 6:14–18"],["Ephesians","Children and fathers, bondmen and masters","Ephesians 6:1–9"],["Philippians","The mind in Christ Jesus","Philippians 2:1–11"],["1 Thessalonians","Being caught up to meet the Lord","1 Thessalonians 4:13–18"],["2 Thessalonians","The appearing of the Lord Jesus","2 Thessalonians 2:1–12"],["2 Timothy","The firm foundation of God","2 Timothy 2:16–26"],["2 Peter","New heavens and a new earth","2 Peter 3:1–16"],["1 John","Having the unction","1 John 2:18–27"],["1 John","Loving one another","1 John 4:11–21"],
+    ["Revelation","The opening of the seven seals","Revelation 5:1–5; 6:1–17; 8:1–5"],["Revelation","The beast and false prophet cast into the lake of fire","Revelation 19:11–21"],["Revelation","The devil cast into the lake of fire","Revelation 20:1–10"],["Revelation","The great white throne","Revelation 20:11–15"],["Revelation","The holy city","Revelation 21:2–27"]
+  ];
+
+  var PS = 18, PR = 19;
+  function bookIdx(name){ for(var i = 0; i < BOOKS.length; i++) if(BOOKS[i][0] === name) return i; return -1; }
+  function bibleBase(){ var u = prefs().bibleUrl || BIBLE_DEFAULT; return u.replace(/\/?$/, "/"); }
+  // Link into the Holy Bible app. It shows a "Done · back" bar that returns here with #done=<rid>.
+  function bibleUrl(b, c, v, v2, rid, mark){
+    var q = "?ret=" + encodeURIComponent(location.origin + location.pathname) + (rid ? "&rid=" + encodeURIComponent(rid) : "") + (v2 ? "&to=" + v2 : "") + (mark ? "&mark=" + mark : "");
+    return bibleBase() + q + "#" + encodeURIComponent(BOOKS[b][0]) + "." + c + (v ? "." + v : "");
+  }
+  function refText(b, c, v, v2){ var n = b === PS ? "Psalm" : BOOKS[b][0]; return n + " " + c + (v ? ":" + v + (v2 && v2 !== v ? "–" + v2 : "") : ""); }
+  // "Genesis 3:1–19; 8:1–14" → first part, for the link
+  function parseRefText(t){
+    var m = String(t).match(/^(\d?\s?[A-Za-z][A-Za-z ]*?)\s+(\d+):\s?(\d+)(?:\s?–\s?(\d+))?/); if(!m) return null;
+    var b = bookIdx(m[1].trim()); if(b < 0) return null;
+    return { b:b, c:+m[2], v:+m[3], v2:m[4] ? +m[4] : 0 };
+  }
+  function chLabel(list){ // [[b,c],...] → "Genesis 4–6, Matthew 2"
+    var out = [], i = 0;
+    while(i < list.length){
+      var b = list[i][0], c0 = list[i][1], c1 = c0;
+      while(i + 1 < list.length && list[i + 1][0] === b && list[i + 1][1] === c1 + 1){ i++; c1++; }
+      out.push((b === PS ? (c0 === c1 ? "Psalm" : "Psalms") : BOOKS[b][0]) + " " + c0 + (c1 > c0 ? "–" + c1 : "")); i++;
+    }
+    return out.join(", ");
+  }
+  function seeded(str){ var h = 1779033703 ^ str.length; for(var i = 0; i < str.length; i++){ h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+    return function(){ h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
+  function daysBetween(a, b){ return Math.round((parseDay(b) - parseDay(a)) / 864e5); }
+  function nowHour(){ var d = new Date(); return d.getHours() + d.getMinutes() / 60; }
+
+  /* ---------- Morning Bible plan (personal) ---------- */
+  function rplan(){ return get(mySpace(), "rplan"); }
+  function planStreams(p){
+    var books = (p.books || []).slice();
+    if(p.order === "chrono") books.sort(function(a, b){ return CHRONO.indexOf(BOOKS[a][0]) - CHRONO.indexOf(BOOKS[b][0]); }); else books.sort(function(a, b){ return a - b; });
+    var chs = function(bs){ var o = []; bs.forEach(function(b){ for(var c = 1; c <= BOOKS[b][1].length; c++) o.push([b, c]); }); return o; };
+    var streams = p.order === "blend" ? [chs(books.filter(function(b){ return b < 39; })), chs(books.filter(function(b){ return b >= 39; }))].filter(function(s){ return s.length; }) : [chs(books)];
+    return streams.map(function(s){ return { list:s, perDay:p.perDay ? Math.max(1, +p.perDay) : Math.max(1, Math.ceil(s.length / Math.max(1, p.days || 365))) }; });
+  }
+  function planToday(p){
+    var done = p.done || {}, t = today(), chs = [];
+    planStreams(p).forEach(function(s){
+      var mine = s.list.filter(function(x){ return done[x[0] + ":" + x[1]] === t; });
+      var need = Math.max(0, s.perDay - mine.length);
+      s.list.forEach(function(x){ if(need > 0 && !done[x[0] + ":" + x[1]]){ mine.push(x); need--; } });
+      chs = chs.concat(mine.sort(function(a, b){ return s.list.indexOf(a) - s.list.indexOf(b); }));
+    });
+    return chs;
+  }
+  function planStats(p){
+    var ss = planStreams(p), total = 0, done = 0, expected = 0, el = Math.max(0, daysBetween(p.start || today(), today()));
+    ss.forEach(function(s){ total += s.list.length; expected += Math.min(s.list.length, s.perDay * el); s.list.forEach(function(x){ if(p.done && p.done[x[0] + ":" + x[1]]) done++; }); });
+    var doneBefore = 0; ss.forEach(function(s){ s.list.forEach(function(x){ var d = p.done && p.done[x[0] + ":" + x[1]]; if(d && d < today()) doneBefore++; }); });
+    return { total:total, done:done, behind:Math.max(0, expected - doneBefore), pct:total ? Math.round(done / total * 100) : 0 };
+  }
+  function morningDone(){ var p = rplan(); if(!p) return false; var tl = planToday(p); return tl.length > 0 && tl.every(function(x){ return (p.done || {})[x[0] + ":" + x[1]]; }); }
+  function tickMorning(on){
+    var p = rplan(); if(!p) return; var d = Object.assign({}, p.done || {}), t = today();
+    planToday(p).forEach(function(x){ var k = x[0] + ":" + x[1]; if(on) d[k] = d[k] || t; else if(d[k] === t) delete d[k]; });
+    patch(p, { done:d }); if(on) markDone("reading", true);
+  }
+  function morningLink(){
+    var p = rplan(); if(!p) return ""; var tl = planToday(p); if(!tl.length) return "";
+    var first = tl.filter(function(x){ return !(p.done || {})[x[0] + ":" + x[1]]; })[0] || tl[0];
+    return bibleUrl(first[0], first[1], 0, 0, "am", tl.map(function(x){ return x[0] + ":" + x[1]; }).join(","));
+  }
+
+  /* ---------- Lunchtime Proverb (personal, a random group of 5–10 verses, same all day) ---------- */
+  function proverbFor(date){
+    var r = seeded("pv|" + myUid() + "|" + date), c = 1 + Math.floor(r() * 31), n = BOOKS[PR][1][c - 1];
+    var len = 5 + Math.floor(r() * 6), v = 1 + Math.floor(r() * Math.max(1, n - len + 1));
+    return { b:PR, c:c, v:v, v2:Math.min(n, v + len - 1) };
+  }
+  function proverbDone(date){ var it = get(mySpace(), "pv-" + (date || today())); return !!(it && it.done); }
+
+  /* ---------- Tonight's Psalm (household, methodical from Psalm 1:1, about 10 verses) ---------- */
+  var PSEQ = (function(){
+    var out = [];
+    BOOKS[PS][1].forEach(function(n, i){
+      var c = i + 1;
+      if(n <= 15){ out.push([c, 1, n]); return; }
+      var size = c === 119 ? 8 : 0, k = size ? n / size : Math.round(n / 10), v = 1;
+      for(var j = 0; j < k; j++){ var len = size || Math.floor(n / k) + (j < n % k ? 1 : 0); out.push([c, v, v + len - 1]); v += len; }
+    });
+    return out;
+  })();
+  function psRound(){
+    var r = 1; all("psread", "hh").forEach(function(x){ if(x.round > r) r = x.round; });
+    var cnt = all("psread", "hh").filter(function(x){ return x.round === r && x.done; }).length;
+    return cnt >= PSEQ.length ? r + 1 : r;
+  }
+  function psDone(r, i){ var it = get("hh", "ps-" + r + "-" + i); return !!(it && it.done); }
+  function psTonight(){
+    var r = psRound(), t = today();
+    var dn = all("psread", "hh").filter(function(x){ return x.round === r && x.done && x.date === t; }).sort(function(a, b){ return b.idx - a.idx; })[0];
+    if(dn) return { r:r, i:dn.idx, done:true };
+    for(var i = 0; i < PSEQ.length; i++) if(!psDone(r, i)) return { r:r, i:i, done:false };
+    return { r:r + 1, i:0, done:false };
+  }
+  function psCount(r){ return all("psread", "hh").filter(function(x){ return x.round === r && x.done; }).length; }
+  function tickPsalm(r, i, on){ put(Object.assign({}, get("hh", "ps-" + r + "-" + i) || { type:"psread", id:"ps-" + r + "-" + i, space:"hh", round:r, idx:i }, { done:on, date:today(), by:myUid() })); }
+
+  /* ---------- White Book (personal) ---------- */
+  function wbs(){ return all("wb", mySpace()).sort(function(a, b){ return (b.start || "").localeCompare(a.start || "") || (b.created || 0) - (a.created || 0); }); }
+  function wbActive(){ return wbs().filter(function(w){ return (w.readTo || 0) < w.pages; })[0] || null; }
+  function wbToday(w){
+    var log = (w.log || {})[today()]; if(log) return { from:log[0], to:log[1], done:true };
+    var end = dayKey(addDays(parseDay(w.start), (w.days || 7) - 1)), left = Math.max(1, daysBetween(today(), end) + 1);
+    var rem = w.pages - (w.readTo || 0), n = Math.max(1, Math.ceil(rem / left));
+    return { from:(w.readTo || 0) + 1, to:Math.min(w.pages, (w.readTo || 0) + n), done:false };
+  }
+  function pg(w, n){ return (+w.first || 1) - 1 + n; } // page number as printed
+  function wbLabel(w){ return "WB" + String(w.num).replace(/^wb/i, ""); }
+
+  /* ---------- Other ministry (personal) ---------- */
+  function ministry(){ return all("ministry", mySpace()).sort(byOrder); }
+
+  /* ---------- Subjects: Bible reading for the young (household) ---------- */
+  function sjDone(i){ var it = get("hh", "sj-" + i); return it && it.done ? it : null; }
+
+  /* ---------- Rows ---------- */
+  var ICON_OPEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v13"/></svg>';
+  function rrow(o){
+    return '<div class="rr' + (o.done ? " done" : "") + '"><div class="rr-t"><b>' + esc(o.title) + '</b><span>' + o.sub + '</span></div>' +
+      (o.href ? '<a class="rr-open" href="' + esc(o.href) + '" aria-label="Open in Bible">' + ICON_OPEN + '</a>' : "") +
+      checkBtn(o.done, o.act, o.attrs || "", "Mark " + o.title + " read") + '</div>';
+  }
+  function rowMorning(){
+    var p = rplan(); if(!p) return rrow({ title:"Morning Bible", sub:'<a href="#" data-act="go" data-v="reading">Choose a reading plan</a>', done:false, act:"go", attrs:'data-v="reading"' });
+    var tl = planToday(p); if(!tl.length) return rrow({ title:"Morning Bible", sub:"Plan finished — well done", done:true, act:"noop" });
+    return rrow({ title:"Morning Bible", sub:esc(chLabel(tl)), href:morningLink(), done:morningDone(), act:"r-morning" });
+  }
+  function rowProverb(){ var x = proverbFor(today()); return rrow({ title:"Lunchtime Proverb", sub:esc(refText(x.b, x.c, x.v, x.v2)), href:bibleUrl(x.b, x.c, x.v, x.v2, "pv"), done:proverbDone(), act:"r-proverb" }); }
+  function rowPsalm(){ var t = psTonight(), s = PSEQ[t.i]; return rrow({ title:"Tonight's Psalm", sub:esc(refText(PS, s[0], s[1], s[2])) + ' <span class="pill">Family</span>', href:bibleUrl(PS, s[0], s[1], s[2], "ps-" + t.r + "-" + t.i), done:t.done, act:"r-psalm", attrs:'data-r="' + t.r + '" data-i="' + t.i + '"' }); }
+  function rowWB(w){ var d = wbToday(w); return rrow({ title:wbLabel(w), sub:"Pages " + pg(w, d.from) + (d.to > d.from ? "–" + pg(w, d.to) : "") + " today", done:d.done, act:"r-wb", attrs:'data-id="' + w.id + '"' }); }
+
+  /* ---------- Today screen card ---------- */
+  function renderTodayReading(){
+    var el = $("today-reading"); if(!el) return;
+    var h = nowHour(), rows = [rowMorning()];
+    if(h >= 11 || proverbDone()) rows.push(rowProverb());
+    if(h >= 17 || psTonight().done) rows.push(rowPsalm());
+    var w = wbActive(); if(w) rows.push(rowWB(w));
+    el.innerHTML = '<div class="th-head"><b>Reading today</b><button class="link-btn" data-act="go" data-v="reading">All reading</button></div>' + rows.join("");
+  }
+  function sReadInner(){ var w = wbActive(); return rowMorning() + (w ? rowWB(w) : ""); }
+  // Reading step in the morning session
+  function readingStepHtml(){
+    var w = wbActive();
+    return '<div class="s-read glass">' + sReadInner() + '</div>' +
+      '<div class="s-instr" style="margin-top:12px">Tap the book to read in the Holy Bible app. Tap <b>Done</b> there and you\'ll come straight back here, ticked.</div>';
+  }
+
+  /* ---------- Reading screen ---------- */
+  var rdShowAllSj = false, rdPlanPick = false;
+  function renderReading(){
+    var p = rplan(), html = "";
+    // Morning Bible
+    html += '<div class="section-label">Morning Bible</div><div class="rv-sec glass">';
+    if(!p || rdPlanPick){
+      html += '<h3>Choose a reading plan</h3><div class="muted small" style="margin-bottom:8px">Same plans as the Holy Bible app. You can change it later.</div>' +
+        RPRESETS.map(function(x){ return '<button class="preset-btn" data-act="r-plan" data-k="' + x.k + '"><b>' + esc(x.name) + '</b><span>' + esc(x.sub) + '</span></button>'; }).join("") +
+        '<div class="fld"><label>Or book by book</label><div class="grid2"><select id="rp-from">' + BOOKS.map(function(b, i){ return '<option value="' + i + '">' + esc(b[0]) + '</option>'; }).join("") + '</select><select id="rp-to">' + BOOKS.map(function(b, i){ return '<option value="' + i + '"' + (i === 65 ? " selected" : "") + '>' + esc(b[0]) + '</option>'; }).join("") + '</select></div>' +
+        '<div class="grid2" style="margin-top:8px"><select id="rp-per">' + [1,2,3,4,5].map(function(n){ return '<option value="' + n + '"' + (n === 3 ? " selected" : "") + '>' + n + ' chapter' + (n > 1 ? "s" : "") + ' a day</option>'; }).join("") + '</select><button class="btn btn-soft btn-sm" data-act="r-plan" data-k="custom">Start</button></div></div>' +
+        (p ? '<div class="btn-row"><button class="btn btn-soft" data-act="r-plan-cancel">Keep my current plan</button></div>' : "");
+    } else {
+      var st = planStats(p), tl = planToday(p);
+      html += '<div class="area-h"><h3>' + esc(p.name) + '</h3><button class="link-btn" data-act="r-plan-change">Change</button></div>' +
+        '<div class="hb-meta"><b>' + st.done + '</b> of ' + st.total + ' chapters · ' + (st.behind ? '<b style="color:var(--danger)">' + st.behind + ' behind</b>' : "on track") + '</div><div class="bar" style="--ac:#6753A6"><i style="width:' + st.pct + '%"></i></div>' +
+        (tl.length ? '<div class="lbl" style="margin-top:12px">Today</div>' + rowMorning() + '<div class="chips">' + tl.map(function(x){ var d = (p.done || {})[x[0] + ":" + x[1]]; return '<button class="chip' + (d ? " on" : "") + '" data-act="r-ch" data-k="' + x[0] + ":" + x[1] + '">' + esc(chLabel([x])) + '</button>'; }).join("") + '</div>' : '<div class="empty">Plan finished. Choose another to keep going.</div>');
+    }
+    html += '</div>';
+    // Proverb
+    var pv = proverbFor(today()), pvMonth = all("proverb", mySpace()).filter(function(x){ return x.done && x.id.slice(3, 10) === today().slice(0, 7); }).length;
+    html += '<div class="section-label">Lunchtime Proverb</div><div class="rv-sec glass">' + rowProverb() + '<div class="hb-meta" style="margin-top:6px">A new group of verses each day · ' + pvMonth + ' read this month</div></div>';
+    // Psalm
+    var t = psTonight(), cnt = psCount(t.r);
+    html += '<div class="section-label">Tonight\'s Psalm · Family</div><div class="rv-sec glass">' + rowPsalm() +
+      '<div class="hb-meta" style="margin-top:6px">Reading through the Psalms in order, about 10 verses a night · ' + cnt + ' of ' + PSEQ.length + ' readings' + (t.r > 1 ? " (round " + t.r + ")" : "") + '</div><div class="bar" style="--ac:#A64E70"><i style="width:' + Math.round(cnt / PSEQ.length * 100) + '%"></i></div>' +
+      '<button class="link-btn" data-act="r-ps-set">Start from a different Psalm</button></div>';
+    // White Book
+    var w = wbActive();
+    html += '<div class="section-label">White Book</div><div class="rv-sec glass">';
+    if(w){
+      var end = dayKey(addDays(parseDay(w.start), (w.days || 7) - 1));
+      html += rowWB(w) +
+        '<div class="hb-meta" style="margin-top:6px">Read to page <b>' + pg(w, w.readTo || 0) + '</b> of ' + pg(w, w.pages) + ' · finish by ' + fmtDay(end) + '</div><div class="bar" style="--ac:#3E9A6E"><i style="width:' + Math.round((w.readTo || 0) / w.pages * 100) + '%"></i></div>' +
+        '<div class="add-row"><input type="number" class="in" id="wb-upto" placeholder="Read up to page…" inputmode="numeric"><button class="btn btn-soft btn-sm" data-act="r-wb-upto" data-id="' + w.id + '">Update</button></div>';
+    }
+    html += '<details' + (w ? "" : " open") + ' style="margin-top:10px"><summary class="small muted">' + (w ? "Start the next White Book" : "Add this week's White Book") + '</summary>' +
+      '<div class="grid2"><div class="fld"><label>White Book number</label><input type="text" id="wb-num" placeholder="e.g. 1034" inputmode="numeric"></div><div class="fld"><label>Pages to read</label><input type="number" class="in" id="wb-pages" placeholder="e.g. 48" inputmode="numeric"></div></div>' +
+      '<div class="grid2"><div class="fld"><label>Read over</label><select id="wb-days"><option value="7">1 week</option><option value="14">2 weeks</option></select></div><div class="fld"><label>First page</label><input type="number" class="in" id="wb-first" value="1" inputmode="numeric"></div></div>' +
+      '<div class="btn-row"><button class="btn btn-ink" data-act="r-wb-add">Start reading</button></div></details>';
+    var past = wbs().filter(function(x){ return x !== w; }).slice(0, 6);
+    if(past.length) html += '<div class="lbl" style="margin-top:12px">Earlier</div>' + past.map(function(x){ return '<div class="rv-row"><span>' + esc(wbLabel(x)) + ' <span class="muted small">· started ' + fmtShort(x.start) + '</span></span><b>' + ((x.readTo || 0) >= x.pages ? "Done" : (x.readTo || 0) + "/" + x.pages) + '</b></div>'; }).join("");
+    html += '</div>';
+    // Other ministry
+    var mins = ministry(), open = mins.filter(function(m){ return !m.done; }), fin = mins.filter(function(m){ return m.done; });
+    html += '<div class="section-label">Other ministry</div><div class="rv-sec glass">' +
+      (open.length ? open.map(function(m){ return '<div class="rr"><div class="rr-t"><b>' + esc(m.author) + (m.volume ? " · " + esc(m.volume) : "") + '</b><span>' + (m.pages ? "Pages " + esc(m.pages) : "") + '</span></div><button class="link-btn" data-act="r-min-del" data-id="' + m.id + '" aria-label="Remove">×</button>' + checkBtn(false, "r-min", 'data-id="' + m.id + '"', "Mark read") + '</div>'; }).join("") : '<div class="muted small">Nothing on the list.</div>') +
+      '<div class="grid2" style="margin-top:10px"><input type="text" id="mn-author" placeholder="Author"><input type="text" id="mn-vol" placeholder="Volume"></div>' +
+      '<div class="add-row"><input type="text" id="mn-pages" placeholder="Pages, e.g. 120–145"><button class="btn btn-soft btn-sm" data-act="r-min-add">Add</button></div>' +
+      (fin.length ? '<details style="margin-top:10px"><summary class="small muted">Read (' + fin.length + ')</summary>' + fin.sort(function(a, b){ return (b.doneAt || "").localeCompare(a.doneAt || ""); }).map(function(m){ return '<div class="rv-row"><span>' + esc(m.author) + (m.volume ? " · " + esc(m.volume) : "") + (m.pages ? ' <span class="muted small">p. ' + esc(m.pages) + '</span>' : "") + '</span><span class="muted small">' + (m.doneAt ? fmtShort(m.doneAt) : "") + ' <button class="link-btn" data-act="r-min" data-id="' + m.id + '">undo</button></span></div>'; }).join("") + '</details>' : "") + '</div>';
+    // Subjects
+    var doneN = SUBJECTS.filter(function(_, i){ return sjDone(i); }).length, next = [];
+    SUBJECTS.forEach(function(s, i){ if(!sjDone(i) && next.length < 3) next.push(i); });
+    var sjRow = function(i){ var s = SUBJECTS[i], r = parseRefText(s[2]), d = sjDone(i); return rrow({ title:s[1], sub:esc(s[2]) + (d ? ' <span class="muted small">· ' + esc(personName(d.by)) + ", " + fmtShort(d.date) + '</span>' : ""), href:r ? bibleUrl(r.b, r.c, r.v, r.v2, "sj-" + i) : "", done:!!d, act:"r-sj", attrs:'data-i="' + i + '"' }); };
+    html += '<div class="section-label">Subjects for the boys · Family</div><div class="rv-sec glass"><div class="hb-meta">Bible reading for the young (Bible & Gospel Trust) · <b>' + doneN + '</b> of ' + SUBJECTS.length + ' read</div><div class="bar" style="--ac:#C9971C"><i style="width:' + Math.round(doneN / SUBJECTS.length * 100) + '%"></i></div>' +
+      (rdShowAllSj ? (function(){ var h = "", last = ""; SUBJECTS.forEach(function(s, i){ if(s[0] !== last){ h += '<div class="lbl" style="margin-top:14px">' + esc(s[0]) + '</div>'; last = s[0]; } h += sjRow(i); }); return h; })()
+        : '<div class="lbl" style="margin-top:12px">Next up</div>' + next.map(sjRow).join("")) +
+      '<button class="link-btn" data-act="r-sj-all">' + (rdShowAllSj ? "Show less" : "Show the whole list") + '</button></div>';
+    html += '<p class="help">Bible app: ' + esc(bibleBase()) + ' <button class="link-btn" data-act="r-bible-url">change</button></p>';
+    $("view-reading").innerHTML = html;
+  }
+
+  /* ---------- Coming back from the Bible app: #done=<rid> ---------- */
+  function handleReturn(){
+    var h = location.hash; if(!/^#(done=|back)/.test(h)) return;
+    var rid = h.indexOf("#done=") === 0 ? decodeURIComponent(h.slice(6)) : "";
+    history.replaceState(null, "", location.pathname + location.search);
+    if(rid === "am"){ tickMorning(true); toast("Morning reading ticked"); }
+    else if(rid === "pv"){ readActions["r-proverb"](null, true); }
+    else if(/^ps-\d+-\d+$/.test(rid)){ var p = rid.split("-"); tickPsalm(+p[1], +p[2], true); toast("Psalm ticked"); }
+    else if(/^sj-\d+$/.test(rid)){ var i = +rid.slice(3); put(Object.assign({}, get("hh", "sj-" + i) || { type:"subject", id:"sj-" + i, space:"hh", idx:i }, { done:true, date:today(), by:myUid() })); toast("Subject ticked"); }
+    if(rid) currentView = rid === "am" ? "home" : "reading";
+  }
+
+  var readActions = {
+    "noop": function(){},
+    "r-morning": function(){ tickMorning(!morningDone()); buzz(15); render(); },
+    "r-ch": function(el){ var p = rplan(); if(!p) return; var d = Object.assign({}, p.done || {}), k = el.dataset.k; if(d[k]) delete d[k]; else d[k] = today(); patch(p, { done:d }); render(); },
+    "r-proverb": function(el, force){ var x = proverbFor(today()), id = "pv-" + today(), old = get(mySpace(), id), on = force || !(old && old.done);
+      put(Object.assign({}, old || { type:"proverb", id:id }, { done:on, ref:refText(x.b, x.c, x.v, x.v2) })); if(force) toast("Proverb ticked"); buzz(15); render(); },
+    "r-psalm": function(el){ var r = +el.dataset.r, i = +el.dataset.i; tickPsalm(r, i, !psDone(r, i)); buzz(15); render(); },
+    "r-ps-set": function(){
+      var v = prompt("Start tonight at which Psalm? (1–150)"); if(v == null) return; var n = parseInt(v, 10); if(!(n >= 1 && n <= 150)) return;
+      var r = psRound(); PSEQ.forEach(function(s, i){ if(s[0] < n && !psDone(r, i)) put({ type:"psread", id:"ps-" + r + "-" + i, space:"hh", round:r, idx:i, done:true, date:"skipped", by:myUid() }); });
+      toast("Tonight starts at Psalm " + n); render();
+    },
+    "r-plan": function(el){
+      var k = el.dataset.k, o;
+      if(k === "custom"){ var a = +$("rp-from").value, z = +$("rp-to").value; if(z < a){ var t = a; a = z; z = t; } o = { name:BOOKS[a][0] + (z > a ? " to " + BOOKS[z][0] : ""), books:range(a, z), perDay:+$("rp-per").value }; }
+      else { var x = RPRESETS.filter(function(y){ return y.k === k; })[0]; o = { name:x.name, books:x.books, days:x.days, order:x.order || "canon" }; }
+      var old = rplan(); if(old && !rdPlanPick) return;
+      if(old && !confirm("Start this plan? Your progress on " + old.name + " is cleared.")) return;
+      put(Object.assign({ type:"rplan", id:"rplan", preset:k, start:today(), done:{}, order:"canon" }, o)); rdPlanPick = false; render(); toast("Plan started");
+    },
+    "r-plan-change": function(){ rdPlanPick = true; renderReading(); },
+    "r-plan-cancel": function(){ rdPlanPick = false; renderReading(); },
+    "r-wb": function(el){ var w = get(mySpace(), el.dataset.id); if(!w) return; var d = wbToday(w), log = Object.assign({}, w.log || {});
+      if(d.done){ delete log[today()]; patch(w, { log:log, readTo:Math.max(0, d.from - 1) }); } else { log[today()] = [d.from, d.to]; patch(w, { log:log, readTo:d.to }); if(d.to >= w.pages) toast(wbLabel(w) + " finished"); }
+      buzz(15); render(); },
+    "r-wb-upto": function(el){ var w = get(mySpace(), el.dataset.id), v = parseInt($("wb-upto").value, 10); if(!w || isNaN(v)) return; var n = Math.max(0, Math.min(w.pages, v - (+w.first || 1) + 1)); var log = Object.assign({}, w.log || {}); if(n > (w.readTo || 0)) log[today()] = [(w.readTo || 0) + 1, n]; patch(w, { readTo:n, log:log }); render(); },
+    "r-wb-add": function(){ var num = $("wb-num").value.trim().replace(/^wb/i, ""), pages = parseInt($("wb-pages").value, 10); if(!num || !(pages > 0)){ toast("Enter the number and pages"); return; }
+      put({ type:"wb", id:"wb-" + num + "-" + uid().slice(-4), num:num, pages:pages, days:+$("wb-days").value, first:parseInt($("wb-first").value, 10) || 1, start:today(), readTo:0, log:{} }); toast("WB" + num + " started"); render(); },
+    "r-min-add": function(){ var a = $("mn-author").value.trim(); if(!a){ toast("Add the author"); return; } put({ type:"ministry", id:"mn-" + uid(), author:a, volume:$("mn-vol").value.trim(), pages:$("mn-pages").value.trim(), order:Date.now() }); render(); },
+    "r-min": function(el){ var m = get(mySpace(), el.dataset.id); if(!m) return; patch(m, { done:!m.done, doneAt:!m.done ? today() : "" }); buzz(15); render(); },
+    "r-min-del": function(el){ var m = get(mySpace(), el.dataset.id); if(m && confirm("Remove this from the list?")){ del(m); render(); } },
+    "r-sj": function(el){ var i = +el.dataset.i, old = get("hh", "sj-" + i); put(Object.assign({}, old || { type:"subject", id:"sj-" + i, space:"hh", idx:i }, { done:!(old && old.done), date:today(), by:myUid() })); buzz(15); render(); },
+    "r-sj-all": function(){ rdShowAllSj = !rdShowAllSj; renderReading(); },
+    "r-bible-url": function(){ var v = prompt("Holy Bible app address", bibleBase()); if(v && /^https?:\/\//.test(v.trim())){ setPref("bibleUrl", v.trim()); render(); } }
+  };
+
   /* ================= Sound + vibration ================= */
   var actx = null;
   function playChime(kind){
@@ -1375,6 +1698,8 @@
       var vs = visualBlocks();
       html += vs.length ? '<div class="small muted" id="vis-step" style="margin-top:12px"></div><div class="s-vis">' + vs.map(function(a, k){ return '<div class="glass" data-vis="' + k + '"><h4>' + esc(a.name) + '</h4><p>' + esc(a.visualisation) + '</p></div>'; }).join("") + '</div>'
         : '<div class="s-instr">'+esc(s.instructions)+'</div>';
+    } else if(s.type === "reading"){
+      html += readingStepHtml();
     } else if(s.type === "scribe"){
       html += scribeHtml(today());
     } else if(s.type === "list"){
@@ -1564,9 +1889,11 @@
     "install": function(){ if(!installEvt) return; installEvt.prompt(); installEvt.userChoice.then(function(){ installEvt = null; renderInstall(); }); },
     "sheet-close": function(){ closeSheet(); }
   };
+  Object.assign(actions, readActions);
   document.addEventListener("click", function(e){
     var el = e.target.closest("[data-act]"); if(!el) return;
     var f = actions[el.dataset.act]; if(f){ e.preventDefault(); f(el, e); }
+    if(session){ var sr = document.querySelector("#s-body .s-read"); if(sr) sr.innerHTML = sReadInner(); }
   });
   $("sheet-bg").addEventListener("click", closeSheet);
   document.addEventListener("change", function(e){
@@ -1594,7 +1921,10 @@
   migrateV2();
   seedGoals();
   setSyncState(signedIn() ? "wait" : "off");
-  showView("home");
+  handleReturn();
+  showView(currentView);
+  window.addEventListener("hashchange", function(){ if(/^#(done=|back)/.test(location.hash)){ handleReturn(); showView(currentView); } });
+  setInterval(function(){ if(currentView === "home" && !session) renderTodayReading(); }, 5 * 60000);
   syncWake();
   document.addEventListener("pointerdown", function once(){ syncWake(); document.removeEventListener("pointerdown", once); }, {passive:true});
   if(signedIn()){ sync(); setInterval(function(){ if(document.visibilityState === "visible") sync(); }, 30000); }
