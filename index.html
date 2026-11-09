@@ -210,7 +210,8 @@
 
   .aff-item{ padding:15px 0; border-bottom:1px solid var(--line); font-weight:300; font-size:15.5px; line-height:1.6; color:var(--ink-dim); display:flex; gap:14px; }
   .aff-item:last-child{ border-bottom:none; }
-  .aff-num{ font-weight:400; color:var(--ink-faint); font-size:12.5px; min-width:16px; padding-top:3px; font-variant-numeric:tabular-nums; }
+  .aff-item.aff-head{ font-weight:500; color:var(--ink); font-size:13px; text-transform:uppercase; letter-spacing:.12em; padding:20px 0 6px; border-bottom:none; }
+  .aff-item.aff-head:first-child{ padding-top:12px; }
   .aff-item strong{ color:var(--ink); font-weight:500; }
 
   .goals-frame{ overflow:hidden; height:62vh; min-height:420px; padding:0; }
@@ -279,6 +280,7 @@
   .s-aff{ width:100%; display:flex; flex-direction:column; gap:10px; margin-top:16px; text-align:left; }
   .s-aff div{ color:var(--ink-dim); border-radius:20px; padding:15px 17px; font-weight:300; font-size:16px; line-height:1.6; }
   .s-aff strong{ color:var(--ink); font-weight:500; }
+  .s-aff div.s-aff-head{ background:none; border:none; box-shadow:none; padding:10px 4px 0; font-weight:500; font-size:12.5px; text-transform:uppercase; letter-spacing:.14em; color:var(--ink-faint); }
   .s-link{
     margin-top:18px; display:inline-flex; align-items:center; gap:8px; color:var(--ink);
     border-radius:999px; padding:11px 18px; font-weight:400; font-size:14px; text-decoration:none;
@@ -366,7 +368,7 @@
     </div>
     <div id="aff-editor" style="display:none;">
       <textarea id="aff-text" spellcheck="false"></textarea>
-      <div class="help">One affirmation per line. Wrap a word in **double asterisks** to highlight it.</div>
+      <div class="help">One affirmation per line. A short line with no full stop (e.g. Health) shows as a heading. Wrap a word in **double asterisks** to highlight it.</div>
       <div class="btn-row">
         <button class="btn btn-soft" id="btn-aff-cancel">Cancel</button>
         <button class="btn btn-ink" id="btn-aff-save">Save</button>
@@ -578,6 +580,8 @@
   /* ================= Helpers ================= */
   function $(id){ return document.getElementById(id); }
   function esc(t){ var d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+  // A short line with no full stop (e.g. "Health") is treated as a heading
+  function isHeading(t){ var x = t.replace(/\*\*/g,"").trim(); return x.length <= 40 && !/[.!?,;:]$/.test(x); }
   function mdBold(t){ return esc(t).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>"); }
   function mmss(sec){ sec = Math.max(0, Math.round(sec)); var m = Math.floor(sec/60), s = sec%60; return (m<10?"0":"")+m+":"+(s<10?"0":"")+s; }
   function fmtDur(sec){ var m = Math.floor(sec/60), s = sec%60; return s ? (m+":"+(s<10?"0":"")+s) : (m+" min"); }
@@ -710,7 +714,8 @@
     var list = $("aff-list"); list.innerHTML = "";
     getAffirmations().forEach(function(line, i){
       var d = document.createElement("div"); d.className = "aff-item";
-      d.innerHTML = '<span class="aff-num">'+(i+1)+'</span><span>'+mdBold(line)+'</span>';
+      if(isHeading(line)) d.className += " aff-head";
+      d.innerHTML = '<span>'+mdBold(line)+'</span>';
       list.appendChild(d);
     });
     $("aff-display").style.display = ""; $("aff-editor").style.display = "none";
@@ -828,7 +833,7 @@
       '<circle class="ring-fill" id="ring-fill" cx="120" cy="120" r="104" fill="none" stroke="url(#ringGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+RING_C.toFixed(2)+'" stroke-dashoffset="0"/></svg>'+
       '<div class="ring-center"><div class="clock" id="clock">--:--</div><div class="clock-of">of '+mmss(s.duration)+'</div><div class="paused-tag">Paused</div></div></div>';
     if(s.type === "affirmations"){
-      html += '<div class="s-aff">' + getAffirmations().map(function(l){ return '<div class="glass">'+mdBold(l)+"</div>"; }).join("") + '</div>';
+      html += '<div class="s-aff">' + getAffirmations().map(function(l){ return isHeading(l) ? '<div class="s-aff-head">'+mdBold(l)+'</div>' : '<div class="glass">'+mdBold(l)+"</div>"; }).join("") + '</div>';
     } else if(s.type === "list"){
       html += '<ul class="s-list">' + s.instructions.map(function(x){ return '<li class="glass">'+esc(x)+"</li>"; }).join("") + '</ul>';
     } else {
