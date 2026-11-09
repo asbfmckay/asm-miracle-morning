@@ -391,7 +391,35 @@
   .hb-note{ display:flex; gap:10px; padding:8px 0; border-top:1px solid var(--line); font-size:14px; }
 
   /* Goals */
-  .area{ padding:16px 16px 14px; margin-bottom:12px; border-left:4px solid var(--ac); }
+  .area{ padding:16px 16px 14px; margin-bottom:12px; }
+  /* Goals v2 */
+  .eyebrow{ display:flex; align-items:center; gap:7px; font-size:11.5px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); }
+  .dot{ width:9px; height:9px; border-radius:50%; display:inline-block; flex-shrink:0; }
+  .area-head{ display:flex; align-items:center; gap:9px; margin:22px 6px 8px; }
+  .area-head h3{ margin:0; flex:1; font-weight:500; font-size:17px; }
+  .vision-d{ margin:-2px 6px 10px; } .vision-d summary{ font-size:12.5px; color:var(--ink-dim); } .vision-d .vision{ margin-top:4px; }
+  .g-card{ width:100%; display:flex; align-items:center; gap:13px; padding:12px 14px; margin-bottom:8px; text-align:left; font-family:inherit; color:var(--ink); cursor:pointer; border-radius:20px; }
+  .g-card .ring{ flex-shrink:0; }
+  .g-body{ flex:1; min-width:0; display:block; }
+  .g-body b{ display:block; font-weight:500; font-size:15.5px; line-height:1.3; }
+  .g-body > span{ display:block; font-size:12.5px; color:var(--ink-dim); font-weight:300; margin-top:2px; }
+  .g-body .g-tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .g-chev{ color:var(--ink-faint); font-size:20px; }
+  .pace{ display:inline-block; white-space:nowrap; flex-shrink:0; font-size:11.5px; font-weight:500; padding:3px 9px; border-radius:999px; }
+  .pace.p-g{ background:#E3F1E7; color:#2F7A4C; } .pace.p-a{ background:#F8EBCB; color:#8A6514; } .pace.p-r{ background:#F6E0E0; color:#A3444C; } .pace.p-n{ background:rgba(46,43,40,.06); color:var(--ink-dim); }
+  .back{ text-decoration:none; font-size:14px; margin:0 0 8px 2px; padding:4px 0; }
+  .g-hero{ padding:16px; margin-bottom:12px; }
+  .g-top{ display:flex; gap:14px; align-items:flex-start; }
+  .g-top h2{ margin:4px 0 2px; font-weight:500; font-size:20px; letter-spacing:-.01em; line-height:1.25; }
+  .g-sub{ font-size:13px; color:var(--ink-dim); font-weight:300; margin-bottom:6px; }
+  .gchart{ width:100%; height:auto; margin-top:14px; display:block; }
+  .g-legend{ display:flex; gap:14px; font-size:11.5px; color:var(--ink-dim); margin:2px 0 4px; }
+  .g-legend i{ display:inline-block; width:14px; height:3px; border-radius:2px; vertical-align:middle; margin-right:5px; }
+  .g-legend i.dash{ background:repeating-linear-gradient(90deg, #ABA59C 0 4px, transparent 4px 7px); }
+  .rv-goal{ padding:10px 0; border-top:1px solid var(--line); } .rv-goal:first-of-type{ border-top:none; }
+  .rv-st{ margin-top:8px; } .rv-st button{ padding:8px 0; font-size:13px; }
+  .rv-st button.s-g{ background:#E3F1E7; } .rv-st button.s-a{ background:#F8EBCB; } .rv-st button.s-r{ background:#F6E0E0; }
+  .rv-next{ margin-top:8px; padding:10px 12px !important; font-size:14px !important; }
   .area-h{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .area-h h3{ margin:0; font-weight:500; font-size:19px; letter-spacing:-.01em; }
   .area .vision{ font-weight:300; font-size:14.5px; line-height:1.55; color:var(--ink-dim); margin-top:6px; white-space:pre-line; }
@@ -503,11 +531,11 @@
       <div class="seg" id="plan-seg"></div>
       <div class="plan-meta">
         <div><div class="big" id="plan-total">60 min</div><div class="lbl">Total</div></div>
-        <div class="right"><div class="big" id="plan-ends">--</div><div class="lbl">Ends if started now</div></div>
       </div>
     </div>
     <div class="savers glass" id="savers"></div>
     <div class="today-habits glass" id="today-reading"></div>
+    <div class="today-habits glass" id="today-tasks" style="display:none"></div>
     <div class="today-habits glass" id="today-habits"></div>
     <div class="start-wrap" id="start-wrap">
       <button class="btn-start" id="btn-start">
@@ -570,7 +598,7 @@
 <script>
 (function(){
   "use strict";
-  var APP_VERSION = "3.2.0";
+  var APP_VERSION = "3.3.0";
   // The API Worker (Cloudflare). Change in Settings → Account if it ever moves.
   var DEFAULT_API = "https://life-api.andrew-bronnia.workers.dev";
 
@@ -772,10 +800,6 @@
       var area = { type:"area", id:a.id, space:"hh", person:myUid(), name:a.name, color:a.color, order:a.order, anchor:!!a.anchor,
         vision:a.vision || "", affirmation:a.affirmation || "", visualisation:a.visualisation || "", dailyAction:a.dailyAction || "", updatedAt:1 };
       put(area, { keepTime:true });
-      (a.goals || []).forEach(function(g, i){
-        var o = typeof g === "string" ? { text:g } : (Array.isArray(g) ? { text:g[0], suggested:g[1] } : g);
-        put(Object.assign({ type:"goal", id:a.id.replace("area-", "g-") + "-" + (i + 1), space:"hh", areaId:a.id, kind:"milestones", due:"2027-11-30", order:i + 1, updatedAt:1 }, o), { keepTime:true });
-      });
     });
     lsSet("life_seeded", "1");
   }
@@ -829,6 +853,7 @@
       cfg.since = r.now || Date.now(); saveCfg(); persist();
       lastSync = Date.now(); syncing = false;
       setSyncState(Object.keys(dirty).length ? "wait" : "ok");
+      maybeSeedGoalsV2();
       if(changed) softRender();
     }).catch(function(e){
       syncing = false;
@@ -876,20 +901,8 @@
   function toast(msg){ var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove("show"); }, 2400); }
   function checkBtn(done, act, attrs, label){ return '<button class="check' + (done ? ' done' : '') + '" data-act="' + act + '" ' + (attrs || '') + ' aria-label="' + esc(label || 'Tick') + '">' + ICON_CHECK + '</button>'; }
 
-  /* ================= Goals data ================= */
+  /* ================= Areas ================= */
   function areas(){ return all("area", "hh").sort(byOrder); }
-  function areaGoals(aId){ return all("goal", "hh").filter(function(g){ return g.areaId === aId; }).sort(byOrder); }
-  function goalMs(gId){ return all("ms", "hh").filter(function(m){ return m.goalId === gId; }).sort(function(a, b){ return (a.due || "").localeCompare(b.due || "") || byOrder(a, b); }); }
-  function goalPct(g){
-    if(g.done) return 100;
-    if(g.kind === "measured"){
-      var s = +g.start, t = +g.target, c = g.current != null && g.current !== "" ? +g.current : s;
-      if(isNaN(s) || isNaN(t) || s === t) return 0;
-      return Math.max(0, Math.min(100, Math.round((c - s) / (t - s) * 100)));
-    }
-    var ms = goalMs(g.id); if(!ms.length) return 0;
-    return Math.round(ms.filter(function(m){ return m.done; }).length / ms.length * 100);
-  }
   function myAreas(){ return areas().filter(function(a){ return !a.person || a.person === myUid(); }); }
 
   /* ================= Habits data (same shape as Folio's tracker) ================= */
@@ -927,16 +940,6 @@
   }
   function hbWeekCount(h, u, monday){ return weekDates(monday).filter(function(d){ return hbMark(h, u, d) === "g"; }).length; }
   function hbTarget(h){ return Math.max(1, Math.min(7, +h.perWeek || 7)); }
-  // Weekly habit score for an area: habits linked to that area's goals (or the area itself).
-  function areaScore(a, monday){
-    var gIds = areaGoals(a.id).map(function(g){ return g.id; });
-    var hs = habits().filter(function(h){ return h.areaId === a.id || (h.goalId && gIds.indexOf(h.goalId) >= 0); }).filter(function(h){ return hbTracks(h, myUid()); });
-    if(!hs.length) return null;
-    var got = 0, want = 0;
-    hs.forEach(function(h){ var t = hbTarget(h); want += t; got += Math.min(t, hbWeekCount(h, myUid(), monday)); });
-    return { got:got, want:want, n:hs.length };
-  }
-
   /* ================= Hero + navigation ================= */
   function renderHero(view){
     var now = new Date();
@@ -986,14 +989,13 @@
     $("plan-seg").innerHTML = PLAN_ORDER.map(function(k){ return '<button data-act="plan" data-k="' + k + '" class="' + (k === key ? "active" : "") + '">' + PLANS[k].label + '</button>'; }).join("");
     var steps = getSteps(key), t = total(steps);
     $("plan-total").textContent = fmtDur(t);
-    $("plan-ends").textContent = clockTime(Date.now() + t*1000);
     var done = doneToday();
     $("savers").innerHTML = steps.map(function(s){
       return '<div class="saver"><div class="tile" style="--c:'+HEX[s.id]+'">'+ICONS[s.id]+'</div>'+
         '<div class="saver-text"' + (s.id === "scribing" ? ' data-act="scribe-open" style="cursor:pointer"' : '') + '><div class="saver-name">'+s.name+'</div><div class="saver-sub">'+esc(s.subtitle)+' · '+fmtDur(s.duration)+'</div></div>'+
         '<span style="--c:'+HEX[s.id]+'">' + checkBtn(!!done[s.id], "saver-tick", 'data-id="'+s.id+'"', "Mark "+s.name+" done") + '</span></div>';
     }).join("");
-    renderTodayReading();
+    renderTodayReading(); renderTodayTasks();
     var hs = habits().filter(function(h){ return hbTracks(h, myUid()); }), td = today();
     $("today-habits").innerHTML = '<div class="th-head"><b>Today\'s habits</b><button class="link-btn" data-act="go" data-v="habits">' + (hs.length ? "All habits" : "Add habits") + '</button></div>' +
       (hs.length ? hs.map(function(h){
@@ -1013,7 +1015,7 @@
   function hbMonthCells(ym){ var p = ym.split("-").map(Number), lead = (new Date(p[0], p[1] - 1, 1).getDay() + 6) % 7, n = new Date(p[0], p[1], 0).getDate(), c = []; for(var i = 0; i < lead; i++) c.push(""); for(i = 1; i <= n; i++) c.push(ym + "-" + String(i).padStart(2, "0")); return c; }
   function hbMonthGrid(h, u, ym){ var head = ["Mo","Tu","We","Th","Fr","Sa","Su"].map(function(x){ return '<div class="hb-mh">' + x + '</div>'; }).join(""); return '<div class="hb-mgrid">' + head + hbMonthCells(ym).map(function(dt){ return dt ? hbDayBtn(h, u, dt, true) : "<span></span>"; }).join("") + '</div>'; }
   function monthLabel(ym){ var p = ym.split("-").map(Number); return new Date(p[0], p[1] - 1, 1).toLocaleDateString("en-AU", { month:"long", year:"numeric" }); }
-  function goalName(id){ var g = all("goal", "hh").filter(function(x){ return x.id === id; })[0]; return g ? g.text : ""; }
+  function goalName(id){ var g = goalById(id); return g ? g.title : ""; }
   function hbCard(h){
     var mon = mondayOf(dayKey(addDays(new Date(), hbWeekOff * 7)));
     var ps = hbPeople(h), body = "";
@@ -1047,8 +1049,8 @@
       '<p class="help">Tap a day to cycle: done → missed → skipped → clear. Habits can link to a goal, so ticks feed that goal\'s weekly score.</p>';
   }
   function goalOptions(sel){
-    return '<option value="">No goal</option>' + myAreas().filter(function(a){ return !a.anchor; }).map(function(a){
-      return '<optgroup label="' + esc(a.name) + '">' + areaGoals(a.id).map(function(g){ return '<option value="' + g.id + '"' + (g.id === sel ? " selected" : "") + '>' + esc(g.text.length > 60 ? g.text.slice(0, 60) + "…" : g.text) + '</option>'; }).join("") + '</optgroup>';
+    return '<option value="">No goal</option>' + areas().filter(function(a){ return !a.anchor && areaGoals(a.id).length; }).map(function(a){
+      return '<optgroup label="' + esc(a.name) + '">' + areaGoals(a.id).map(function(g){ return '<option value="' + g.id + '"' + (g.id === sel ? " selected" : "") + '>' + esc(g.title.length > 60 ? g.title.slice(0, 60) + "…" : g.title) + '</option>'; }).join("") + '</optgroup>';
     }).join("");
   }
   function habitSheet(h){
@@ -1074,66 +1076,6 @@
       (!isNew && mine ? '<div class="btn-row"><button class="btn btn-danger" data-act="hb-del" data-id="' + h.id + '" data-sp="' + h.space + '">Delete habit</button></div>' : ""));
   }
 
-  /* ================= Goals screen ================= */
-  var editArea = null;
-  function renderGoals(){
-    var as = areas();
-    if(!as.length){ $("view-goals").innerHTML = '<div class="glass empty" style="padding:18px">No goals yet.</div>'; return; }
-    var mon = mondayOf(), q = quarterOf();
-    $("view-goals").innerHTML = as.map(function(a){
-      if(editArea === a.id) return areaEditor(a);
-      if(a.anchor) return '<div class="anchor-card glass"><div class="area-h"><h3 style="font-size:15px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)">Anchor affirmation</h3><button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Edit</button></div><div class="quote">' + esc(a.affirmation) + '</div></div>';
-      var gs = areaGoals(a.id), sc = areaScore(a, mon);
-      var goalsHtml = gs.length ? gs.map(function(g){
-        var pct = goalPct(g), ms = goalMs(g.id);
-        var open = ms.filter(function(m){ return !m.done || (m.doneAt && m.doneAt >= q.start); });
-        var meas = g.kind === "measured" ? '<div class="small muted" style="margin-top:4px">Now ' + esc(g.current != null && g.current !== "" ? g.current : g.start) + (g.unit || "") + ' · target ' + esc(g.target) + (g.unit || "") + (g.due ? ' by ' + fmtShort(g.due) : "") + ' <button class="link-btn" data-act="goal-measure" data-id="' + g.id + '">Update</button></div>' : "";
-        return '<div class="goal"><div class="goal-t"><span>' + esc(g.text) + (g.suggested ? ' <span class="pill sug" data-act="goal-confirm" data-id="' + g.id + '" title="Tap to confirm">' + esc(g.suggested) + '</span>' : "") + '</span><b>' + pct + '%</b></div><div class="bar"><i style="width:' + pct + '%"></i></div>' + meas +
-          open.map(function(m){ var late = !m.done && m.due && m.due < today(); return '<div class="ms' + (m.done ? " done" : "") + (late ? " late" : "") + '">' + checkBtn(m.done, "ms-tick", 'data-id="' + m.id + '"', "Tick milestone") + '<span>' + esc(m.text) + '</span><small>' + (m.due ? fmtShort(m.due) : "") + '</small><button class="link-btn" data-act="ms-del" data-id="' + m.id + '" aria-label="Delete milestone">×</button></div>'; }).join("") +
-          '<div class="add-row" data-goal="' + g.id + '" style="display:none"><input type="text" placeholder="Milestone, e.g. Below 95kg"><input type="date" value="' + q.end + '"><button class="btn btn-soft btn-sm" data-act="ms-add" data-id="' + g.id + '">Add</button></div>' +
-          '<button class="link-btn" data-act="ms-show" data-id="' + g.id + '">+ Milestone</button></div>';
-      }).join("") : '<div class="muted small">No 12-month goals yet.</div>';
-      return '<div class="area glass" style="--ac:' + esc(a.color || "#999") + '"><div class="area-h"><h3>' + esc(a.name) + '</h3><button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Edit</button></div>' +
-        (a.vision ? '<div class="lbl">10-year vision</div><div class="vision">' + esc(a.vision) + '</div>' : "") +
-        '<div class="lbl">12-month goals</div>' + goalsHtml +
-        (a.dailyAction ? '<div class="lbl">Daily action</div><div class="vision" style="margin-top:0">' + esc(a.dailyAction) + '</div>' : "") +
-        '<div class="score">This week\'s habits: ' + (sc ? '<b>' + sc.got + ' of ' + sc.want + '</b>' : '<span class="muted">link a habit to one of these goals</span>') + '</div></div>';
-    }).join("") + '<p class="help">Current quarter: ' + q.label + '. Milestones show until ticked; ticked ones stay for the quarter.</p>';
-  }
-  function areaEditor(a){
-    var gs = areaGoals(a.id);
-    var f = function(id, label, val, rows){ return '<div class="fld"><label>' + label + '</label><textarea class="in" id="' + id + '" rows="' + (rows || 3) + '">' + esc(val || "") + '</textarea></div>'; };
-    return '<div class="area glass" style="--ac:' + esc(a.color || "#999") + '"><h2 style="margin:0;font-weight:500;font-size:18px">Edit ' + esc(a.name) + '</h2>' +
-      (a.anchor ? f("ae-aff", "Anchor affirmation", a.affirmation, 6) :
-      '<div class="fld"><label>Name</label><input type="text" id="ae-name" value="' + esc(a.name) + '"></div>' +
-      f("ae-vision", "10-year vision", a.vision, 4) +
-      '<div class="fld"><label>12-month goals</label>' + gs.map(function(g){
-        return '<div class="glass" style="padding:10px;margin-bottom:8px;border-radius:16px" data-gid="' + g.id + '"><textarea class="in" rows="2" data-f="text">' + esc(g.text) + '</textarea>' +
-          '<div class="grid2" style="margin-top:6px"><select data-f="kind"><option value="milestones">Milestone-based</option><option value="measured"' + (g.kind === "measured" ? " selected" : "") + '>Measured (a number)</option></select><input type="date" data-f="due" value="' + esc(g.due || "") + '"></div>' +
-          '<div class="grid3" style="margin-top:6px' + (g.kind === "measured" ? "" : ";display:none") + '" data-meas><input type="number" class="in" step="any" data-f="start" placeholder="Start" value="' + esc(g.start == null ? "" : g.start) + '"><input type="number" class="in" step="any" data-f="target" placeholder="Target" value="' + esc(g.target == null ? "" : g.target) + '"><input type="text" data-f="unit" placeholder="Unit" value="' + esc(g.unit || "") + '"></div>' +
-          '<button class="link-btn" data-act="goal-del" data-id="' + g.id + '">Delete goal</button></div>';
-      }).join("") + '<button class="btn btn-soft btn-sm" data-act="goal-add" data-id="' + a.id + '">+ Add goal</button></div>' +
-      f("ae-daily", "Daily action", a.dailyAction, 2) +
-      f("ae-aff", "Affirmation", a.affirmation, 6) +
-      f("ae-vis", "Visualisation", a.visualisation, 4)) +
-      '<div class="btn-row"><button class="btn btn-soft" data-act="area-cancel">Cancel</button><button class="btn btn-ink" data-act="area-save" data-id="' + a.id + '">Save</button></div></div>';
-  }
-  function saveAreaEditor(aId){
-    var a = areas().filter(function(x){ return x.id === aId; })[0]; if(!a) return;
-    var v = function(id){ var el = $(id); return el ? el.value.trim() : undefined; };
-    var ch = { affirmation:v("ae-aff") };
-    if(!a.anchor){ ch.name = v("ae-name") || a.name; ch.vision = v("ae-vision"); ch.dailyAction = v("ae-daily"); ch.visualisation = v("ae-vis"); }
-    patch(a, ch);
-    document.querySelectorAll("[data-gid]").forEach(function(box){
-      var g = all("goal", "hh").filter(function(x){ return x.id === box.dataset.gid; })[0]; if(!g) return;
-      var c = {}; box.querySelectorAll("[data-f]").forEach(function(el){ var f = el.dataset.f, val = el.value.trim(); c[f] = (f === "start" || f === "target") ? (val === "" ? null : +val) : val; });
-      if(!c.text) return;
-      var changed = Object.keys(c).some(function(k){ return String(g[k] == null ? "" : g[k]) !== String(c[k] == null ? "" : c[k]); });
-      if(changed) patch(g, c);
-    });
-    editArea = null; renderGoals(); toast("Saved");
-  }
-
   /* ================= Weekly review ================= */
   var rvWeek = null, rvView = null;
   function renderReview(){
@@ -1145,8 +1087,6 @@
     var scribes = dates.map(function(d){ return get(mySpace(), "sc-" + d); }).filter(Boolean);
     var fam = all("famnote", "hh").filter(function(n){ return n.week === mon; });
     var myFam = fam.filter(function(n){ return n.owner === myUid(); })[0];
-    var measured = [], openMs = [], q = quarterOf(sun);
-    myAreas().forEach(function(a){ areaGoals(a.id).forEach(function(g){ if(g.kind === "measured") measured.push(g); goalMs(g.id).forEach(function(m){ if(!m.done && (!m.due || m.due <= q.end)) openMs.push({ m:m, a:a }); }); }); });
     var nav = '<div class="hb-bar"><div class="hb-nav"><button data-act="rv-week" data-d="-1">‹</button><span>' + fmtShort(mon) + " – " + fmtShort(sun) + '</span><button data-act="rv-week" data-d="1" ' + (mon >= mondayOf() ? "disabled" : "") + '>›</button></div>' + (rv && rv.done ? '<span class="pill">Done ' + fmtShort(dayKey(new Date(rv.doneAt || rv.updatedAt))) + '</span>' : "") + '</div>';
     var html = nav;
     if(prev && prev.better) html += '<div class="callout glass">Last week you chose: <b>' + esc(prev.better) + '</b></div>';
@@ -1162,9 +1102,7 @@
       if(s.pa) bits.push("<i>" + esc(s.pq || "") + "</i> " + esc(s.pa));
       return '<div class="sc-entry"><b>' + fmtDay(s.date) + '</b>' + bits.join("<br>") + '</div>';
     }).join("") : '<div class="muted small">No entries this week.</div>') + '</div>';
-    html += '<div class="rv-sec glass"><h3>Update progress</h3>' +
-      measured.map(function(g){ return '<div class="rv-row"><span>' + esc(g.text) + '</span><span style="display:flex;gap:6px;align-items:center"><input type="number" class="in" step="any" style="width:90px;padding:8px" data-measure="' + g.id + '" value="' + esc(g.current == null ? "" : g.current) + '" placeholder="' + esc(g.start) + '">' + esc(g.unit || "") + '</span></div>'; }).join("") +
-      (openMs.length ? openMs.map(function(o){ return '<div class="ms" style="--ac:' + esc(o.a.color) + '">' + checkBtn(false, "ms-tick", 'data-id="' + o.m.id + '"', "Tick milestone") + '<span>' + esc(o.m.text) + '</span><small>' + (o.m.due ? fmtShort(o.m.due) : "") + '</small></div>'; }).join("") : (measured.length ? "" : '<div class="muted small">Add milestones on the Goals tab to tick them off here.</div>')) + '</div>';
+    html += goalsReviewHtml();
     html += '<div class="rv-sec glass"><h3>To discuss with the family</h3><div class="muted small" style="margin-bottom:8px">From the week\'s reading. Shared with the household.</div>' +
       fam.filter(function(n){ return n.owner !== myUid() && n.text; }).map(function(n){ return '<div class="sc-entry"><b>' + esc(personName(n.owner)) + '</b>' + esc(n.text) + '</div>'; }).join("") +
       '<textarea class="in" id="rv-fam" placeholder="Something from the reading to talk about together">' + esc(myFam ? myFam.text : "") + '</textarea></div>';
@@ -1176,11 +1114,7 @@
     $("view-review").innerHTML = html;
   }
   function saveReview(mon){
-    document.querySelectorAll("[data-measure]").forEach(function(el){
-      var g = all("goal", "hh").filter(function(x){ return x.id === el.dataset.measure; })[0]; if(!g || el.value === "") return;
-      var v = +el.value; if(isNaN(v) || v === +g.current) return;
-      var log = (g.log || []).concat([{ date:today(), v:v }]).slice(-60); patch(g, { current:v, log:log });
-    });
+    saveGoalsReview();
     var famTxt = $("rv-fam").value.trim(), fid = "fn-" + mon + "-" + hbSafe(myUid()), fam = get("hh", fid);
     if(famTxt || fam) put(Object.assign({}, fam || { type:"famnote", id:fid, space:"hh", week:mon, owner:myUid() }, { text:famTxt }));
     var old = get(mySpace(), "rv-" + mon);
@@ -1604,6 +1538,324 @@
     "r-bible-url": function(){ var v = prompt("Holy Bible app address", bibleBase()); if(v && /^https?:\/\//.test(v.trim())){ setPref("bibleUrl", v.trim()); render(); } }
   };
 
+  /* ================= Goals v2 (v3.3.0) =================
+     Area → 10-year vision → Goal (a result by a date) → Milestones (dated checkpoints) → Habits + Tasks.
+     Goal kinds: "count" (a number that goes up), "measure" (a reading like weight), "milestones" (done when all are ticked).
+     Count goals can update themselves: source "nt" (Reading plan, Matthew–Revelation), "subjects", "wb" (White Books on time).
+     Shared goals live in "hh"; "Just me" goals in your own "u:" space. Milestones, tasks and updates sit in the goal's space. */
+  function goals(){ return all("goal").filter(function(g){ return g.v === 2 && !g.archived && (g.space === "hh" || g.space === mySpace()); }).sort(byOrder); }
+  function goalById(id){ return goals().filter(function(g){ return g.id === id; })[0] || null; }
+  function areaGoals(aId){ return goals().filter(function(g){ return g.areaId === aId; }); }
+  function goalMs(gId){ return all("ms").filter(function(m){ return m.goalId === gId && (m.space === "hh" || m.space === mySpace()); }).sort(function(a, b){ return (a.due || "9").localeCompare(b.due || "9") || byOrder(a, b); }); }
+  function goalTasks(gId){ return all("gtask").filter(function(t){ return t.goalId === gId && (t.space === "hh" || t.space === mySpace()); }).sort(function(a, b){ return (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.due || "9").localeCompare(b.due || "9") || byOrder(a, b); }); }
+  function goalLogs(gId){ return all("glog").filter(function(l){ return l.goalId === gId && (l.space === "hh" || l.space === mySpace()); }).sort(function(a, b){ return a.d.localeCompare(b.d) || (a.created || 0) - (b.created || 0); }); }
+  function goalHabits(gId){ return habits().filter(function(h){ return h.goalId === gId; }); }
+  function areaOf(g){ return areas().filter(function(a){ return a.id === g.areaId; })[0] || {}; }
+  function num(v){ return v === "" || v == null || isNaN(+v) ? null : +v; }
+  function fmtN(v, unit){ if(v == null) return "–"; var s = Math.round(v * 10) / 10; s = s.toLocaleString("en-AU"); return unit === "$" ? "$" + s : s + (unit ? (unit.length <= 2 ? "" : " ") + unit : ""); }
+
+  /* ---------- Progress: a series of (date, value) points, the current value and the target ---------- */
+  function goalSeries(g){
+    var pts = [], src = g.source || "manual";
+    if(g.kind === "count" && src === "nt"){
+      var p = rplan(), ds = []; if(p) Object.keys(p.done || {}).forEach(function(k){ if(+k.split(":")[0] >= 39) ds.push(p.done[k]); });
+      ds.sort(); ds.forEach(function(d, i){ pts.push([d, i + 1]); });
+    } else if(g.kind === "count" && src === "subjects"){
+      var sd = all("subject", "hh").filter(function(x){ return x.done && x.date; }).map(function(x){ return x.date; }).sort();
+      sd.forEach(function(d, i){ pts.push([d, i + 1]); });
+    } else if(g.kind === "count"){
+      var c = 0; goalLogs(g.id).forEach(function(l){ c += +l.v || 0; pts.push([l.d, c]); });
+    } else if(g.kind === "measure"){
+      goalLogs(g.id).forEach(function(l){ if(num(l.v) != null) pts.push([l.d, +l.v]); });
+    } else {
+      var n = 0; goalMs(g.id).filter(function(m){ return m.done && m.doneAt; }).map(function(m){ return m.doneAt; }).sort().forEach(function(d){ n++; pts.push([d, n]); });
+    }
+    return pts;
+  }
+  function wbStats(g){
+    var from = g.startDate || "0000", list = wbs().filter(function(w){ return (w.start || "") >= from; }), onTime = 0, due = 0, missed = 0;
+    list.forEach(function(w){
+      var end = dayKey(addDays(parseDay(w.start), (w.days || 7) - 1)), last = Object.keys(w.log || {}).sort().pop() || "";
+      var fin = (w.readTo || 0) >= w.pages;
+      if(fin && last <= end) onTime++;
+      if(end < today()){ due++; if(!(fin && last <= end)) missed++; }
+    });
+    return { received:list.length, onTime:onTime, missed:missed, due:due };
+  }
+  function goalProgress(g){
+    if(g.kind === "count" && g.source === "wb"){
+      var w = wbStats(g); return { cur:w.onTime, start:0, target:w.received, pct:w.received ? Math.round(w.onTime / w.received * 100) : 0, label:w.onTime + " of " + w.received + " on time", wb:w };
+    }
+    var pts = goalSeries(g), start = num(g.start) != null ? +g.start : 0, target = num(g.target), cur;
+    if(g.kind === "milestones"){ var ms = goalMs(g.id); target = ms.length; start = 0; cur = ms.filter(function(m){ return m.done; }).length; }
+    else if(g.kind === "measure") cur = pts.length ? pts[pts.length - 1][1] : (num(g.current) != null ? +g.current : start);
+    else cur = pts.length ? pts[pts.length - 1][1] : 0;
+    var pct = target != null && target !== start ? Math.max(0, Math.min(100, Math.round((cur - start) / (target - start) * 100))) : 0;
+    var label = g.kind === "measure" ? fmtN(cur, g.unit) + (target != null ? " → " + fmtN(target, g.unit) : "") : g.kind === "milestones" ? cur + " of " + target + " milestones" : fmtN(cur) + (target != null ? " of " + fmtN(target) : "") + (g.unit ? " " + g.unit : "");
+    return { cur:cur, start:start, target:target, pct:pct, label:label };
+  }
+  // Where you should be by a date: straight lines through start → each milestone with a number → target.
+  function pacePoints(g){
+    var pr = goalProgress(g), pts = [[g.startDate || today(), pr.start]];
+    if(g.kind === "milestones"){ var ms = goalMs(g.id), k = 0; ms.forEach(function(m){ if(m.due){ k++; pts.push([m.due, k]); } }); return pts; }
+    goalMs(g.id).forEach(function(m){ if(m.due && num(m.target) != null) pts.push([m.due, +m.target]); });
+    if(g.due && pr.target != null) pts.push([g.due, pr.target]);
+    return pts.sort(function(a, b){ return a[0].localeCompare(b[0]); });
+  }
+  function expectedAt(g, d){
+    var pts = pacePoints(g); if(pts.length < 2) return null;
+    if(d <= pts[0][0]) return pts[0][1];
+    for(var i = 1; i < pts.length; i++){
+      if(d <= pts[i][0]){ var a = pts[i - 1], b = pts[i], span = daysBetween(a[0], b[0]) || 1; return a[1] + (b[1] - a[1]) * daysBetween(a[0], d) / span; }
+    }
+    return pts[pts.length - 1][1];
+  }
+  // Pace: "g" on pace, "a" a little behind, "r" behind, "" not enough to say
+  function goalPace(g){
+    var pr = goalProgress(g);
+    if(g.kind === "count" && g.source === "wb"){ if(!pr.wb.due) return { s:"", txt:"Not started" }; return pr.wb.missed ? { s:pr.wb.missed > 1 ? "r" : "a", txt:pr.wb.missed + " missed" } : { s:"g", txt:"None missed" }; }
+    if(pr.target == null) return { s:"", txt:"Set a target" };
+    if(pr.pct >= 100) return { s:"g", txt:"Achieved" };
+    var exp = expectedAt(g, today()); if(exp == null) return { s:"", txt:"Add a due date" };
+    var range = Math.abs(pr.target - pr.start) || 1, dir = pr.target >= pr.start ? 1 : -1, gap = (pr.cur - exp) * dir / range;
+    var unit = g.kind === "milestones" ? "" : (g.unit || "");
+    var diff = Math.abs(pr.cur - exp), txt = gap >= -0.03 ? "On pace" : fmtN(Math.round(diff * 10) / 10, unit === "$" ? "$" : "") + (unit && unit !== "$" ? " " + unit : "") + " behind";
+    return { s:gap >= -0.03 ? "g" : gap >= -0.12 ? "a" : "r", txt:txt, exp:exp };
+  }
+  function statusOf(g){ var st = g.status; if(st && st.s && st.d >= dayKey(addDays(new Date(), -8))) return { s:st.s, txt:{ g:"On track", a:"At risk", r:"Off track" }[st.s], manual:true }; return goalPace(g); }
+
+  /* ---------- Drawing ---------- */
+  function ring(pct, color, size){
+    size = size || 46; var r = size / 2 - 4, c = 2 * Math.PI * r, off = c * (1 - Math.max(0, Math.min(100, pct)) / 100);
+    return '<svg class="ring" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '"><circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="rgba(46,43,40,.08)" stroke-width="4"/><circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="4" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" transform="rotate(-90 ' + size / 2 + ' ' + size / 2 + ')"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="' + (size > 50 ? 15 : 11.5) + '" font-family="Outfit" fill="#26241F">' + pct + '%</text></svg>';
+  }
+  function pacePill(st){ return st.s || st.txt ? '<span class="pace p-' + (st.s || "n") + '">' + esc(st.txt) + '</span>' : ""; }
+  function goalChart(g){
+    var pace = pacePoints(g), pts = goalSeries(g), pr = goalProgress(g);
+    if(g.source === "wb" || pace.length < 2) return "";
+    var W = 320, H = 140, L = 34, R = 8, T = 10, B = 22, d0 = parseDay(pace[0][0]), d1 = parseDay(pace[pace.length - 1][0]);
+    var vals = pace.map(function(p){ return p[1]; }).concat(pts.map(function(p){ return p[1]; })); vals.push(pr.cur);
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals); if(hi === lo) hi = lo + 1; var pad = (hi - lo) * .08; lo -= pad; hi += pad;
+    var x = function(d){ return L + (W - L - R) * Math.max(0, Math.min(1, (parseDay(d) - d0) / ((d1 - d0) || 1))); }, y = function(v){ return T + (H - T - B) * (1 - (v - lo) / (hi - lo)); };
+    var path = function(ps){ return ps.map(function(p, i){ return (i ? "L" : "M") + x(p[0]).toFixed(1) + " " + y(p[1]).toFixed(1); }).join(" "); };
+    var act = [[pace[0][0], pr.start]].concat(pts.map(function(p){ return [p[0] < pace[0][0] ? pace[0][0] : p[0], p[1]]; }));
+    if(g.kind !== "measure" && act[act.length - 1][0] < today()) act.push([today(), pr.cur]);
+    var tx = x(today()), color = areaOf(g).color || "#6753A6";
+    var fmtY = function(v){ return Math.round(v).toLocaleString("en-AU"); };
+    return '<svg class="gchart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Progress against pace">' +
+      '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(hi - pad) + '" y2="' + y(hi - pad) + '" stroke="rgba(46,43,40,.06)"/><line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(lo + pad) + '" y2="' + y(lo + pad) + '" stroke="rgba(46,43,40,.06)"/>' +
+      '<text x="' + (L - 6) + '" y="' + (y(hi - pad) + 4) + '" text-anchor="end" font-size="10" fill="#ABA59C">' + fmtY(hi - pad) + '</text><text x="' + (L - 6) + '" y="' + (y(lo + pad) + 4) + '" text-anchor="end" font-size="10" fill="#ABA59C">' + fmtY(lo + pad) + '</text>' +
+      '<path d="' + path(pace) + '" fill="none" stroke="#ABA59C" stroke-width="1.5" stroke-dasharray="4 4"/>' +
+      (tx > L && tx < W - R ? '<line x1="' + tx + '" x2="' + tx + '" y1="' + T + '" y2="' + (H - B) + '" stroke="rgba(46,43,40,.15)"/><text x="' + tx + '" y="' + (H - 7) + '" text-anchor="middle" font-size="10" fill="#77716A">Today</text>' : "") +
+      '<text x="' + L + '" y="' + (H - 7) + '" font-size="10" fill="#ABA59C">' + fmtShort(pace[0][0]) + '</text><text x="' + (W - R) + '" y="' + (H - 7) + '" text-anchor="end" font-size="10" fill="#ABA59C">' + fmtShort(pace[pace.length - 1][0]) + '</text>' +
+      '<path d="' + path(act) + '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="' + x(act[act.length - 1][0]).toFixed(1) + '" cy="' + y(act[act.length - 1][1]).toFixed(1) + '" r="4" fill="' + color + '"/></svg>' +
+      '<div class="g-legend"><span><i style="background:' + color + '"></i>You</span><span><i class="dash"></i>On pace</span></div>';
+  }
+
+  /* ---------- Goals list ---------- */
+  var goalOpen = null, editArea = null;
+  function goalCard(g){
+    var pr = goalProgress(g), st = statusOf(g), a = areaOf(g);
+    return '<button class="g-card glass" data-act="g-open" data-id="' + g.id + '">' + ring(pr.pct, a.color || "#6753A6") +
+      '<span class="g-body"><b>' + esc(g.title) + '</b><span>' + esc(pr.label) + (g.due ? " · by " + fmtShort(g.due) : "") + '</span><span class="g-tags">' + pacePill(st) + (g.space === "hh" ? '<span class="pill">Shared</span>' : "") + '</span></span><span class="g-chev">›</span></button>';
+  }
+  function renderGoals(){
+    if(goalOpen && goalById(goalOpen)) return renderGoalPage(goalById(goalOpen));
+    goalOpen = null;
+    var as = areas(), html = "";
+    var anchor = as.filter(function(a){ return a.anchor; })[0];
+    if(anchor && (!anchor.person || anchor.person === myUid())) html += '<div class="anchor-card glass"><div class="area-h"><span class="eyebrow">Anchor affirmation</span><button class="link-btn" data-act="area-edit" data-id="' + anchor.id + '">Edit</button></div><div class="quote">' + esc(anchor.affirmation) + '</div></div>';
+    as.filter(function(a){ return !a.anchor; }).forEach(function(a){
+      var gs = areaGoals(a.id);
+      if(!gs.length && a.person && a.person !== myUid()) return;
+      html += '<div class="area-head"><span class="dot" style="background:' + esc(a.color || "#999") + '"></span><h3>' + esc(a.name) + '</h3><button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Vision & affirmation</button></div>' +
+        (a.vision ? '<details class="vision-d"><summary>10-year vision</summary><div class="vision">' + esc(a.vision) + '</div></details>' : "") +
+        (gs.length ? gs.map(goalCard).join("") : '<div class="muted small" style="margin:0 6px 10px">No goals here yet.</div>');
+    });
+    if(!goals().length && !signedIn()) html += '<div class="glass empty" style="padding:18px">Sign in (Settings, top right) to load your goals.</div>';
+    html += '<div class="btn-row"><button class="btn btn-ink" data-act="g-new">Add a goal</button></div>' +
+      '<p class="help">A goal is a result by a date. The daily work sits inside each goal as habits and tasks. Tap a goal to open it.</p>';
+    $("view-goals").innerHTML = html;
+  }
+
+  /* ---------- One goal ---------- */
+  function renderGoalPage(g){
+    var pr = goalProgress(g), st = statusOf(g), a = areaOf(g), color = a.color || "#6753A6", mine = g.space !== "hh" || true;
+    var ms = goalMs(g.id), tasks = goalTasks(g.id), hs = goalHabits(g.id), logs = goalLogs(g.id).slice().reverse(), mon = mondayOf();
+    var auto = g.kind === "count" && g.source && g.source !== "manual";
+    var upd = "";
+    if(auto) upd = '<div class="muted small">Updates itself from the ' + ({ nt:"Reading tab (morning plan)", subjects:"Reading tab (Subjects for the boys)", wb:"Reading tab (White Book)" }[g.source] || "app") + '.</div>';
+    else if(g.kind === "count") upd = '<div class="add-row"><input type="text" id="gl-note" placeholder="Note (optional)"><input type="date" id="gl-date" value="' + today() + '" max="' + today() + '"><button class="btn btn-ink btn-sm" data-act="g-log" data-id="' + g.id + '">+1</button></div>';
+    else if(g.kind === "measure") upd = '<div class="add-row"><input type="number" class="in" step="any" id="gl-val" placeholder="' + esc(g.unit || "Value") + '" inputmode="decimal"><input type="date" id="gl-date" value="' + today() + '" max="' + today() + '"><button class="btn btn-ink btn-sm" data-act="g-log" data-id="' + g.id + '">Save</button></div>';
+    var html = '<button class="link-btn back" data-act="g-close">‹ Goals</button>' +
+      '<div class="g-hero glass"><div class="g-top">' + ring(pr.pct, color, 64) + '<div><div class="eyebrow"><span class="dot" style="background:' + esc(color) + '"></span>' + esc(a.name || "") + ' · ' + (g.space === "hh" ? "Shared" : "Just me") + '</div><h2>' + esc(g.title) + '</h2><div class="g-sub">' + esc(pr.label) + (g.due ? ' · by ' + fmtDay(g.due, { day:"numeric", month:"short", year:"numeric" }) : "") + '</div>' + pacePill(st) + '</div></div>' +
+      goalChart(g) + upd + '</div>';
+    if(g.why) html += '<div class="rv-sec glass"><h3>Why</h3><div class="vision" style="margin:0">' + esc(g.why) + '</div></div>';
+    // Milestones
+    html += '<div class="rv-sec glass"><h3>Milestones</h3>' + (ms.length ? ms.map(function(m){
+      var reached = !m.done && num(m.target) != null && g.kind !== "milestones" && (pr.target >= pr.start ? pr.cur >= +m.target : pr.cur <= +m.target);
+      var done = m.done || reached, late = !done && m.due && m.due < today();
+      return '<div class="ms' + (done ? " done" : "") + (late ? " late" : "") + '" style="--ac:' + esc(color) + '">' + checkBtn(done, "ms-tick", 'data-id="' + m.id + '" data-sp="' + m.space + '"', "Tick milestone") + '<span>' + esc(m.text) + (num(m.target) != null && g.kind !== "milestones" && m.text.indexOf(String(m.target)) < 0 ? ' <span class="muted small">(' + fmtN(+m.target, g.unit) + ')</span>' : "") + '</span><small>' + (m.due ? fmtShort(m.due) : "") + '</small><button class="link-btn" data-act="ms-del" data-id="' + m.id + '" data-sp="' + m.space + '" aria-label="Delete milestone">×</button></div>';
+    }).join("") : '<div class="muted small">No milestones yet. Add 3–5 dated checkpoints.</div>') +
+      '<input type="text" id="ms-text" placeholder="New checkpoint, e.g. Through Luke" style="margin-top:10px"><div class="add-row">' + (g.kind !== "milestones" ? '<input type="number" class="in" step="any" id="ms-target" placeholder="' + esc(g.unit || "Number") + '">' : "") + '<input type="date" id="ms-due" value="' + quarterOf().end + '"><button class="btn btn-soft btn-sm" data-act="ms-add" data-id="' + g.id + '">Add</button></div></div>';
+    // Habits
+    html += '<div class="rv-sec glass"><h3>Habits</h3>' + (hs.length ? hs.map(function(h){ var c = hbWeekCount(h, myUid(), mon), t = hbTarget(h), on = hbMark(h, myUid(), today()) === "g";
+      return '<div class="rr"><div class="rr-t"><b>' + esc(h.name) + '</b><span>' + c + ' of ' + t + ' this week · streak ' + hbStats(h, myUid()).streak + '</span></div>' + (hbTracks(h, myUid()) ? checkBtn(on, "hb-today", 'data-id="' + h.id + '" data-sp="' + h.space + '"', "Tick " + h.name) : "") + '</div>'; }).join("") : '<div class="muted small">No habits linked yet.</div>') +
+      (g.source === "nt" || g.source === "subjects" || g.source === "wb" ? '<div class="muted small" style="margin-top:6px">The daily reading for this goal is on the Reading tab.</div>' : "") +
+      '<button class="link-btn" data-act="g-habit" data-id="' + g.id + '">+ Add a habit for this goal</button></div>';
+    // Tasks
+    var openT = tasks.filter(function(t){ return !t.done; }), doneT = tasks.filter(function(t){ return t.done; });
+    html += '<div class="rv-sec glass"><h3>Tasks</h3>' + (openT.length ? openT.map(taskRow).join("") : '<div class="muted small">No open tasks.</div>') +
+      '<div class="add-row"><input type="text" id="gt-text" placeholder="Next step"><input type="date" id="gt-due"><button class="btn btn-soft btn-sm" data-act="gt-add" data-id="' + g.id + '">Add</button></div>' +
+      (doneT.length ? '<details style="margin-top:8px"><summary class="small muted">Done (' + doneT.length + ')</summary>' + doneT.map(taskRow).join("") + '</details>' : "") + '</div>';
+    // If–then, notes, links
+    html += '<div class="rv-sec glass"><h3>If–then plan</h3><textarea class="in" rows="2" data-gfield="ifThen" data-id="' + g.id + '" placeholder="If [obstacle], then I will [action].">' + esc(g.ifThen || "") + '</textarea></div>';
+    html += '<div class="rv-sec glass"><h3>Notes</h3><textarea class="in" rows="4" data-gfield="notes" data-id="' + g.id + '" placeholder="Thoughts, lessons, plans">' + esc(g.notes || "") + '</textarea>' +
+      '<div class="lbl" style="margin-top:12px">Links</div>' + (g.links || []).map(function(l, i){ return '<div class="rv-row"><a href="' + esc(l.u) + '" target="_blank" rel="noopener">' + esc(l.t || l.u) + '</a><button class="link-btn" data-act="gk-del" data-id="' + g.id + '" data-i="' + i + '">×</button></div>'; }).join("") +
+      '<div class="add-row"><input type="text" id="gk-t" placeholder="Label"><input type="text" id="gk-u" placeholder="https://… (doc, file, page)"><button class="btn btn-soft btn-sm" data-act="gk-add" data-id="' + g.id + '">Add</button></div></div>';
+    // Updates log
+    if(logs.length) html += '<div class="rv-sec glass"><h3>Updates</h3>' + logs.slice(0, 15).map(function(l){ return '<div class="rv-row"><span>' + fmtShort(l.d) + (l.note ? ' · ' + esc(l.note) : "") + (l.by && l.by !== myUid() ? ' <span class="muted small">· ' + esc(personName(l.by)) + '</span>' : "") + '</span><span><b>' + (g.kind === "measure" ? fmtN(+l.v, g.unit) : "+" + l.v) + '</b> <button class="link-btn" data-act="gl-del" data-id="' + l.id + '" data-sp="' + l.space + '">×</button></span></div>'; }).join("") + '</div>';
+    html += '<div class="btn-row"><button class="btn btn-soft" data-act="g-edit" data-id="' + g.id + '">Edit goal</button></div>';
+    $("view-goals").innerHTML = html;
+  }
+  function taskRow(t){ var late = !t.done && t.due && t.due < today(); return '<div class="ms' + (t.done ? " done" : "") + (late ? " late" : "") + '" style="--ac:var(--ok)">' + checkBtn(t.done, "gt-tick", 'data-id="' + t.id + '" data-sp="' + t.space + '"', "Tick task") + '<span>' + esc(t.text) + '</span><small>' + (t.due ? fmtShort(t.due) : "") + '</small><button class="link-btn" data-act="gt-del" data-id="' + t.id + '" data-sp="' + t.space + '">×</button></div>'; }
+
+  /* ---------- Add / edit a goal ---------- */
+  function goalSheet(g){
+    var isNew = !g; g = g || { kind:"count", source:"manual", startDate:today(), due:"2027-12-31", space:mySpace(), start:0 };
+    var opt = function(v, l, cur){ return '<option value="' + v + '"' + (String(cur) === String(v) ? " selected" : "") + '>' + l + '</option>'; };
+    openSheet('<h2>' + (isNew ? "New goal" : "Edit goal") + '</h2><p class="muted small">A result you can say yes or no to, or read off a number, by a date.</p>' +
+      '<div class="fld"><label>Goal</label><input type="text" id="gf-title" value="' + esc(g.title || "") + '" placeholder="e.g. Read Romans to Revelation"></div>' +
+      '<div class="grid2"><div class="fld"><label>Area</label><select id="gf-area">' + areas().filter(function(a){ return !a.anchor; }).map(function(a){ return opt(a.id, esc(a.name), g.areaId); }).join("") + '</select></div>' +
+      '<div class="fld"><label>Who</label><select id="gf-who">' + opt("me", "Just me", g.space === "hh" ? "" : "me") + opt("hh", "Shared with " + (personName(myUid() === "bronnia" ? "andrew" : "bronnia") || "household"), g.space === "hh" ? "hh" : "") + '</select></div></div>' +
+      '<div class="fld"><label>How it\'s measured</label><select id="gf-kind">' + opt("count", "A count that goes up (chapters, date nights…)", g.kind) + opt("measure", "A reading (weight, $ saved…)", g.kind) + opt("milestones", "Done when its milestones are ticked", g.kind) + '</select></div>' +
+      '<div class="fld" id="gf-src-w"' + (g.kind === "count" ? "" : ' style="display:none"') + '><label>Counted from</label><select id="gf-src">' + opt("manual", "My updates (+1)", g.source) + opt("nt", "Reading plan — New Testament chapters", g.source) + opt("subjects", "Subjects for the boys", g.source) + opt("wb", "White Books read on time", g.source) + '</select></div>' +
+      '<div class="grid3" id="gf-nums"' + (g.kind === "milestones" ? ' style="display:none"' : "") + '><div class="fld"><label>Start</label><input type="number" class="in" step="any" id="gf-start" value="' + esc(g.start == null ? "" : g.start) + '"></div><div class="fld"><label>Target</label><input type="number" class="in" step="any" id="gf-target" value="' + esc(g.target == null ? "" : g.target) + '"></div><div class="fld"><label>Unit</label><input type="text" id="gf-unit" value="' + esc(g.unit || "") + '" placeholder="kg, $, chapters"></div></div>' +
+      '<div class="grid2"><div class="fld"><label>Starting</label><input type="date" id="gf-sd" value="' + esc(g.startDate || today()) + '"></div><div class="fld"><label>Due</label><input type="date" id="gf-due" value="' + esc(g.due || "") + '"></div></div>' +
+      '<div class="fld"><label>Why it matters</label><textarea class="in" id="gf-why" rows="2">' + esc(g.why || "") + '</textarea></div>' +
+      '<div class="btn-row"><button class="btn btn-ink" data-act="g-save" data-id="' + (g.id || "") + '" data-sp="' + (g.space || "") + '">Save</button></div>' +
+      (isNew ? "" : '<div class="btn-row"><button class="btn btn-soft" data-act="g-archive" data-id="' + g.id + '">' + (g.done ? "Reopen" : "Mark achieved and archive") + '</button><button class="btn btn-danger" data-act="g-del" data-id="' + g.id + '">Delete</button></div>'));
+  }
+  // Move a goal and everything under it between "Just me" and "Shared"
+  function moveGoal(g, sp){
+    var kids = ["ms", "gtask", "glog"].reduce(function(acc, t){ return acc.concat(all(t, g.space).filter(function(x){ return x.goalId === g.id; })); }, []);
+    kids.forEach(function(x){ put(Object.assign({}, x, { space:sp })); del(x); });
+    var ng = put(Object.assign({}, g, { space:sp })); del(g); return ng;
+  }
+  function areaSheet(a){
+    var f = function(id, label, val, rows){ return '<div class="fld"><label>' + label + '</label><textarea class="in" id="' + id + '" rows="' + (rows || 3) + '">' + esc(val || "") + '</textarea></div>'; };
+    openSheet('<h2>' + (a.anchor ? "Anchor affirmation" : esc(a.name)) + '</h2>' +
+      (a.anchor ? f("ae-aff", "Affirmation", a.affirmation, 7) :
+        '<div class="fld"><label>Name</label><input type="text" id="ae-name" value="' + esc(a.name) + '"></div>' + f("ae-vision", "10-year vision", a.vision, 5) + f("ae-aff", "Affirmation (read each morning)", a.affirmation, 7) + f("ae-vis", "Visualisation", a.visualisation, 4) + f("ae-daily", "Daily standard", a.dailyAction, 2)) +
+      '<div class="btn-row"><button class="btn btn-ink" data-act="area-save" data-id="' + a.id + '">Save</button></div>');
+  }
+
+  /* ---------- Today: goal tasks due ---------- */
+  function renderTodayTasks(){
+    var el = $("today-tasks"); if(!el) return;
+    var gs = goals(), ts = [];
+    gs.forEach(function(g){ goalTasks(g.id).forEach(function(t){ if(!t.done && t.due && t.due <= today()) ts.push({ t:t, g:g }); }); });
+    if(!ts.length){ el.style.display = "none"; return; }
+    el.style.display = "";
+    el.innerHTML = '<div class="th-head"><b>Goal steps due</b><button class="link-btn" data-act="go" data-v="goals">Goals</button></div>' + ts.map(function(o){
+      return '<div class="rr"><div class="rr-t"><b>' + esc(o.t.text) + '</b><span>' + esc(o.g.title) + (o.t.due < today() ? ' · <span style="color:var(--danger)">due ' + fmtShort(o.t.due) + '</span>' : "") + '</span></div>' + checkBtn(false, "gt-tick", 'data-id="' + o.t.id + '" data-sp="' + o.t.space + '"', "Tick") + '</div>';
+    }).join("");
+  }
+
+  /* ---------- Weekly review: goals ---------- */
+  function goalsReviewHtml(){
+    var gs = goals(); if(!gs.length) return "";
+    return '<div class="rv-sec glass"><h3>Goals</h3><div class="muted small" style="margin-bottom:6px">Check each one: how is it really going, and what is the one next step?</div>' + gs.map(function(g){
+      var pr = goalProgress(g), pace = goalPace(g), cur = g.status && g.status.d >= mondayOf() ? g.status.s : "";
+      return '<div class="rv-goal"><div class="rv-row" style="border:none;padding-bottom:2px"><span><b style="font-weight:500">' + esc(g.title) + '</b><br><span class="muted small">' + esc(pr.label) + '</span></span>' + pacePill(pace) + '</div>' +
+        '<div class="seg rv-st" data-goal="' + g.id + '">' + [["g", "On track"], ["a", "At risk"], ["r", "Off track"]].map(function(x){ return '<button type="button" data-act="rv-gs" data-id="' + g.id + '" data-s="' + x[0] + '" class="' + (cur === x[0] ? "active s-" + x[0] : "") + '">' + x[1] + '</button>'; }).join("") + '</div>' +
+        '<input type="text" class="rv-next" data-next="' + g.id + '" placeholder="Next step this week (becomes a task)"></div>';
+    }).join("") + '</div>';
+  }
+  function saveGoalsReview(){
+    document.querySelectorAll("[data-next]").forEach(function(el){
+      var g = goalById(el.dataset.next), t = el.value.trim(); if(!g || !t) return;
+      put({ type:"gtask", id:"gt-" + uid(), space:g.space, goalId:g.id, text:t, due:dayKey(addDays(new Date(), 6)), done:false, order:Date.now() });
+    });
+  }
+
+  /* ---------- One-off: replace the first goals with the 2027 goals (from the goals doc, 10 Nov 2026) ---------- */
+  var GOALS_2027 = [
+    { id:"g2-nt", area:"area-faith", who:"me", title:"Read the New Testament, Matthew to Revelation", kind:"count", source:"nt", start:0, target:260, unit:"chapters", why:"Everything else I build means nothing without this.", ifThen:"If I miss a morning, then I read the missed chapter at lunch before the Proverb.",
+      ms:[["Through Luke", "2027-02-28", 68], ["Through Romans", "2027-05-31", 133], ["Through Colossians", "2027-08-31", 182], ["Through Jude", "2027-11-30", 238], ["Revelation 22", "2027-12-31", 260]] },
+    { id:"g2-subjects", area:"area-faith", who:"hh", title:"Read all 218 subjects with the boys", kind:"count", source:"subjects", start:0, target:218, unit:"subjects", why:"I lead my household in learning.", ifThen:"If a night is lost, then we read two on Saturday.",
+      ms:[["60 read", "2027-02-28", 60], ["110 read", "2027-05-31", 110], ["160 read", "2027-08-31", 160], ["210 read", "2027-11-30", 210], ["All 218", "2027-12-31", 218]], habits:[["Subject with the boys", 4, true]] },
+    { id:"g2-wb", area:"area-faith", who:"me", title:"Read every White Book as it arrives, none missed", kind:"count", source:"wb", start:0, unit:"White Books", why:"The ministry given through our leaders, kept up week by week.", ifThen:"If I'm behind by Friday, then I finish it Saturday morning before the next one arrives." },
+    { id:"g2-dates", area:"area-family", who:"hh", title:"28 date nights with Bronnia", kind:"count", source:"manual", start:0, target:28, unit:"date nights", why:"She always feels loved and supported.", ifThen:"If a date night falls through, then we rebook it inside 7 days.",
+      ms:[["8 date nights", "2027-02-28", 8], ["14", "2027-05-31", 14], ["20", "2027-08-31", 20], ["26", "2027-11-30", 26], ["28", "2027-12-31", 28]], tasks:[["Book the next date night"]] },
+    { id:"g2-boys", area:"area-family", who:"me", title:"One-on-one time with each boy in 50 weeks", kind:"count", source:"manual", start:0, target:50, unit:"weeks", why:"The boys remember a dad who was always there.", ifThen:"If I'm travelling that week, then a call doing something he loves counts.",
+      ms:[["14 weeks", "2027-02-28", 14], ["26 weeks", "2027-05-31", 26], ["38 weeks", "2027-08-31", 38], ["46 weeks", "2027-11-30", 46], ["50 weeks", "2027-12-31", 50]], habits:[["One-on-one time with each boy", 1]] },
+    { id:"g2-weight", area:"area-health", who:"me", title:"Reach 85kg by 30 April, then stay under 87kg", kind:"measure", start:104, target:85, unit:"kg", due:"2027-04-30", why:"The energy to keep up with and be present for my boys.", ifThen:"If I'm interstate, then I do the 20-minute hotel session before breakfast.",
+      notes:"After 30 April 2027: stay under 87kg at every monthly check to 31 Dec 2027.",
+      ms:[["98kg", "2026-12-31", 98], ["95kg", "2027-01-31", 95], ["92kg", "2027-02-28", 92], ["88kg", "2027-03-31", 88], ["85kg", "2027-04-30", 85], ["Elite Executive program finished", "2027-05-31", null]],
+      habits:[["Train", 4], ["Weigh in (Monday)", 1], ["Log food", 6]], tasks:[["Pick a book on the science of eating and portions"]] },
+    { id:"g2-terakor", area:"area-financial", who:"me", title:"Terakor launched and selling", kind:"measure", start:0, unit:"$", why:"Income sustainable enough to employ Dad full time.", ifThen:"If the week is full with Entro, then the Saturday-morning hour is Terakor's.",
+      habits:[["Terakor step", 3]], tasks:[["Set the sales target and dates for this goal"]] },
+    { id:"g2-property", area:"area-financial", who:"hh", title:"First development property bought", kind:"milestones", why:"The start of the property nest egg, and freedom from debt.", ifThen:"If a Sunday review is missed, then we do it Monday night — never two in a row.",
+      ms:[["Budget fully tracked for 3 months", "2027-02-28"], ["Finance pre-approval", "2027-05-31"], ["Area and criteria agreed", "2027-05-31"], ["Offer made", "2027-09-30"], ["Settled", "2027-12-31"]], habits:[["Sunday budget review", 1, true]] }
+  ];
+  function maybeSeedGoalsV2(){
+    if(myUid() !== "andrew") return; // only the owner seeds, after signing in and syncing
+    if(get("hh", "goals-v2") || lsGet("life_goals_v2_" + myUid())) return;
+    if(!areas().length) return;
+    all("goal").forEach(function(g){ if(g.v !== 2 && !g.archived) patch(g, { archived:true }); });
+    var sd = today();
+    GOALS_2027.forEach(function(s, i){
+      var sp = s.who === "hh" ? "hh" : mySpace();
+      put({ type:"goal", v:2, id:s.id, space:sp, areaId:s.area, title:s.title, kind:s.kind, source:s.source || "manual", start:s.start == null ? null : s.start, target:s.target == null ? null : s.target, unit:s.unit || "",
+        startDate:sd, due:s.due || "2027-12-31", why:s.why || "", ifThen:s.ifThen || "", notes:s.notes || "", owner:myUid(), order:(i + 1) * 10 });
+      (s.ms || []).forEach(function(m, k){ put({ type:"ms", id:s.id + "-ms" + (k + 1), space:sp, goalId:s.id, text:m[0], due:m[1], target:m[2] == null ? null : m[2], done:false, order:k }); });
+      (s.tasks || []).forEach(function(t, k){ put({ type:"gtask", id:s.id + "-t" + (k + 1), space:sp, goalId:s.id, text:t[0], due:t[1] || "", done:false, order:k }); });
+      (s.habits || []).forEach(function(h, k){ if(habits().some(function(x){ return x.name === h[0]; })) return; put({ type:"habit", id:"hb-" + s.id + "-" + (k + 1), space:"hh", owner:myUid(), name:h[0], perWeek:h[1], goalId:s.id, people:h[2] ? "all" : undefined, order:(i + 1) * 10 + k }); });
+    });
+    put({ type:"flag", id:"goals-v2", space:"hh", at:today() });
+    lsSet("life_goals_v2_" + myUid(), "1");
+  }
+
+  var goalActions = {
+    "g-open": function(el){ goalOpen = el.dataset.id; renderGoals(); window.scrollTo(0, 0); },
+    "g-close": function(){ goalOpen = null; renderGoals(); window.scrollTo(0, 0); },
+    "g-new": function(){ goalSheet(null); },
+    "g-edit": function(el){ var g = goalById(el.dataset.id); if(g) goalSheet(g); },
+    "g-save": function(el){
+      var t = $("gf-title").value.trim(); if(!t){ toast("Name the goal"); return; }
+      var kind = $("gf-kind").value, sp = $("gf-who").value === "hh" ? "hh" : mySpace();
+      var ch = { title:t, areaId:$("gf-area").value, kind:kind, source:kind === "count" ? $("gf-src").value : "manual", start:num($("gf-start").value), target:num($("gf-target").value), unit:$("gf-unit").value.trim(), startDate:$("gf-sd").value || today(), due:$("gf-due").value, why:$("gf-why").value.trim() };
+      if(kind === "count" && ch.start == null) ch.start = 0;
+      var old = el.dataset.id ? goalById(el.dataset.id) : null;
+      if(old){ var g = patch(old, ch); if(g.space !== sp) g = moveGoal(g, sp); goalOpen = g.id; }
+      else { var n = put(Object.assign({ type:"goal", v:2, id:"g2-" + uid(), space:sp, owner:myUid(), order:Date.now() }, ch)); goalOpen = n.id; }
+      closeSheet(); toast("Goal saved");
+    },
+    "g-archive": function(el){ var g = goalById(el.dataset.id); if(!g) return; patch(g, { archived:true, done:true, doneAt:today() }); goalOpen = null; closeSheet(); toast("Goal archived — well done"); },
+    "g-del": function(el){ var g = goalById(el.dataset.id); if(!g || !confirm("Delete this goal, its milestones, tasks and updates?")) return; ["ms", "gtask", "glog"].forEach(function(t){ all(t, g.space).filter(function(x){ return x.goalId === g.id; }).forEach(del); }); del(g); goalOpen = null; closeSheet(); },
+    "g-log": function(el){ var g = goalById(el.dataset.id); if(!g) return; var d = ($("gl-date") || {}).value || today(), v;
+      if(g.kind === "measure"){ v = num($("gl-val").value); if(v == null){ toast("Enter a number"); return; } } else v = 1;
+      put({ type:"glog", id:"gl-" + uid(), space:g.space, goalId:g.id, d:d, v:v, note:(($("gl-note") || {}).value || "").trim(), by:myUid() }); buzz(15); toast("Updated"); renderGoals(); },
+    "gl-del": function(el){ var l = get(el.dataset.sp, el.dataset.id); if(l && confirm("Remove this update?")){ del(l); renderGoals(); } },
+    "ms-add": function(el){ var g = goalById(el.dataset.id), t = $("ms-text").value.trim(); if(!g || !t) return; put({ type:"ms", id:"ms-" + uid(), space:g.space, goalId:g.id, text:t, due:$("ms-due").value, target:$("ms-target") ? num($("ms-target").value) : null, done:false, order:Date.now() }); renderGoals(); },
+    "ms-tick": function(el){ var m = get(el.dataset.sp || "hh", el.dataset.id); if(!m) return; patch(m, { done:!m.done, doneAt:!m.done ? today() : "" }); buzz(15); render(); },
+    "ms-del": function(el){ var m = get(el.dataset.sp || "hh", el.dataset.id); if(m && confirm("Delete this milestone?")){ del(m); render(); } },
+    "gt-add": function(el){ var g = goalById(el.dataset.id), t = $("gt-text").value.trim(); if(!g || !t) return; put({ type:"gtask", id:"gt-" + uid(), space:g.space, goalId:g.id, text:t, due:$("gt-due").value, done:false, order:Date.now() }); renderGoals(); },
+    "gt-tick": function(el){ var t = get(el.dataset.sp, el.dataset.id); if(!t) return; patch(t, { done:!t.done, doneAt:!t.done ? today() : "" }); buzz(15); render(); },
+    "gt-del": function(el){ var t = get(el.dataset.sp, el.dataset.id); if(t){ del(t); render(); } },
+    "gk-add": function(el){ var g = goalById(el.dataset.id), u = $("gk-u").value.trim(); if(!g || !/^https?:\/\//.test(u)){ toast("Paste a link starting with https://"); return; } patch(g, { links:(g.links || []).concat([{ t:$("gk-t").value.trim(), u:u }]) }); renderGoals(); },
+    "gk-del": function(el){ var g = goalById(el.dataset.id); if(!g) return; var l = (g.links || []).slice(); l.splice(+el.dataset.i, 1); patch(g, { links:l }); renderGoals(); },
+    "g-habit": function(el){ habitSheet(null); var s = $("hf-goal"); if(s) s.value = el.dataset.id; },
+    "area-edit": function(el){ var a = areas().filter(function(x){ return x.id === el.dataset.id; })[0]; if(a) areaSheet(a); },
+    "area-save": function(el){ var a = areas().filter(function(x){ return x.id === el.dataset.id; })[0]; if(!a) return; var v = function(id){ var e = $(id); return e ? e.value.trim() : undefined; };
+      var ch = { affirmation:v("ae-aff") }; if(!a.anchor){ ch.name = v("ae-name") || a.name; ch.vision = v("ae-vision"); ch.visualisation = v("ae-vis"); ch.dailyAction = v("ae-daily"); } patch(a, ch); closeSheet(); toast("Saved"); },
+    "rv-gs": function(el){ var g = goalById(el.dataset.id); if(!g) return; patch(g, { status:{ s:el.dataset.s, d:today() } });
+      el.parentNode.querySelectorAll("button").forEach(function(b){ b.className = b === el ? "active s-" + el.dataset.s : ""; }); }
+  };
+  function goalFieldSave(el){ var g = goalById(el.dataset.id); if(!g) return; var ch = {}; ch[el.dataset.gfield] = el.value.trim(); patch(g, ch); }
+
   /* ================= Sound + vibration ================= */
   var actx = null;
   function playChime(kind){
@@ -1889,7 +2141,8 @@
     "install": function(){ if(!installEvt) return; installEvt.prompt(); installEvt.userChoice.then(function(){ installEvt = null; renderInstall(); }); },
     "sheet-close": function(){ closeSheet(); }
   };
-  Object.assign(actions, readActions);
+  Object.assign(actions, readActions, goalActions);
+  (function(){ var f = actions["hb-today"]; actions["hb-today"] = function(el){ f(el); if(currentView !== "home") render(); }; })();
   document.addEventListener("click", function(e){
     var el = e.target.closest("[data-act]"); if(!el) return;
     var f = actions[el.dataset.act]; if(f){ e.preventDefault(); f(el, e); }
@@ -1900,6 +2153,8 @@
     var el = e.target, c = el.dataset.chg;
     if(el.id === "folio-file" && el.files[0]) folioPreview(el.files[0]);
     if(el.matches && el.matches('select[data-f="kind"]')){ var m = el.closest("[data-gid]").querySelector("[data-meas]"); if(m) m.style.display = el.value === "measured" ? "" : "none"; }
+    if(el.id === "gf-kind"){ $("gf-src-w").style.display = el.value === "count" ? "" : "none"; $("gf-nums").style.display = el.value === "milestones" ? "none" : ""; }
+    if(el.dataset && el.dataset.gfield) goalFieldSave(el);
     if(!c) return;
     if(c === "wake") setWake(el.checked);
     if(c === "sound"){ setSound(el.checked); if(el.checked) playChime("soft"); }
@@ -1913,7 +2168,6 @@
   document.querySelectorAll("#tabbar button").forEach(function(b){ b.addEventListener("click", function(){ rvWeek = null; showView(b.dataset.view); }); });
   $("btn-settings").addEventListener("click", function(){ showView("more"); });
   $("btn-start").addEventListener("click", function(){ startSession(getPlanKey()); });
-  setInterval(function(){ if(currentView === "home" && !session) $("plan-ends").textContent = clockTime(Date.now() + total(getSteps(getPlanKey()))*1000); }, 30000);
   window.addEventListener("online", function(){ if(signedIn()) sync(); });
   window.addEventListener("pagehide", persistNow);
 

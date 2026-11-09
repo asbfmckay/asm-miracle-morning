@@ -16,7 +16,26 @@ Miracle Morning App\
     worker\worker.js, worker\wrangler.toml   ← the API Worker (deployed separately, see below)
 ```
 
-## Where we are: Phase 2 (Reading) built — v3.2.0 (10 Nov 2026). Waiting on your go-ahead for Phase 3 (Sharing).
+## Where we are: Goals v2 built — v3.3.0 (10 Nov 2026). Phase 2 (Reading) done. Next: Phase 3 (Sharing) when Andrew says go.
+
+### v3.3.0 (10 Nov 2026) — Goals v2
+- **Levels:** Area → 10-year vision → **Goal** (a result by a date) → **Milestones** (dated checkpoints, with a number where it makes sense) → **Habits** (recurring) and **Tasks** (one-off, dated). Standards live in the area affirmation.
+- **Goals tab:** clean cards grouped by area (small colour dot, no thick band), each with a progress ring, "x of y", due date, a pace pill (On pace / N behind / Achieved) and Shared tag. 10-year vision folds open under each area. "Vision & affirmation" edits the area in a panel.
+- **Tap a goal:** progress ring, chart of you against the on-pace line (straight lines through the milestones), update box (+1 with note for counts, a reading for measures), Why, Milestones (auto-ticked when the number is reached), linked Habits (tick here), Tasks, If–then plan, Notes, Links, Updates log, Edit goal (title, area, Just me/Shared, how it's measured, counted from, start/target/unit, dates, why), archive or delete.
+- **Self-updating goals:** NT goal counts New Testament chapters ticked on the Reading tab; Subjects goal counts subjects; White Book goal = White Books finished inside their week of those received (pace = none missed).
+- **The 8 goals to 31 Dec 2027** from the goals doc are loaded with milestones, if–then plans, and habits (Subject with the boys 4/wk shared, One-on-one 1/wk, Train 4/wk, Weigh in 1/wk, Log food 6/wk, Terakor step 3/wk, Sunday budget review 1/wk shared) and tasks. The old goal list is archived (kept, hidden). Terakor has no target yet: open it → Edit goal → Target.
+- Loaded once, by Andrew's profile after signing in and syncing (flag item `goals-v2` in hh). Bronnia sees the shared goals only.
+- **Today:** "Goal steps due" card (tasks due today or overdue). **Weekly review:** each goal with its pace, On track / At risk / Off track, and a next step (becomes a task due in 6 days).
+- Data: `goal` (v:2; hh = shared, u: = just me), `ms`, `gtask`, `glog` (one item per update, so two people never overwrite each other), all in the goal's space. Old v1 goals: `archived:true`.
+- Files: links only for now (paste a OneDrive/Google link). Uploading files would need storage added to the Worker — ask if wanted.
+
+### Your steps for v3.3.0
+1. GitHub Desktop → life-app → commit "v3.3.0 Goals v2" → Push.
+2. In the app: Reading → change plan → book by book, Matthew to Revelation, 1 chapter a day.
+3. Goals → Terakor → Edit goal → set the target when ready.
+
+### v3.2.1 (10 Nov 2026)
+- Removed "Ends if started now" from the Today plan card (Andrew: not really required).
 
 ### v3.2.0 (10 Nov 2026) — Phase 2: Reading
 - **New Reading tab** (tabs: Today · Reading · Habits · Goals · Review).
