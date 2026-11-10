@@ -1,5 +1,5 @@
 // Network-first: you always get the latest version when online, cached copy when offline.
-const CACHE = "mm-v3-6";
+const CACHE = "mm-v3-7";
 const CORE = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).catch(()=>{})); self.skipWaiting(); });
 self.addEventListener("activate", e => {

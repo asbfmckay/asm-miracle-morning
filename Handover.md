@@ -16,7 +16,15 @@ Miracle Morning App\
     worker\worker.js, worker\wrangler.toml   ← the API Worker (deployed separately, see below)
 ```
 
-## Where we are: All 5 spec phases built — v3.6.0 (10 Nov 2026). Waiting on Andrew's testing and feedback. Brighta status to be linked once Brighta is live.
+## Where we are: All 5 spec phases built — v3.7.0 (10 Nov 2026). Waiting on Andrew's testing and feedback. Brighta status to be linked once Brighta is live.
+
+### v3.7.0 (10 Nov 2026) — all reviews on Monday night, weekly budget check
+- Andrew: "make all reviews on Monday night… a weekly budget review — get our finances up to date in Brighta every week and budget review."
+- **Weekly review** now reviews the week just ended (Mon–Sun) until it's done, then the current week (`defaultReviewWeek()`). Banner: "Reviews are on Monday night: Brighta up to date, budget reviewed together, then this."
+- **Budget · together** section (shared, `budget` item `bud-<monday>` in hh): two ticks — Finances up to date in Brighta, Budget reviewed together — each showing who and when, plus a shared budget note. Ticking "reviewed" also ticks the Monday budget review habit.
+- **Today, on Mondays:** a "Tonight: weekly review" row (Brighta · budget · review, with the budget streak) and a Start button until all three are done.
+- Quarterly and annual review banners say Monday night. The seeded habit is renamed "Monday budget review" and Goal 8's if–then now reads Monday/Tuesday (one-off patch on Andrew's device). Goals doc and spec doc updated to Monday night.
+
 
 ### v3.6.0 (10 Nov 2026) — Phase 5: reviews and budget status
 - **Review tab now has four parts:** Weekly · Quarterly · Annual · History. A dot shows on Quarterly in the last 16 days of a quarter (and 21 days after) until it's done, and on Annual in Nov–Dec (and to 21 Jan) until it's done.

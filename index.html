@@ -608,7 +608,7 @@
 <script>
 (function(){
   "use strict";
-  var APP_VERSION = "3.6.0";
+  var APP_VERSION = "3.7.0";
   // The API Worker (Cloudflare). Change in Settings → Account if it ever moves.
   var DEFAULT_API = "https://life-api.andrew-bronnia.workers.dev";
 
@@ -863,7 +863,7 @@
       cfg.since = r.now || Date.now(); saveCfg(); persist();
       lastSync = Date.now(); syncing = false;
       setSyncState(Object.keys(dirty).length ? "wait" : "ok");
-      maybeSeedGoalsV2(); maybeMoveAreaWords(); hfFetch();
+      maybeSeedGoalsV2(); maybeMoveAreaWords(); maybeMondayReviews(); hfFetch();
       if(changed) softRender();
     }).catch(function(e){
       syncing = false;
@@ -1096,10 +1096,9 @@
   /* ================= Weekly review ================= */
   var rvWeek = null, rvView = null;
   function renderWeeklyReview(){
-    var mon = rvWeek || mondayOf(), dates = weekDates(mon), sun = dates[6];
+    var mon = rvWeek || defaultReviewWeek(), dates = weekDates(mon), sun = dates[6];
     var rv = get(mySpace(), "rv-" + mon), viewing = rvView;
     var prev = get(mySpace(), "rv-" + dayKey(addDays(parseDay(mon), -7)));
-    var isSunday = new Date().getDay() === 0;
     var hs = habits().filter(function(h){ return hbTracks(h, myUid()); });
     var scribes = dates.map(function(d){ return get(mySpace(), "sc-" + d); }).filter(Boolean);
     var fam = all("famnote", "hh").filter(function(n){ return n.week === mon; });
@@ -1107,7 +1106,7 @@
     var nav = '<div class="hb-bar"><div class="hb-nav"><button data-act="rv-week" data-d="-1">‹</button><span>' + fmtShort(mon) + " – " + fmtShort(sun) + '</span><button data-act="rv-week" data-d="1" ' + (mon >= mondayOf() ? "disabled" : "") + '>›</button></div>' + (rv && rv.done ? '<span class="pill">Done ' + fmtShort(dayKey(new Date(rv.doneAt || rv.updatedAt))) + '</span>' : "") + '</div>';
     var html = nav;
     if(prev && prev.better) html += '<div class="callout glass">Last week you chose: <b>' + esc(prev.better) + '</b></div>';
-    else if(mon === mondayOf() && !isSunday && !(rv && rv.done)) html += '<div class="callout glass">Your weekly review is for Sunday. You can fill it in any time this week.</div>';
+    if(!(rv && rv.done)) html += '<div class="callout glass">Reviewing the week of <b>' + fmtShort(mon) + ' – ' + fmtShort(sun) + '</b>. Reviews are on <b>Monday night</b>: Brighta up to date, budget reviewed together, then this.</div>';
     html += '<div class="rv-sec glass"><h3>Habits this week</h3>' + (hs.length ? hs.map(function(h){ var c = hbWeekCount(h, myUid(), mon), t = hbTarget(h); return '<div class="rv-row"><span>' + esc(h.name) + '</span><b style="color:' + (c >= t ? "var(--ok)" : "var(--ink)") + '">' + c + ' / ' + t + '</b></div>'; }).join("") : '<div class="muted small">No habits yet.</div>') + '</div>';
     html += '<div class="rv-sec glass"><h3>This week\'s Scribing</h3>' + (scribes.length ? scribes.map(function(s){
       var bits = [];
@@ -1780,11 +1779,15 @@
   /* ---------- Today: goal tasks due ---------- */
   function renderTodayTasks(){
     var el = $("today-tasks"); if(!el) return;
-    var gs = goals(), ts = [];
+    var gs = goals(), ts = [], extra = "";
+    if(new Date().getDay() === 1){
+      var w = defaultReviewWeek(), b = budgetItem(w) || {}, rv = get(mySpace(), "rv-" + w), done = b.brighta && b.reviewed && rv && rv.done;
+      extra = '<div class="rr"><div class="rr-t"><b>Tonight: weekly review</b><span>Brighta up to date · budget together · review' + (budgetStreak() ? ' · ' + budgetStreak() + '-week budget streak' : "") + '</span></div>' + (done ? checkBtn(true, "noop", "", "Done") : '<button class="btn btn-ink btn-sm" data-act="go" data-v="review">Start</button>') + '</div>';
+    }
     gs.forEach(function(g){ goalTasks(g.id).forEach(function(t){ if(!t.done && t.due && t.due <= today()) ts.push({ t:t, g:g }); }); });
-    if(!ts.length){ el.style.display = "none"; return; }
+    if(!ts.length && !extra){ el.style.display = "none"; return; }
     el.style.display = "";
-    el.innerHTML = '<div class="th-head"><b>Goal steps due</b><button class="link-btn" data-act="go" data-v="goals">Goals</button></div>' + ts.map(function(o){
+    el.innerHTML = '<div class="th-head"><b>' + (ts.length ? "Due today" : "Tonight") + '</b><button class="link-btn" data-act="go" data-v="goals">Goals</button></div>' + extra + ts.map(function(o){
       return '<div class="rr"><div class="rr-t"><b>' + esc(o.t.text) + '</b><span>' + esc(o.g.title) + (o.t.due < today() ? ' · <span style="color:var(--danger)">due ' + fmtShort(o.t.due) + '</span>' : "") + '</span></div>' + checkBtn(false, "gt-tick", 'data-id="' + o.t.id + '" data-sp="' + o.t.space + '"', "Tick") + '</div>';
     }).join("");
   }
@@ -1823,8 +1826,8 @@
       habits:[["Train", 4], ["Weigh in (Monday)", 1], ["Log food", 6]], tasks:[["Pick a book on the science of eating and portions"]] },
     { id:"g2-terakor", area:"area-financial", who:"me", title:"Terakor launched and selling", kind:"measure", start:0, unit:"$", why:"Income sustainable enough to employ Dad full time.", ifThen:"If the week is full with Entro, then the Saturday-morning hour is Terakor's.",
       habits:[["Terakor step", 3]], tasks:[["Set the sales target and dates for this goal"]] },
-    { id:"g2-property", area:"area-financial", who:"hh", title:"First development property bought", kind:"milestones", why:"The start of the property nest egg, and freedom from debt.", ifThen:"If a Sunday review is missed, then we do it Monday night — never two in a row.",
-      ms:[["Budget fully tracked for 3 months", "2027-02-28"], ["Finance pre-approval", "2027-05-31"], ["Area and criteria agreed", "2027-05-31"], ["Offer made", "2027-09-30"], ["Settled", "2027-12-31"]], habits:[["Sunday budget review", 1, true]] }
+    { id:"g2-property", area:"area-financial", who:"hh", title:"First development property bought", kind:"milestones", why:"The start of the property nest egg, and freedom from debt.", ifThen:"If the Monday-night review is missed, then we do it Tuesday night — never two in a row.",
+      ms:[["Budget fully tracked for 3 months", "2027-02-28"], ["Finance pre-approval", "2027-05-31"], ["Area and criteria agreed", "2027-05-31"], ["Offer made", "2027-09-30"], ["Settled", "2027-12-31"]], habits:[["Monday budget review", 1, true]] }
   ];
   // v3.4: move Andrew's area words out of the shared household items into his own private space.
   function maybeMoveAreaWords(){
@@ -1835,6 +1838,13 @@
       patch(a, { vision:"", affirmation:"", visualisation:"", dailyAction:"", person:"" });
     });
     lsSet("life_av_moved", "1");
+  }
+  // v3.7: reviews moved to Monday night
+  function maybeMondayReviews(){
+    if(myUid() !== "andrew" || lsGet("life_monday")) return;
+    var h = get("hh", "hb-g2-property-1"); if(h && /sunday/i.test(h.name)) patch(h, { name:"Monday budget review" });
+    var g = goalById("g2-property"); if(g && /Sunday/.test(g.ifThen || "")) patch(g, { ifThen:"If the Monday-night review is missed, then we do it Tuesday night — never two in a row." });
+    lsSet("life_monday", "1");
   }
   function maybeSeedGoalsV2(){
     if(myUid() !== "andrew") return; // only the owner seeds, after signing in and syncing
@@ -1986,19 +1996,30 @@
     $("view-review").innerHTML = html;
   }
 
-  /* ---------- Budget (Brighta comes later) ---------- */
-  function budgetReviewHtml(mon){
-    var h = habits().filter(function(x){ return /budget/i.test(x.name); })[0];
-    var done = h ? hbPeople(h).some(function(u){ return hbWeekCount(h, u, mon) > 0; }) : null;
-    return '<div class="rv-sec glass"><h3>Budget</h3>' +
-      (h ? '<div class="rv-row"><span>Budget reviewed together this week</span><b style="color:' + (done ? "var(--ok)" : "var(--danger)") + '">' + (done ? "Yes" : "Not yet") + '</b></div>' : '<div class="muted small">Add a "Sunday budget review" habit to track this.</div>') +
-      '<div class="muted small" style="margin-top:6px">Brighta isn\'t linked yet. Once it\'s live, this will show whether the budget is on track (status only, never figures).</div></div>';
+  /* ---------- Weekly budget (Monday night, shared) ----------
+     Two ticks, shared by the household: finances brought up to date in Brighta, then the budget reviewed
+     together. Stored as one shared item per week (bud-<monday of the week reviewed>). Ticking "reviewed"
+     also ticks the Monday budget review habit for whoever ticks it. */
+  function defaultReviewWeek(){ // the week just ended, until its review is done; then this week
+    var last = dayKey(addDays(parseDay(mondayOf()), -7)), r = get(mySpace(), "rv-" + last);
+    return r && r.done ? mondayOf() : last;
   }
+  function budgetItem(mon){ return get("hh", "bud-" + mon); }
+  function budgetReviewHtml(mon){
+    var b = budgetItem(mon) || {}, row = function(f, label, sub){ var on = !!b[f];
+      return '<div class="rr"><div class="rr-t"><b>' + label + '</b><span>' + (on ? "Done " + fmtShort(b[f + "On"] || today()) + (b[f + "By"] && b[f + "By"] !== myUid() ? " by " + esc(personName(b[f + "By"])) : "") : sub) + '</span></div>' + checkBtn(on, "bud-tick", 'data-f="' + f + '" data-week="' + mon + '"', label) + '</div>'; };
+    return '<div class="rv-sec glass"><h3>Budget · together</h3>' +
+      row("brighta", "Finances up to date in Brighta", "Every transaction for the week entered and categorised") +
+      row("reviewed", "Budget reviewed together", "How did we go against the budget? Anything to change?") +
+      '<textarea class="in" id="bud-note" data-week="' + mon + '" rows="2" placeholder="Budget notes for the week (shared)" style="margin-top:8px">' + esc(b.note || "") + '</textarea>' +
+      '<div class="muted small" style="margin-top:6px">Brighta isn\'t linked yet. Once it\'s live, its on-track status (never figures) shows here.</div></div>';
+  }
+  function budgetStreak(){ var n = 0, d = parseDay(dayKey(addDays(parseDay(mondayOf()), -7))); for(var i = 0; i < 104; i++){ var b = budgetItem(dayKey(d)); if(b && b.brighta && b.reviewed){ n++; d = addDays(d, -7); } else break; } return n; }
 
   /* ---------- Quarterly ---------- */
   function quarterlyHtml(){
     var q = reviewQuarter(), nq = nextQuarter(q), saved = get(mySpace(), "qr-" + q.end) || {}, gs = goals();
-    var html = '<div class="callout glass">Quarter <b>' + esc(q.label) + '</b> (' + fmtShort(q.start) + ' – ' + fmtShort(q.end) + '). Tick or move this quarter\'s milestones, then set next quarter\'s (' + esc(nq.label) + ').' + (saved.done ? ' <span class="pill">Done ' + fmtShort(dayKey(new Date(saved.doneAt))) + '</span>' : "") + '</div>';
+    var html = '<div class="callout glass">Quarter <b>' + esc(q.label) + '</b> (' + fmtShort(q.start) + ' – ' + fmtShort(q.end) + '). Tick or move this quarter\'s milestones, then set next quarter\'s (' + esc(nq.label) + '). Do it on a Monday night.' + (saved.done ? ' <span class="pill">Done ' + fmtShort(dayKey(new Date(saved.doneAt))) + '</span>' : "") + '</div>';
     html += gs.map(function(g){
       var pr = goalProgress(g), ms = goalMs(g.id), color = areaOf(g).color || "#6753A6";
       var thisQ = ms.filter(function(m){ return m.due && m.due >= q.start && m.due <= q.end || (!m.done && m.due && m.due < q.start); });
@@ -2023,7 +2044,7 @@
   /* ---------- Annual (November) ---------- */
   function annualHtml(){
     var y = reviewYear(), saved = get(mySpace(), "ar-" + y) || {}, gs = goals();
-    var html = '<div class="callout glass">Annual review for <b>' + y + '</b>. Reread the 10-year vision, decide what happens to each goal, then set next year\'s.' + (saved.done ? ' <span class="pill">Done ' + fmtShort(dayKey(new Date(saved.doneAt))) + '</span>' : "") + '</div>';
+    var html = '<div class="callout glass">Annual review for <b>' + y + '</b>. Reread the 10-year vision, decide what happens to each goal, then set next year\'s. Do it on a Monday night in November.' + (saved.done ? ' <span class="pill">Done ' + fmtShort(dayKey(new Date(saved.doneAt))) + '</span>' : "") + '</div>';
     html += '<div class="rv-sec glass"><h3>10-year vision</h3>' + areas().filter(function(a){ return !a.anchor; }).map(function(a){ var v = av(a).vision;
       return '<div class="sc-entry"><b><span class="dot" style="background:' + esc(a.color || "#999") + ';margin-right:6px"></span>' + esc(a.name) + ' <button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Edit</button></b>' + (v ? '<span style="white-space:pre-line">' + esc(v) + '</span>' : '<span class="muted">Not written yet.</span>') + '</div>'; }).join("") + '</div>';
     html += '<div class="rv-sec glass"><h3>Each goal</h3>' + (gs.length ? gs.map(function(g){
@@ -2046,7 +2067,7 @@
       .concat(all("qreview", mySpace()).filter(function(r){ return r.done; }).map(function(r){ return { k:"Quarterly", t:r.label, sub:r.focus || "", at:r.end, id:r.id }; }))
       .concat(all("areview", mySpace()).filter(function(r){ return r.done; }).map(function(r){ return { k:"Annual", t:String(r.year), sub:r.word || "", at:r.year + "-11-30", id:r.id }; }))
       .sort(function(a, b){ return b.at.localeCompare(a.at); });
-    if(!list.length) return '<div class="glass empty" style="padding:18px">No reviews yet. Your first weekly review is this Sunday.</div>';
+    if(!list.length) return '<div class="glass empty" style="padding:18px">No reviews yet. Your first weekly review is Monday night.</div>';
     return '<div class="card glass">' + list.map(function(x){ return '<div class="row" data-act="rv-hist" data-id="' + x.id + '" style="cursor:pointer"><div><div class="row-title">' + esc(x.t) + ' <span class="pill">' + x.k + '</span></div><div class="row-sub">' + esc(x.sub || "—") + '</div></div><span class="muted">›</span></div>'; }).join("") + '</div>';
   }
   function historySheet(id){
@@ -2061,6 +2082,10 @@
   function goalSnapshot(){ return goals().map(function(g){ var pr = goalProgress(g); return { id:g.id, title:g.title, label:pr.label, pct:pr.pct, pace:goalPace(g).txt }; }); }
 
   var reviewActions = {
+    "bud-tick": function(el){ var w = el.dataset.week, f = el.dataset.f, b = budgetItem(w) || { type:"budget", id:"bud-" + w, space:"hh", week:w }, ch = {};
+      ch[f] = !b[f]; ch[f + "On"] = today(); ch[f + "By"] = myUid(); put(Object.assign({}, b, ch));
+      if(f === "reviewed" && ch[f]){ var h = habits().filter(function(x){ return /budget/i.test(x.name); })[0]; if(h && hbTracks(h, myUid())) hbWrite(h, today(), "d", "g"); }
+      buzz(15); render(); },
     "rv-tab": function(el){ rvTab = el.dataset.v; renderReview(); window.scrollTo(0, 0); },
     "rv-open": function(el){ rvWeek = el.dataset.week; rvTab = "week"; if($("sheet").classList.contains("open")) closeSheet(); showView("review"); },
     "rv-hist": function(el){ historySheet(el.dataset.id); },
@@ -2381,6 +2406,7 @@
     if(el.matches && el.matches('select[data-f="kind"]')){ var m = el.closest("[data-gid]").querySelector("[data-meas]"); if(m) m.style.display = el.value === "measured" ? "" : "none"; }
     if(el.id === "gf-kind"){ $("gf-src-w").style.display = el.value === "milestones" ? "none" : ""; $("gf-nums").style.display = el.value === "milestones" ? "none" : ""; }
     if(el.dataset && el.dataset.gfield) goalFieldSave(el);
+    if(el.id === "bud-note"){ var bw = el.dataset.week, bb = budgetItem(bw) || { type:"budget", id:"bud-" + bw, space:"hh", week:bw }; put(Object.assign({}, bb, { note:el.value.trim() })); }
     if(!c) return;
     if(c === "wake") setWake(el.checked);
     if(c === "sound"){ setSound(el.checked); if(el.checked) playChime("soft"); }
