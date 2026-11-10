@@ -16,7 +16,15 @@ Miracle Morning App\
     worker\worker.js, worker\wrangler.toml   ← the API Worker (deployed separately, see below)
 ```
 
-## Where we are: Health & Fitness link built — v3.5.0 (10 Nov 2026). Next: rest of Phase 4 (Send to Folio) and Phase 5 (Brighta, quarterly/annual reviews).
+## Where we are: All 5 spec phases built — v3.6.0 (10 Nov 2026). Waiting on Andrew's testing and feedback. Brighta status to be linked once Brighta is live.
+
+### v3.6.0 (10 Nov 2026) — Phase 5: reviews and budget status
+- **Review tab now has four parts:** Weekly · Quarterly · Annual · History. A dot shows on Quarterly in the last 16 days of a quarter (and 21 days after) until it's done, and on Annual in Nov–Dec (and to 21 Jan) until it's done.
+- **Quarterly** (quarters Dec–Feb, Mar–May, Jun–Aug, Sep–Nov): each goal with progress and pace; this quarter's milestones (tick, or "Move to" next quarter); next quarter's milestones (add with number and date); Wins, What I learned, One focus. Saved as `qreview` `qr-<quarter end>` (private) with a snapshot of every goal.
+- **Annual** (November): reread each area's 10-year vision (edit inline); for each goal choose Achieved (archived), Carry forward (due → 31 Dec next year) or Let go (archived); biggest wins, lessons, a word for next year; "+ Add a goal for next year". Saved as `areview` `ar-<year>`.
+- **History:** every finished weekly, quarterly and annual review, newest first; tap to read it.
+- **Budget (weekly review):** "Budget reviewed together this week" from the shared Sunday budget review habit (either of you ticking counts). Brighta isn't live yet — `budgetReviewHtml()` is where its status (on track yes/no, never figures) will go.
+
 
 ### v3.5.0 (10 Nov 2026) — Health & Fitness link (Andrew's profile only)
 - **Health & Fitness worker** (`health-coach`): new read-only `GET /summary` behind secret `LIFE_READ_KEY`. **life-api**: new `GET /hf/summary` (Andrew only) that calls it with secret `HF_READ_KEY` (same value); var `HF_URL` = https://health-coach.andrew-bronnia.workers.dev. WORKER_VERSION 3.5.0.

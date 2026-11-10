@@ -495,6 +495,8 @@
   .hf-grid b em{ font-style:normal; font-size:12px; color:var(--ink-faint); }
   .hf-grid small{ display:block; font-size:11px; color:var(--ink-dim); font-weight:300; }
 
+  .rv-tabs{ margin-bottom:12px; } .rv-tabs button{ font-size:13px; padding:9px 0; }
+
   /* Sheet (bottom panel for forms) */
   #sheet-bg{ position:fixed; inset:0; background:rgba(38,36,31,.28); z-index:60; display:none; }
   #sheet{
@@ -606,7 +608,7 @@
 <script>
 (function(){
   "use strict";
-  var APP_VERSION = "3.5.0";
+  var APP_VERSION = "3.6.0";
   // The API Worker (Cloudflare). Change in Settings → Account if it ever moves.
   var DEFAULT_API = "https://life-api.andrew-bronnia.workers.dev";
 
@@ -1093,7 +1095,7 @@
 
   /* ================= Weekly review ================= */
   var rvWeek = null, rvView = null;
-  function renderReview(){
+  function renderWeeklyReview(){
     var mon = rvWeek || mondayOf(), dates = weekDates(mon), sun = dates[6];
     var rv = get(mySpace(), "rv-" + mon), viewing = rvView;
     var prev = get(mySpace(), "rv-" + dayKey(addDays(parseDay(mon), -7)));
@@ -1118,15 +1120,16 @@
       return '<div class="sc-entry"><b>' + fmtDay(s.date) + '</b>' + bits.join("<br>") + '</div>';
     }).join("") : '<div class="muted small">No entries this week.</div>') + '</div>';
     html += goalsReviewHtml();
+    html += budgetReviewHtml(mon);
     html += '<div class="rv-sec glass"><h3>To discuss with the family</h3><div class="muted small" style="margin-bottom:8px">From the week\'s reading. Shared with the household.</div>' +
       fam.filter(function(n){ return n.owner !== myUid() && n.text; }).map(function(n){ return '<div class="sc-entry"><b>' + esc(personName(n.owner)) + '</b>' + esc(n.text) + '</div>'; }).join("") +
       '<textarea class="in" id="rv-fam" placeholder="Something from the reading to talk about together">' + esc(myFam ? myFam.text : "") + '</textarea></div>';
     html += '<div class="rv-sec glass"><h3>One thing to do better next week</h3><textarea class="in" id="rv-better" rows="2">' + esc(rv ? rv.better : "") + '</textarea>' +
       '<div class="fld"><label>Anything else (patterns from Scribing, notes)</label><textarea class="in" id="rv-notes" rows="3">' + esc(rv ? rv.notes : "") + '</textarea></div></div>';
     html += '<div class="btn-row"><button class="btn btn-ink" data-act="rv-save" data-week="' + mon + '">' + (rv && rv.done ? "Save changes" : "Finish review") + '</button></div>';
-    var past = all("review", mySpace()).filter(function(r){ return r.done; }).sort(function(a, b){ return b.week.localeCompare(a.week); });
-    if(past.length) html += '<div class="section-label">Past reviews</div><div class="card glass">' + past.slice(0, 12).map(function(r){ return '<div class="row" data-act="rv-open" data-week="' + r.week + '" style="cursor:pointer"><div><div class="row-title">Week of ' + fmtShort(r.week) + '</div><div class="row-sub">' + esc(r.better || "—") + '</div></div><span class="muted">›</span></div>'; }).join("") + '</div>';
-    $("view-review").innerHTML = html;
+
+
+    return html;
   }
   function saveReview(mon){
     saveGoalsReview();
@@ -1959,6 +1962,125 @@
       '</div>';
   }
 
+  /* ================= Reviews: weekly · quarterly · annual · history (v3.6.0, Phase 5) ================= */
+  var rvTab = "week", rvAnnual = {};
+  function reviewQuarter(){ // the quarter being reviewed: the current one, or the one just ended (first 21 days after)
+    var q = quarterOf(); var prev = quarterOf(dayKey(addDays(parseDay(q.start), -1)));
+    return daysBetween(q.start, today()) < 21 ? prev : q;
+  }
+  function nextQuarter(q){ return quarterOf(dayKey(addDays(parseDay(q.end), 1))); }
+  function quarterDue(){
+    var q = reviewQuarter(), d = daysBetween(today(), q.end);
+    return d <= 16 && !get(mySpace(), "qr-" + q.end);
+  }
+  function reviewYear(){ var d = new Date(); return d.getMonth() === 0 && d.getDate() <= 21 ? d.getFullYear() - 1 : d.getFullYear(); }
+  function annualDue(){ var m = new Date().getMonth(); return (m === 10 || m === 11 || (m === 0 && new Date().getDate() <= 21)) && !get(mySpace(), "ar-" + reviewYear()); }
+
+  function renderReview(){
+    var tabs = [["week", "Weekly"], ["quarter", "Quarterly" + (quarterDue() ? " •" : "")], ["year", "Annual" + (annualDue() ? " •" : "")], ["history", "History"]];
+    var html = '<div class="seg light rv-tabs">' + tabs.map(function(t){ return '<button data-act="rv-tab" data-v="' + t[0] + '" class="' + (rvTab === t[0] ? "active" : "") + '">' + t[1] + '</button>'; }).join("") + '</div>';
+    if(rvTab === "week") html += renderWeeklyReview();
+    else if(rvTab === "quarter") html += quarterlyHtml();
+    else if(rvTab === "year") html += annualHtml();
+    else html += historyHtml();
+    $("view-review").innerHTML = html;
+  }
+
+  /* ---------- Budget (Brighta comes later) ---------- */
+  function budgetReviewHtml(mon){
+    var h = habits().filter(function(x){ return /budget/i.test(x.name); })[0];
+    var done = h ? hbPeople(h).some(function(u){ return hbWeekCount(h, u, mon) > 0; }) : null;
+    return '<div class="rv-sec glass"><h3>Budget</h3>' +
+      (h ? '<div class="rv-row"><span>Budget reviewed together this week</span><b style="color:' + (done ? "var(--ok)" : "var(--danger)") + '">' + (done ? "Yes" : "Not yet") + '</b></div>' : '<div class="muted small">Add a "Sunday budget review" habit to track this.</div>') +
+      '<div class="muted small" style="margin-top:6px">Brighta isn\'t linked yet. Once it\'s live, this will show whether the budget is on track (status only, never figures).</div></div>';
+  }
+
+  /* ---------- Quarterly ---------- */
+  function quarterlyHtml(){
+    var q = reviewQuarter(), nq = nextQuarter(q), saved = get(mySpace(), "qr-" + q.end) || {}, gs = goals();
+    var html = '<div class="callout glass">Quarter <b>' + esc(q.label) + '</b> (' + fmtShort(q.start) + ' – ' + fmtShort(q.end) + '). Tick or move this quarter\'s milestones, then set next quarter\'s (' + esc(nq.label) + ').' + (saved.done ? ' <span class="pill">Done ' + fmtShort(dayKey(new Date(saved.doneAt))) + '</span>' : "") + '</div>';
+    html += gs.map(function(g){
+      var pr = goalProgress(g), ms = goalMs(g.id), color = areaOf(g).color || "#6753A6";
+      var thisQ = ms.filter(function(m){ return m.due && m.due >= q.start && m.due <= q.end || (!m.done && m.due && m.due < q.start); });
+      var nextQ = ms.filter(function(m){ return m.due && m.due >= nq.start && m.due <= nq.end; });
+      return '<div class="rv-sec glass"><div class="g-top" style="align-items:center">' + ring(pr.pct, color) + '<div style="flex:1"><b style="font-weight:500">' + esc(g.title) + '</b><div class="g-sub" style="margin:2px 0 4px">' + esc(pr.label) + '</div>' + pacePill(goalPace(g)) + '</div></div>' +
+        '<div class="lbl" style="margin-top:12px">This quarter</div>' + (thisQ.length ? thisQ.map(function(m){ return msReviewRow(m, g, color, nq); }).join("") : '<div class="muted small">No milestones due.</div>') +
+        '<div class="lbl" style="margin-top:12px">Next quarter</div>' + (nextQ.length ? nextQ.map(function(m){ return '<div class="ms" style="--ac:' + esc(color) + '"><span>' + esc(m.text) + (num(m.target) != null && g.kind !== "milestones" && m.text.indexOf(String(m.target)) < 0 ? ' <span class="muted small">(' + fmtN(+m.target, g.unit) + ')</span>' : "") + '</span><small>' + fmtShort(m.due) + '</small></div>'; }).join("") : '<div class="muted small">None set yet.</div>') +
+        '<input type="text" id="qm-t-' + g.id + '" placeholder="Next quarter\'s milestone" style="margin-top:8px"><div class="add-row">' + (g.kind !== "milestones" ? '<input type="number" class="in" step="any" id="qm-n-' + g.id + '" placeholder="' + esc(g.unit || "Number") + '">' : "") + '<input type="date" id="qm-d-' + g.id + '" value="' + nq.end + '"><button class="btn btn-soft btn-sm" data-act="qm-add" data-id="' + g.id + '">Add</button></div></div>';
+    }).join("");
+    html += '<div class="rv-sec glass"><h3>Looking back</h3><div class="fld"><label>Wins this quarter</label><textarea class="in" id="qr-wins" rows="3">' + esc(saved.wins || "") + '</textarea></div>' +
+      '<div class="fld"><label>What I learned</label><textarea class="in" id="qr-lessons" rows="3">' + esc(saved.lessons || "") + '</textarea></div>' +
+      '<div class="fld"><label>One focus for next quarter</label><textarea class="in" id="qr-focus" rows="2">' + esc(saved.focus || "") + '</textarea></div></div>' +
+      '<div class="btn-row"><button class="btn btn-ink" data-act="qr-save" data-q="' + q.end + '">' + (saved.done ? "Save changes" : "Finish quarterly review") + '</button></div>';
+    return html;
+  }
+  function msReviewRow(m, g, color, nq){
+    var late = !m.done && m.due < today();
+    return '<div class="ms' + (m.done ? " done" : "") + (late ? " late" : "") + '" style="--ac:' + esc(color) + '">' + checkBtn(m.done, "ms-tick", 'data-id="' + m.id + '" data-sp="' + m.space + '"', "Tick milestone") + '<span>' + esc(m.text) + '</span><small>' + fmtShort(m.due) + '</small>' +
+      (m.done ? "" : '<button class="link-btn" data-act="qm-move" data-id="' + m.id + '" data-sp="' + m.space + '" data-d="' + nq.end + '">Move to ' + esc(nq.label.split(" ")[0]) + '</button>') + '</div>';
+  }
+
+  /* ---------- Annual (November) ---------- */
+  function annualHtml(){
+    var y = reviewYear(), saved = get(mySpace(), "ar-" + y) || {}, gs = goals();
+    var html = '<div class="callout glass">Annual review for <b>' + y + '</b>. Reread the 10-year vision, decide what happens to each goal, then set next year\'s.' + (saved.done ? ' <span class="pill">Done ' + fmtShort(dayKey(new Date(saved.doneAt))) + '</span>' : "") + '</div>';
+    html += '<div class="rv-sec glass"><h3>10-year vision</h3>' + areas().filter(function(a){ return !a.anchor; }).map(function(a){ var v = av(a).vision;
+      return '<div class="sc-entry"><b><span class="dot" style="background:' + esc(a.color || "#999") + ';margin-right:6px"></span>' + esc(a.name) + ' <button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Edit</button></b>' + (v ? '<span style="white-space:pre-line">' + esc(v) + '</span>' : '<span class="muted">Not written yet.</span>') + '</div>'; }).join("") + '</div>';
+    html += '<div class="rv-sec glass"><h3>Each goal</h3>' + (gs.length ? gs.map(function(g){
+      var pr = goalProgress(g), cur = rvAnnual[g.id] || (saved.choices || {})[g.id] || "";
+      return '<div class="rv-goal"><div class="rv-row" style="border:none;padding-bottom:2px"><span><b style="font-weight:500">' + esc(g.title) + '</b><br><span class="muted small">' + esc(pr.label) + ' · ' + pr.pct + '%' + (g.due ? ' · due ' + fmtShort(g.due) : "") + '</span></span>' + pacePill(goalPace(g)) + '</div>' +
+        '<div class="seg rv-st">' + [["achieved", "Achieved"], ["carry", "Carry forward"], ["drop", "Let go"]].map(function(x){ return '<button type="button" data-act="ar-pick" data-id="' + g.id + '" data-v="' + x[0] + '" class="' + (cur === x[0] ? "active s-" + ({ achieved:"g", carry:"a", drop:"r" }[x[0]]) : "") + '">' + x[1] + '</button>'; }).join("") + '</div></div>';
+    }).join("") : '<div class="muted small">No goals yet.</div>') +
+      '<div class="muted small" style="margin-top:8px">Achieved and Let go are archived when you finish. Carry forward moves the due date to 31 Dec ' + (y + 1) + '.</div></div>';
+    html += '<div class="rv-sec glass"><h3>Looking back, looking ahead</h3><div class="fld"><label>Biggest wins of the year</label><textarea class="in" id="ar-wins" rows="3">' + esc(saved.wins || "") + '</textarea></div>' +
+      '<div class="fld"><label>What I learned</label><textarea class="in" id="ar-lessons" rows="3">' + esc(saved.lessons || "") + '</textarea></div>' +
+      '<div class="fld"><label>A word or theme for ' + (y + 1) + '</label><input type="text" id="ar-word" value="' + esc(saved.word || "") + '"></div>' +
+      '<button class="link-btn" data-act="g-new">+ Add a goal for ' + (y + 1) + '</button></div>' +
+      '<div class="btn-row"><button class="btn btn-ink" data-act="ar-save" data-y="' + y + '">' + (saved.done ? "Save changes" : "Finish annual review") + '</button></div>';
+    return html;
+  }
+
+  /* ---------- History ---------- */
+  function historyHtml(){
+    var list = all("review", mySpace()).filter(function(r){ return r.done; }).map(function(r){ return { k:"Weekly", t:"Week of " + fmtShort(r.week), sub:r.better || "", at:r.week, id:r.id }; })
+      .concat(all("qreview", mySpace()).filter(function(r){ return r.done; }).map(function(r){ return { k:"Quarterly", t:r.label, sub:r.focus || "", at:r.end, id:r.id }; }))
+      .concat(all("areview", mySpace()).filter(function(r){ return r.done; }).map(function(r){ return { k:"Annual", t:String(r.year), sub:r.word || "", at:r.year + "-11-30", id:r.id }; }))
+      .sort(function(a, b){ return b.at.localeCompare(a.at); });
+    if(!list.length) return '<div class="glass empty" style="padding:18px">No reviews yet. Your first weekly review is this Sunday.</div>';
+    return '<div class="card glass">' + list.map(function(x){ return '<div class="row" data-act="rv-hist" data-id="' + x.id + '" style="cursor:pointer"><div><div class="row-title">' + esc(x.t) + ' <span class="pill">' + x.k + '</span></div><div class="row-sub">' + esc(x.sub || "—") + '</div></div><span class="muted">›</span></div>'; }).join("") + '</div>';
+  }
+  function historySheet(id){
+    var r = get(mySpace(), id); if(!r) return;
+    var p = function(label, v){ return v ? '<div class="fld"><label>' + label + '</label><div class="vision" style="margin:0;white-space:pre-line">' + esc(v) + '</div></div>' : ""; };
+    var snap = (r.snapshot || r.scores || []);
+    var rows = snap.length ? '<div class="fld"><label>' + (r.type === "review" ? "Habits" : "Goals") + '</label>' + snap.map(function(s){ return '<div class="rv-row"><span>' + esc(s.title || s.name) + '</span><b>' + esc(s.label || (s.got + " / " + s.want)) + '</b></div>'; }).join("") + '</div>' : "";
+    var title = r.type === "review" ? "Week of " + fmtShort(r.week) : r.type === "qreview" ? "Quarter " + r.label : "Year " + r.year;
+    openSheet('<h2>' + esc(title) + '</h2>' + rows + p("One thing to do better", r.better) + p("Notes", r.notes) + p("Wins", r.wins) + p("What I learned", r.lessons) + p("Focus", r.focus) + p("Word for the year", r.word) +
+      (r.type === "review" ? '<div class="btn-row"><button class="btn btn-soft" data-act="rv-open" data-week="' + r.week + '">Open this week</button></div>' : ""));
+  }
+  function goalSnapshot(){ return goals().map(function(g){ var pr = goalProgress(g); return { id:g.id, title:g.title, label:pr.label, pct:pr.pct, pace:goalPace(g).txt }; }); }
+
+  var reviewActions = {
+    "rv-tab": function(el){ rvTab = el.dataset.v; renderReview(); window.scrollTo(0, 0); },
+    "rv-open": function(el){ rvWeek = el.dataset.week; rvTab = "week"; if($("sheet").classList.contains("open")) closeSheet(); showView("review"); },
+    "rv-hist": function(el){ historySheet(el.dataset.id); },
+    "qm-add": function(el){ var g = goalById(el.dataset.id), t = ($("qm-t-" + g.id) || {}).value; if(!g || !t || !t.trim()) return;
+      put({ type:"ms", id:"ms-" + uid(), space:g.space, goalId:g.id, text:t.trim(), due:$("qm-d-" + g.id).value, target:$("qm-n-" + g.id) ? num($("qm-n-" + g.id).value) : null, done:false, order:Date.now() }); renderReview(); },
+    "qm-move": function(el){ var m = get(el.dataset.sp, el.dataset.id); if(m){ patch(m, { due:el.dataset.d }); toast("Moved to next quarter"); renderReview(); } },
+    "qr-save": function(el){ var q = reviewQuarter(), id = "qr-" + q.end, old = get(mySpace(), id);
+      put(Object.assign({}, old || { type:"qreview", id:id }, { label:q.label, start:q.start, end:q.end, wins:$("qr-wins").value.trim(), lessons:$("qr-lessons").value.trim(), focus:$("qr-focus").value.trim(), snapshot:goalSnapshot(), done:true, doneAt:(old && old.doneAt) || Date.now() }));
+      toast("Quarterly review saved"); renderReview(); window.scrollTo(0, 0); },
+    "ar-pick": function(el){ rvAnnual[el.dataset.id] = el.dataset.v; el.parentNode.querySelectorAll("button").forEach(function(b){ b.className = b === el ? "active s-" + ({ achieved:"g", carry:"a", drop:"r" }[el.dataset.v]) : ""; }); },
+    "ar-save": function(el){
+      var y = +el.dataset.y, id = "ar-" + y, old = get(mySpace(), id), choices = Object.assign({}, (old && old.choices) || {}, rvAnnual), snap = goalSnapshot();
+      Object.keys(rvAnnual).forEach(function(gid){ var g = goalById(gid); if(!g) return; var c = rvAnnual[gid];
+        if(c === "achieved") patch(g, { archived:true, done:true, doneAt:today() });
+        else if(c === "drop") patch(g, { archived:true, dropped:true, doneAt:today() });
+        else if(c === "carry") patch(g, { due:(y + 1) + "-12-31" }); });
+      put(Object.assign({}, old || { type:"areview", id:id }, { year:y, choices:choices, wins:$("ar-wins").value.trim(), lessons:$("ar-lessons").value.trim(), word:$("ar-word").value.trim(), snapshot:snap, done:true, doneAt:(old && old.doneAt) || Date.now() }));
+      rvAnnual = {}; toast("Annual review saved"); renderReview(); window.scrollTo(0, 0); }
+  };
+
   /* ================= Sound + vibration ================= */
   var actx = null;
   function playChime(kind){
@@ -2245,7 +2367,7 @@
     "install": function(){ if(!installEvt) return; installEvt.prompt(); installEvt.userChoice.then(function(){ installEvt = null; renderInstall(); }); },
     "sheet-close": function(){ closeSheet(); }
   };
-  Object.assign(actions, readActions, goalActions);
+  Object.assign(actions, readActions, goalActions, reviewActions);
   (function(){ var f = actions["hb-today"]; actions["hb-today"] = function(el){ f(el); if(currentView !== "home") render(); }; })();
   document.addEventListener("click", function(e){
     var el = e.target.closest("[data-act]"); if(!el) return;
