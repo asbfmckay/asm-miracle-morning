@@ -8,10 +8,12 @@ compatibility_date = "2026-09-01"
 # Run once: npx wrangler kv namespace create DB   — then paste the id it prints here.
 [[kv_namespaces]]
 binding = "DB"
-id = "2762b00d622341ac87fd459ae4949c2e"
+id = "REPLACE_WITH_KV_ID"
 
 [vars]
 # Where the app is served from (no trailing slash). Add more, comma-separated, if the address changes.
 ALLOWED_ORIGINS = "https://asbfmckay.github.io"
+# The Health & Fitness worker (read-only summary). Its key is the secret HF_READ_KEY.
+HF_URL = "https://health-coach.andrew-bronnia.workers.dev"
 # Local testing only. Keep "false".
 ALLOW_LOCALHOST = "false"

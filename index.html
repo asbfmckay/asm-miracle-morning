@@ -488,6 +488,13 @@
   .s-read{ width:100%; margin-top:16px; padding:2px 16px; border-radius:20px; text-align:left; }
   details summary{ cursor:pointer; padding:4px 0; }
 
+  .hf-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; padding:4px 0 10px; }
+  .hf-grid div{ background:rgba(255,255,255,.6); border-radius:14px; padding:9px 8px; text-align:center; }
+  .hf-grid span{ display:block; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); }
+  .hf-grid b{ display:block; font-weight:500; font-size:17px; margin-top:3px; font-variant-numeric:tabular-nums; }
+  .hf-grid b em{ font-style:normal; font-size:12px; color:var(--ink-faint); }
+  .hf-grid small{ display:block; font-size:11px; color:var(--ink-dim); font-weight:300; }
+
   /* Sheet (bottom panel for forms) */
   #sheet-bg{ position:fixed; inset:0; background:rgba(38,36,31,.28); z-index:60; display:none; }
   #sheet{
@@ -536,6 +543,7 @@
     <div class="savers glass" id="savers"></div>
     <div class="today-habits glass" id="today-reading"></div>
     <div class="today-habits glass" id="today-tasks" style="display:none"></div>
+    <div class="today-habits glass" id="today-health" style="display:none"></div>
     <div class="today-habits glass" id="today-habits"></div>
     <div class="start-wrap" id="start-wrap">
       <button class="btn-start" id="btn-start">
@@ -598,7 +606,7 @@
 <script>
 (function(){
   "use strict";
-  var APP_VERSION = "3.3.0";
+  var APP_VERSION = "3.5.0";
   // The API Worker (Cloudflare). Change in Settings → Account if it ever moves.
   var DEFAULT_API = "https://life-api.andrew-bronnia.workers.dev";
 
@@ -636,7 +644,7 @@
       { id:"silence",  name:"Silence",       subtitle:"Prayer",                      duration:300,  type:"timer", instructions:"Sit quietly. Breathe. Bring your requests and your gratitude before God." },
       { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming", duration:300,  type:"affirmations" },
       { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:300,  type:"visual", instructions:"Picture today going well — the conversations, the work, the way you want to show up." },
-      { id:"exercise", name:"Exercise",      subtitle:"Move your body",              duration:1200, type:"timer", instructions:"Twenty minutes of movement. Walk, stretch, train — get the blood moving.", link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
+      { id:"exercise", name:"Exercise",      subtitle:"Move your body",              duration:1200, type:"timer", instructions:"Twenty minutes of movement. Walk, stretch, train — get the blood moving.", link:{label:"Open Workout", hf:"workout"} },
       { id:"reading",  name:"Reading",       subtitle:"The Word and the ministry",   duration:1200, type:"reading" },
       { id:"scribing", name:"Scribing",      subtitle:"Impressions",                 duration:300,  type:"scribe" }
     ]},
@@ -644,7 +652,7 @@
       { id:"silence",  name:"Silence",       subtitle:"Prayer",                      duration:60,  type:"timer", instructions:"One minute. Breathe. Bring your requests and your gratitude before God." },
       { id:"affirm",   name:"Affirmations",  subtitle:"Declare who you're becoming", duration:60,  type:"affirmations" },
       { id:"visual",   name:"Visualisation", subtitle:"See your goals take shape",   duration:60,  type:"visual", instructions:"One minute. Picture today going well." },
-      { id:"exercise", name:"Exercise",      subtitle:"20 push-ups · 20 sit-ups · 20 dips", duration:300, type:"list", instructions:["20 × Push-ups","20 × Sit-ups","20 × Dips"], link:{label:"Open Workout Program", url:"https://asbfmckay.github.io/workout-app/"} },
+      { id:"exercise", name:"Exercise",      subtitle:"20 push-ups · 20 sit-ups · 20 dips", duration:300, type:"list", instructions:["20 × Push-ups","20 × Sit-ups","20 × Dips"], link:{label:"Open Workout", hf:"workout"} },
       { id:"reading",  name:"Reading",       subtitle:"The Word and the ministry",   duration:60,  type:"reading" },
       { id:"scribing", name:"Scribing",      subtitle:"Impressions",                 duration:60,  type:"scribe" }
     ]}
@@ -853,7 +861,7 @@
       cfg.since = r.now || Date.now(); saveCfg(); persist();
       lastSync = Date.now(); syncing = false;
       setSyncState(Object.keys(dirty).length ? "wait" : "ok");
-      maybeSeedGoalsV2();
+      maybeSeedGoalsV2(); maybeMoveAreaWords(); hfFetch();
       if(changed) softRender();
     }).catch(function(e){
       syncing = false;
@@ -903,7 +911,13 @@
 
   /* ================= Areas ================= */
   function areas(){ return all("area", "hh").sort(byOrder); }
-  function myAreas(){ return areas().filter(function(a){ return !a.person || a.person === myUid(); }); }
+  function myAreas(){ return areas(); }
+  // Each person's own words for an area (vision, affirmation, visualisation, daily standard) — private to them (v3.4).
+  function av(a){
+    var it = get(mySpace(), "av-" + a.id); if(it) return it;
+    if((a.person || "andrew") === myUid() && (a.affirmation || a.vision)) return { vision:a.vision, affirmation:a.affirmation, visualisation:a.visualisation, dailyAction:a.dailyAction };
+    return {};
+  }
 
   /* ================= Habits data (same shape as Folio's tracker) ================= */
   var HB_DAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
@@ -995,7 +1009,7 @@
         '<div class="saver-text"' + (s.id === "scribing" ? ' data-act="scribe-open" style="cursor:pointer"' : '') + '><div class="saver-name">'+s.name+'</div><div class="saver-sub">'+esc(s.subtitle)+' · '+fmtDur(s.duration)+'</div></div>'+
         '<span style="--c:'+HEX[s.id]+'">' + checkBtn(!!done[s.id], "saver-tick", 'data-id="'+s.id+'"', "Mark "+s.name+" done") + '</span></div>';
     }).join("");
-    renderTodayReading(); renderTodayTasks();
+    renderTodayReading(); renderTodayTasks(); renderTodayHealth();
     var hs = habits().filter(function(h){ return hbTracks(h, myUid()); }), td = today();
     $("today-habits").innerHTML = '<div class="th-head"><b>Today\'s habits</b><button class="link-btn" data-act="go" data-v="habits">' + (hs.length ? "All habits" : "Add habits") + '</button></div>' +
       (hs.length ? hs.map(function(h){
@@ -1070,6 +1084,7 @@
       '<div class="grid2"><div class="fld"><label>Times a week</label><select id="hf-week">' + [1,2,3,4,5,6,7].map(function(n){ return '<option' + (n === hbTarget(h) ? " selected" : "") + '>' + n + '</option>'; }).join("") + '</select></div>' +
       '<div class="fld"><label>Who</label><select id="hf-who"><option value="me">Just me</option><option value="all"' + (h.people === "all" ? " selected" : "") + '>Both of us (each ticks)</option><option value="private"' + (h.space && h.space !== "hh" ? " selected" : "") + '>Private to me</option></select></div></div>' +
       '<div class="fld"><label>Links to goal</label><select id="hf-goal">' + goalOptions(h.goalId) + '</select></div>' +
+      (myUid() === "andrew" ? '<div class="fld"><label>Ticks itself from</label><select id="hf-auto"><option value="">Nothing — I tick it</option>' + Object.keys(HF_AUTO).map(function(k){ return '<option value="' + k + '"' + (h.auto === k ? " selected" : "") + '>' + esc(HF_AUTO[k]) + '</option>'; }).join("") + '</select></div>' : "") +
       '<div class="btn-row"><button class="btn btn-ink" data-act="hb-save" data-id="' + (h.id || "") + '" data-sp="' + (h.space || "") + '">Save</button></div>'
       : '<p class="muted small">' + esc(personName(h.owner)) + "'s habit. You can see it but not change it.</p>") +
       notes +
@@ -1129,7 +1144,7 @@
     var pq = s.pq || PROMPTS[doy % PROMPTS.length], g = s.g || [], t = s.t || [];
     var inp = function(f, v, ph){ return '<input type="text" data-sc="' + f + '" value="' + esc(v || "") + '" placeholder="' + esc(ph || "") + '">'; };
     return '<div class="s-scribe" data-date="' + date + '" data-pq="' + esc(pq) + '">' +
-      '<div class="glass"><label>Grateful for</label>' + inp("g0", g[0], "1. One about my wife or the boys") + inp("g1", g[1], "2.") + inp("g2", g[2], "3.") + '</div>' +
+      '<div class="glass"><label>Grateful for</label>' + inp("g0", g[0], "1. One about the family") + inp("g1", g[1], "2.") + inp("g2", g[2], "3.") + '</div>' +
       '<div class="glass"><label>A line that struck me</label>' + inp("line", s.line, "From today's reading") + '</div>' +
       '<div class="glass"><label>Top 3 for today</label>' + inp("t0", t[0], "Faith or family") + inp("t1", t[1], "Health") + inp("t2", t[2], "Work or finance") + '</div>' +
       '<div class="glass"><label>Win from yesterday</label>' + inp("win", s.win, "Training, budget, or being present") + '</div>' +
@@ -1171,6 +1186,9 @@
       '<div class="section-label">You</div><div class="card glass" style="padding:14px 16px;"><div class="row-title" style="margin-bottom:8px;">Your name</div><input type="text" data-chg="name" value="' + esc(getName()) + '" autocomplete="off"></div>' +
       '<div class="section-label">Affirmations</div><div class="card glass"><div class="row"><div><div class="row-title">Also read my character affirmations</div><div class="row-sub">Your earlier list (honesty, trust…), read after the goal affirmations</div></div><label class="switch"><input type="checkbox" data-chg="oldaff"' + (p.showOldAff ? " checked" : "") + '><span></span></label></div>' +
         '<div class="row"><div class="row-title">Edit that list</div><button class="btn btn-soft btn-sm" data-act="oldaff-edit">Edit</button></div></div>' +
+      (signedIn() ? '<div class="section-label">Household</div><div class="card glass" style="padding:12px 16px">' +
+        '<div class="row-sub" style="font-size:13.5px;line-height:1.6"><b>Shared with ' + esc(personName(myUid() === "bronnia" ? "andrew" : "bronnia")) + ':</b> shared goals (and their milestones, tasks, updates), every habit except private ones (you each tick your own), tonight\'s Psalm, Subjects for the boys, the family discussion note in the weekly review.<br>' +
+        '<b>Private to you:</b> your morning routine and streak, vision and affirmations, Scribing, weekly review, "Just me" goals, private habits, morning Bible plan, Proverb, White Book and ministry.</div></div>' : "") +
       '<div class="section-label">Data</div><div class="card glass">' +
         '<div class="row"><div><div class="row-title">Move habits from Folio</div><div class="row-sub">Brings your habits and their full history across</div></div><button class="btn btn-soft btn-sm" data-act="folio-sheet">Import</button></div>' +
         '<div class="row"><div><div class="row-title">Download a backup</div><div class="row-sub">Everything in the app, as a file</div></div><button class="btn btn-soft btn-sm" data-act="export">Download</button></div></div>' +
@@ -1498,8 +1516,9 @@
     if(rid === "am"){ tickMorning(true); toast("Morning reading ticked"); }
     else if(rid === "pv"){ readActions["r-proverb"](null, true); }
     else if(/^ps-\d+-\d+$/.test(rid)){ var p = rid.split("-"); tickPsalm(+p[1], +p[2], true); toast("Psalm ticked"); }
+    else if(rid === "ex"){ markDone("exercise", true); toast("Exercise ticked"); }
     else if(/^sj-\d+$/.test(rid)){ var i = +rid.slice(3); put(Object.assign({}, get("hh", "sj-" + i) || { type:"subject", id:"sj-" + i, space:"hh", idx:i }, { done:true, date:today(), by:myUid() })); toast("Subject ticked"); }
-    if(rid) currentView = rid === "am" ? "home" : "reading";
+    if(rid) currentView = rid === "am" || rid === "ex" ? "home" : "reading";
   }
 
   var readActions = {
@@ -1567,6 +1586,7 @@
       var c = 0; goalLogs(g.id).forEach(function(l){ c += +l.v || 0; pts.push([l.d, c]); });
     } else if(g.kind === "measure"){
       goalLogs(g.id).forEach(function(l){ if(num(l.v) != null) pts.push([l.d, +l.v]); });
+      if(g.source === "hf") pts = pts.concat(hfTrend()).sort(function(a, b){ return a[0].localeCompare(b[0]); });
     } else {
       var n = 0; goalMs(g.id).filter(function(m){ return m.done && m.doneAt; }).map(function(m){ return m.doneAt; }).sort().forEach(function(d){ n++; pts.push([d, n]); });
     }
@@ -1665,12 +1685,13 @@
     goalOpen = null;
     var as = areas(), html = "";
     var anchor = as.filter(function(a){ return a.anchor; })[0];
-    if(anchor && (!anchor.person || anchor.person === myUid())) html += '<div class="anchor-card glass"><div class="area-h"><span class="eyebrow">Anchor affirmation</span><button class="link-btn" data-act="area-edit" data-id="' + anchor.id + '">Edit</button></div><div class="quote">' + esc(anchor.affirmation) + '</div></div>';
+    var anyWords = as.some(function(a){ return av(a).affirmation; });
+    if(!anyWords) html += '<div class="callout glass"><b>Write your own vision and affirmations.</b><br>Tap <b>Vision & affirmation</b> beside each area. They\'re private to you and read each morning in your Affirmations and Visualisation steps.</div>';
+    if(anchor) html += '<div class="anchor-card glass"><div class="area-h"><span class="eyebrow">Anchor affirmation</span><button class="link-btn" data-act="area-edit" data-id="' + anchor.id + '">Edit</button></div><div class="quote">' + (av(anchor).affirmation ? esc(av(anchor).affirmation) : '<span class="muted">The one sentence you read first every morning.</span>') + '</div></div>';
     as.filter(function(a){ return !a.anchor; }).forEach(function(a){
       var gs = areaGoals(a.id);
-      if(!gs.length && a.person && a.person !== myUid()) return;
       html += '<div class="area-head"><span class="dot" style="background:' + esc(a.color || "#999") + '"></span><h3>' + esc(a.name) + '</h3><button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Vision & affirmation</button></div>' +
-        (a.vision ? '<details class="vision-d"><summary>10-year vision</summary><div class="vision">' + esc(a.vision) + '</div></details>' : "") +
+        (av(a).vision ? '<details class="vision-d"><summary>10-year vision</summary><div class="vision">' + esc(av(a).vision) + '</div></details>' : "") +
         (gs.length ? gs.map(goalCard).join("") : '<div class="muted small" style="margin:0 6px 10px">No goals here yet.</div>');
     });
     if(!goals().length && !signedIn()) html += '<div class="glass empty" style="padding:18px">Sign in (Settings, top right) to load your goals.</div>';
@@ -1683,9 +1704,9 @@
   function renderGoalPage(g){
     var pr = goalProgress(g), st = statusOf(g), a = areaOf(g), color = a.color || "#6753A6", mine = g.space !== "hh" || true;
     var ms = goalMs(g.id), tasks = goalTasks(g.id), hs = goalHabits(g.id), logs = goalLogs(g.id).slice().reverse(), mon = mondayOf();
-    var auto = g.kind === "count" && g.source && g.source !== "manual";
+    var auto = g.kind !== "milestones" && g.source && g.source !== "manual";
     var upd = "";
-    if(auto) upd = '<div class="muted small">Updates itself from the ' + ({ nt:"Reading tab (morning plan)", subjects:"Reading tab (Subjects for the boys)", wb:"Reading tab (White Book)" }[g.source] || "app") + '.</div>';
+    if(auto) upd = '<div class="muted small">Updates itself from the ' + ({ nt:"Reading tab (morning plan)", subjects:"Reading tab (Subjects for the boys)", wb:"Reading tab (White Book)", hf:"Health & Fitness app (7-day trend weight)" }[g.source] || "app") + '.</div>';
     else if(g.kind === "count") upd = '<div class="add-row"><input type="text" id="gl-note" placeholder="Note (optional)"><input type="date" id="gl-date" value="' + today() + '" max="' + today() + '"><button class="btn btn-ink btn-sm" data-act="g-log" data-id="' + g.id + '">+1</button></div>';
     else if(g.kind === "measure") upd = '<div class="add-row"><input type="number" class="in" step="any" id="gl-val" placeholder="' + esc(g.unit || "Value") + '" inputmode="decimal"><input type="date" id="gl-date" value="' + today() + '" max="' + today() + '"><button class="btn btn-ink btn-sm" data-act="g-log" data-id="' + g.id + '">Save</button></div>';
     var html = '<button class="link-btn back" data-act="g-close">‹ Goals</button>' +
@@ -1730,7 +1751,7 @@
       '<div class="grid2"><div class="fld"><label>Area</label><select id="gf-area">' + areas().filter(function(a){ return !a.anchor; }).map(function(a){ return opt(a.id, esc(a.name), g.areaId); }).join("") + '</select></div>' +
       '<div class="fld"><label>Who</label><select id="gf-who">' + opt("me", "Just me", g.space === "hh" ? "" : "me") + opt("hh", "Shared with " + (personName(myUid() === "bronnia" ? "andrew" : "bronnia") || "household"), g.space === "hh" ? "hh" : "") + '</select></div></div>' +
       '<div class="fld"><label>How it\'s measured</label><select id="gf-kind">' + opt("count", "A count that goes up (chapters, date nights…)", g.kind) + opt("measure", "A reading (weight, $ saved…)", g.kind) + opt("milestones", "Done when its milestones are ticked", g.kind) + '</select></div>' +
-      '<div class="fld" id="gf-src-w"' + (g.kind === "count" ? "" : ' style="display:none"') + '><label>Counted from</label><select id="gf-src">' + opt("manual", "My updates (+1)", g.source) + opt("nt", "Reading plan — New Testament chapters", g.source) + opt("subjects", "Subjects for the boys", g.source) + opt("wb", "White Books read on time", g.source) + '</select></div>' +
+      '<div class="fld" id="gf-src-w"' + (g.kind === "milestones" ? ' style="display:none"' : "") + '><label>Updated from</label><select id="gf-src">' + opt("manual", "My updates", g.source) + (myUid() === "andrew" ? opt("hf", "Health & Fitness — trend weight", g.source) : "") + opt("nt", "Reading plan — New Testament chapters", g.source) + opt("subjects", "Subjects for the boys", g.source) + opt("wb", "White Books read on time", g.source) + '</select></div>' +
       '<div class="grid3" id="gf-nums"' + (g.kind === "milestones" ? ' style="display:none"' : "") + '><div class="fld"><label>Start</label><input type="number" class="in" step="any" id="gf-start" value="' + esc(g.start == null ? "" : g.start) + '"></div><div class="fld"><label>Target</label><input type="number" class="in" step="any" id="gf-target" value="' + esc(g.target == null ? "" : g.target) + '"></div><div class="fld"><label>Unit</label><input type="text" id="gf-unit" value="' + esc(g.unit || "") + '" placeholder="kg, $, chapters"></div></div>' +
       '<div class="grid2"><div class="fld"><label>Starting</label><input type="date" id="gf-sd" value="' + esc(g.startDate || today()) + '"></div><div class="fld"><label>Due</label><input type="date" id="gf-due" value="' + esc(g.due || "") + '"></div></div>' +
       '<div class="fld"><label>Why it matters</label><textarea class="in" id="gf-why" rows="2">' + esc(g.why || "") + '</textarea></div>' +
@@ -1744,10 +1765,12 @@
     var ng = put(Object.assign({}, g, { space:sp })); del(g); return ng;
   }
   function areaSheet(a){
+    var p = av(a);
     var f = function(id, label, val, rows){ return '<div class="fld"><label>' + label + '</label><textarea class="in" id="' + id + '" rows="' + (rows || 3) + '">' + esc(val || "") + '</textarea></div>'; };
     openSheet('<h2>' + (a.anchor ? "Anchor affirmation" : esc(a.name)) + '</h2>' +
-      (a.anchor ? f("ae-aff", "Affirmation", a.affirmation, 7) :
-        '<div class="fld"><label>Name</label><input type="text" id="ae-name" value="' + esc(a.name) + '"></div>' + f("ae-vision", "10-year vision", a.vision, 5) + f("ae-aff", "Affirmation (read each morning)", a.affirmation, 7) + f("ae-vis", "Visualisation", a.visualisation, 4) + f("ae-daily", "Daily standard", a.dailyAction, 2)) +
+      '<p class="muted small">Private to you.</p>' +
+      (a.anchor ? f("ae-aff", "Affirmation", p.affirmation, 7) :
+        f("ae-vision", "10-year vision", p.vision, 5) + f("ae-aff", "Affirmation (read each morning)", p.affirmation, 7) + f("ae-vis", "Visualisation", p.visualisation, 4) + f("ae-daily", "Daily standard", p.dailyAction, 2)) +
       '<div class="btn-row"><button class="btn btn-ink" data-act="area-save" data-id="' + a.id + '">Save</button></div>');
   }
 
@@ -1800,6 +1823,16 @@
     { id:"g2-property", area:"area-financial", who:"hh", title:"First development property bought", kind:"milestones", why:"The start of the property nest egg, and freedom from debt.", ifThen:"If a Sunday review is missed, then we do it Monday night — never two in a row.",
       ms:[["Budget fully tracked for 3 months", "2027-02-28"], ["Finance pre-approval", "2027-05-31"], ["Area and criteria agreed", "2027-05-31"], ["Offer made", "2027-09-30"], ["Settled", "2027-12-31"]], habits:[["Sunday budget review", 1, true]] }
   ];
+  // v3.4: move Andrew's area words out of the shared household items into his own private space.
+  function maybeMoveAreaWords(){
+    if(myUid() !== "andrew" || lsGet("life_av_moved")) return;
+    areas().forEach(function(a){
+      if(!(a.affirmation || a.vision || a.visualisation || a.dailyAction)) return;
+      if(!get(mySpace(), "av-" + a.id)) put({ type:"avision", id:"av-" + a.id, areaId:a.id, vision:a.vision || "", affirmation:a.affirmation || "", visualisation:a.visualisation || "", dailyAction:a.dailyAction || "" });
+      patch(a, { vision:"", affirmation:"", visualisation:"", dailyAction:"", person:"" });
+    });
+    lsSet("life_av_moved", "1");
+  }
   function maybeSeedGoalsV2(){
     if(myUid() !== "andrew") return; // only the owner seeds, after signing in and syncing
     if(get("hh", "goals-v2") || lsGet("life_goals_v2_" + myUid())) return;
@@ -1826,7 +1859,7 @@
     "g-save": function(el){
       var t = $("gf-title").value.trim(); if(!t){ toast("Name the goal"); return; }
       var kind = $("gf-kind").value, sp = $("gf-who").value === "hh" ? "hh" : mySpace();
-      var ch = { title:t, areaId:$("gf-area").value, kind:kind, source:kind === "count" ? $("gf-src").value : "manual", start:num($("gf-start").value), target:num($("gf-target").value), unit:$("gf-unit").value.trim(), startDate:$("gf-sd").value || today(), due:$("gf-due").value, why:$("gf-why").value.trim() };
+      var ch = { title:t, areaId:$("gf-area").value, kind:kind, source:kind === "milestones" ? "manual" : $("gf-src").value, start:num($("gf-start").value), target:num($("gf-target").value), unit:$("gf-unit").value.trim(), startDate:$("gf-sd").value || today(), due:$("gf-due").value, why:$("gf-why").value.trim() };
       if(kind === "count" && ch.start == null) ch.start = 0;
       var old = el.dataset.id ? goalById(el.dataset.id) : null;
       if(old){ var g = patch(old, ch); if(g.space !== sp) g = moveGoal(g, sp); goalOpen = g.id; }
@@ -1850,11 +1883,81 @@
     "g-habit": function(el){ habitSheet(null); var s = $("hf-goal"); if(s) s.value = el.dataset.id; },
     "area-edit": function(el){ var a = areas().filter(function(x){ return x.id === el.dataset.id; })[0]; if(a) areaSheet(a); },
     "area-save": function(el){ var a = areas().filter(function(x){ return x.id === el.dataset.id; })[0]; if(!a) return; var v = function(id){ var e = $(id); return e ? e.value.trim() : undefined; };
-      var ch = { affirmation:v("ae-aff") }; if(!a.anchor){ ch.name = v("ae-name") || a.name; ch.vision = v("ae-vision"); ch.visualisation = v("ae-vis"); ch.dailyAction = v("ae-daily"); } patch(a, ch); closeSheet(); toast("Saved"); },
+      var ch = { affirmation:v("ae-aff") }; if(!a.anchor){ ch.vision = v("ae-vision"); ch.visualisation = v("ae-vis"); ch.dailyAction = v("ae-daily"); }
+      put(Object.assign({}, get(mySpace(), "av-" + a.id) || { type:"avision", id:"av-" + a.id, areaId:a.id }, ch)); closeSheet(); toast("Saved"); },
     "rv-gs": function(el){ var g = goalById(el.dataset.id); if(!g) return; patch(g, { status:{ s:el.dataset.s, d:today() } });
       el.parentNode.querySelectorAll("button").forEach(function(b){ b.className = b === el ? "active s-" + el.dataset.s : ""; }); }
   };
   function goalFieldSave(el){ var g = goalById(el.dataset.id); if(!g) return; var ch = {}; ch[el.dataset.gfield] = el.value.trim(); patch(g, ch); }
+
+  /* ================= Health & Fitness link (v3.5.0) =================
+     The Health & Fitness app stays where weight, food and training are logged. The Life App reads a
+     small summary through life-api (GET /hf/summary, Andrew only) and uses it to:
+     - move the weight goal from the 7-day trend weight,
+     - tick habits that are set to "tick themselves" (workout done, weighed in, food logged),
+     - show a Health line on Today and today's workout in the Exercise step. */
+  var HF_DEFAULT = "https://asbfmckay.github.io/health-fitness/";
+  var HF_DAYS = { 1:"Chest & Triceps", 2:"Shoulders & Arms", 3:"Back & Biceps", 4:"Core & Cardio", 5:"Full Body HIIT" };
+  var HF_AUTO = { "hf-train":"Health & Fitness — a workout logged", "hf-weigh":"Health & Fitness — a weigh-in", "hf-food":"Health & Fitness — food logged" };
+  var hfData = lsJSON("life_hf", null), hfBusy = false, hfLast = 0;
+  function hfOn(){ return signedIn() && myUid() === "andrew"; }
+  function hfBase(){ return (prefs().hfUrl || HF_DEFAULT).replace(/\/?$/, "/"); }
+  function hfUrl(page, rid){ return hfBase() + "?ret=" + encodeURIComponent(location.origin + location.pathname) + (rid ? "&rid=" + rid : "") + "#" + page; }
+  function hfFetch(force){
+    if(!hfOn() || hfBusy) return; if(!force && Date.now() - hfLast < 10 * 60000) return;
+    hfBusy = true; hfLast = Date.now();
+    api("/hf/summary").then(function(d){ hfBusy = false; hfData = d; lsSet("life_hf", JSON.stringify(d)); hfLinkOnce(); hfApply(); softRender(); },
+      function(e){ hfBusy = false; hfData = hfData || null; if(e.status !== 403) console.warn("H&F:", e.message); });
+  }
+  // 7-day trend weight at each weigh-in (average of the weigh-ins in the 7 days up to it)
+  function hfTrend(){
+    var w = (hfData && hfData.weights) || [];
+    return w.map(function(x){ var from = dayKey(addDays(parseDay(x.date), -6)); var win = w.filter(function(y){ return y.date >= from && y.date <= x.date; });
+      return [x.date, Math.round(win.reduce(function(a, y){ return a + y.kg; }, 0) / win.length * 10) / 10]; });
+  }
+  function hfDates(kind){
+    if(!hfData) return [];
+    if(kind === "hf-train") return (hfData.sessions || []).filter(function(s){ return s.min >= 5; }).map(function(s){ return s.date; });
+    if(kind === "hf-weigh") return (hfData.weights || []).map(function(w){ return w.date; });
+    if(kind === "hf-food") return (hfData.food || []).map(function(f){ return f.date; });
+    return [];
+  }
+  // Tick habits that are linked to Health & Fitness. Only fills empty days in the last 3 weeks; never unticks.
+  function hfApply(){
+    if(!hfOn() || !hfData) return;
+    var from = dayKey(addDays(new Date(), -21)), t = today();
+    habits().filter(function(h){ return h.auto && HF_AUTO[h.auto] && hbTracks(h, myUid()); }).forEach(function(h){
+      var seen = {};
+      hfDates(h.auto).forEach(function(d){ if(d >= from && d <= t && !seen[d]){ seen[d] = 1; if(!hbMark(h, myUid(), d)) hbWrite(h, d, "d", "g"); } });
+    });
+  }
+  // One-off: point the weight goal and its three habits at Health & Fitness.
+  function hfLinkOnce(){
+    if(!hfOn() || lsGet("life_hf_linked")) return;
+    var g = goalById("g2-weight"); if(g && (g.source || "manual") === "manual") patch(g, { source:"hf" });
+    [["hb-g2-weight-1", "hf-train"], ["hb-g2-weight-2", "hf-weigh"], ["hb-g2-weight-3", "hf-food"]].forEach(function(x){ var h = get("hh", x[0]); if(h && !h.auto) patch(h, { auto:x[1] }); });
+    lsSet("life_hf_linked", "1");
+  }
+  function hfWorkoutToday(){ return HF_DAYS[new Date().getDay()] || "Rest day — walk or stretch"; }
+
+  /* Today: a small Health card */
+  function renderTodayHealth(){
+    var el = $("today-health"); if(!el) return;
+    if(!hfOn() || !hfData){ el.style.display = "none"; return; }
+    el.style.display = "";
+    var tr = hfTrend(), last = tr.length ? tr[tr.length - 1] : null, g = goalById("g2-weight"), t = today(), tg = hfData.targets || {};
+    var food = (hfData.food || []).filter(function(f){ return f.date === t; })[0];
+    var steps = hfData.today && hfData.today.date === t ? hfData.today.steps : null;
+    var mon = mondayOf(), wk = (hfData.sessions || []).filter(function(s){ return s.date >= mon && s.min >= 5; }).length;
+    var pace = g ? goalPace(g) : null;
+    el.innerHTML = '<div class="th-head"><b>Health</b><a class="link-btn" href="' + esc(hfUrl("hf", "")) + '">Open Health & Fitness</a></div>' +
+      '<div class="hf-grid">' +
+      '<div><span>Trend weight</span><b>' + (last ? last[1] + "kg" : "–") + '</b><small>' + (pace && pace.txt ? esc(pace.txt) : "goal 85kg") + '</small></div>' +
+      '<div><span>Workouts</span><b>' + wk + '<em>/4</em></b><small>this week</small></div>' +
+      '<div><span>Food</span><b>' + (food ? Math.round(food.kcal).toLocaleString("en-AU") : "–") + '</b><small>of ' + (tg.kcalIn || 2000).toLocaleString("en-AU") + ' cal</small></div>' +
+      '<div><span>Steps</span><b>' + (steps != null ? Math.round(steps).toLocaleString("en-AU") : "–") + '</b><small>of ' + (tg.steps || 10000).toLocaleString("en-AU") + '</small></div>' +
+      '</div>';
+  }
 
   /* ================= Sound + vibration ================= */
   var actx = null;
@@ -1905,11 +2008,11 @@
   // Affirmations in reading order: anchor first, then each area. Pulled live from Goals.
   function affirmationBlocks(){
     var out = [];
-    myAreas().forEach(function(a){ if(a.affirmation) out.push({ head:a.anchor ? "Anchor" : a.name, text:a.affirmation }); });
+    myAreas().forEach(function(a){ var p = av(a); if(p.affirmation) out.push({ head:a.anchor ? "Anchor" : a.name, text:p.affirmation }); });
     if(prefs().showOldAff){ var old = prefs().oldAff || DEFAULT_AFFIRMATIONS; out.push({ head:"Character", lines:old }); }
     return out;
   }
-  function visualBlocks(){ return myAreas().filter(function(a){ return !a.anchor && a.visualisation; }); }
+  function visualBlocks(){ return myAreas().filter(function(a){ return !a.anchor && av(a).visualisation; }).map(function(a){ return { name:a.name, visualisation:av(a).visualisation }; }); }
 
   var session = null;
   function startSession(planKey){
@@ -1956,10 +2059,10 @@
       html += scribeHtml(today());
     } else if(s.type === "list"){
       html += '<ul class="s-list">' + s.instructions.map(function(x){ return '<li class="glass">'+esc(x)+"</li>"; }).join("") + '</ul>';
-    } else html += '<div class="s-instr">'+esc(s.instructions)+'</div>';
+    } else html += '<div class="s-instr">'+(s.id === "exercise" && hfOn() ? '<b>Today: '+esc(hfWorkoutToday())+'</b><br>' : "")+esc(s.instructions)+'</div>';
     if(s.link){
       if(s.link.soon) html += '<span class="s-link soon glass">'+esc(s.link.label)+' · coming in the next update</span>';
-      else html += '<a class="s-link glass" target="_blank" rel="noopener" href="'+esc(s.link.url)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>'+esc(s.link.label)+'</a>';
+      else html += '<a class="s-link glass" target="_blank" rel="noopener" href="'+esc(s.link.hf ? hfUrl(s.link.hf, "ex") : s.link.url)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>'+esc(s.link.label)+'</a>';
     }
     var body = $("s-body"); body.classList.remove("enter"); body.innerHTML = html; body.scrollTop = 0; void body.offsetWidth; body.classList.add("enter");
     var saved = session.saved[i];
@@ -2091,6 +2194,7 @@
       var name = $("hf-name").value.trim(); if(!name){ toast("Give it a name"); return; }
       var who = $("hf-who").value, space = who === "private" ? mySpace() : "hh";
       var ch = { name:name, perWeek:+$("hf-week").value, goalId:$("hf-goal").value || "", people:who === "all" ? "all" : undefined };
+      if($("hf-auto")) ch.auto = $("hf-auto").value;
       var old = el.dataset.id ? get(el.dataset.sp, el.dataset.id) : null;
       if(old && old.space !== space){
         // Moving between private and household: copy the habit and my ticks across.
@@ -2153,7 +2257,7 @@
     var el = e.target, c = el.dataset.chg;
     if(el.id === "folio-file" && el.files[0]) folioPreview(el.files[0]);
     if(el.matches && el.matches('select[data-f="kind"]')){ var m = el.closest("[data-gid]").querySelector("[data-meas]"); if(m) m.style.display = el.value === "measured" ? "" : "none"; }
-    if(el.id === "gf-kind"){ $("gf-src-w").style.display = el.value === "count" ? "" : "none"; $("gf-nums").style.display = el.value === "milestones" ? "none" : ""; }
+    if(el.id === "gf-kind"){ $("gf-src-w").style.display = el.value === "milestones" ? "none" : ""; $("gf-nums").style.display = el.value === "milestones" ? "none" : ""; }
     if(el.dataset && el.dataset.gfield) goalFieldSave(el);
     if(!c) return;
     if(c === "wake") setWake(el.checked);

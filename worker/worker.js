@@ -5,6 +5,10 @@
  * WORKER_VERSION should match APP_VERSION in index.html.
  *
  * Changelog
+ * v3.5.0 (2026-11-10) — Health & Fitness link. Andrew: "integrate seamlessly the health & fitness app".
+ *   - GET /hf/summary (Andrew only): fetches the Health & Fitness worker's read-only GET /summary
+ *     (weigh-ins, workouts, food-logged days, today's watch figures, targets) using the HF_READ_KEY secret.
+ *     HF_URL var = that worker's address. The phone never holds a Health & Fitness key.
  * v3.1.0 (2026-11-09) — PIN sign-in with two fixed profiles. Andrew: "Can we just change this to a simple
  *   pin number to login? And have a profile for me (andrew.mckay92@gmail.com) and profile for Bronnia
  *   (andrew.bronnia@gmail.com)".
@@ -21,7 +25,7 @@
  *   - Sync is per item, newest `updatedAt` wins. Deletes are kept as tombstones.
  *   - A daily snapshot of each space is kept (last 14) as a safety net.
  */
-const WORKER_VERSION = '3.1.0';
+const WORKER_VERSION = '3.5.0';
 
 // The household. `pin` names the secret that holds that person's PIN.
 const PROFILES = [
@@ -51,6 +55,14 @@ export default {
       if (url.pathname === '/me' && req.method === 'GET') return json({ user: pub(me), people: PROFILES.map(pub) }, 200, cors);
       if (url.pathname === '/auth/logout' && req.method === 'POST') { await env.DB.delete('sess:' + s.token); return json({ ok: true }, 200, cors); }
 
+      if (url.pathname === '/hf/summary' && req.method === 'GET') {
+        if (me.uid !== 'andrew') return json({ error: 'Not linked for this profile.' }, 403, cors);
+        if (!env.HF_URL || !env.HF_READ_KEY) return json({ error: 'Health & Fitness link not set up yet.' }, 503, cors);
+        const r = await fetch(env.HF_URL.replace(/\/$/, '') + '/summary', { headers: { Authorization: 'Bearer ' + env.HF_READ_KEY } });
+        const body = await r.text();
+        if (!r.ok) return json({ error: 'Health & Fitness said ' + r.status }, 502, cors);
+        return new Response(body, { status: 200, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+      }
       if (url.pathname === '/sync' && req.method === 'GET') {
         const since = +url.searchParams.get('since') || 0, now = Date.now(), items = [];
         for (const sp of spacesFor(me)) {

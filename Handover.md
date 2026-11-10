@@ -16,7 +16,34 @@ Miracle Morning App\
     worker\worker.js, worker\wrangler.toml   ← the API Worker (deployed separately, see below)
 ```
 
-## Where we are: Goals v2 built — v3.3.0 (10 Nov 2026). Phase 2 (Reading) done. Next: Phase 3 (Sharing) when Andrew says go.
+## Where we are: Health & Fitness link built — v3.5.0 (10 Nov 2026). Next: rest of Phase 4 (Send to Folio) and Phase 5 (Brighta, quarterly/annual reviews).
+
+### v3.5.0 (10 Nov 2026) — Health & Fitness link (Andrew's profile only)
+- **Health & Fitness worker** (`health-coach`): new read-only `GET /summary` behind secret `LIFE_READ_KEY`. **life-api**: new `GET /hf/summary` (Andrew only) that calls it with secret `HF_READ_KEY` (same value); var `HF_URL` = https://health-coach.andrew-bronnia.workers.dev. WORKER_VERSION 3.5.0.
+- **Weight goal** (85kg by 30 Apr 2027) now updates from the 7-day trend weight in Health & Fitness (`source:"hf"`). Goal edit has "Updated from: Health & Fitness — trend weight".
+- **Habits that tick themselves:** Train (a workout of 5+ min logged), Weigh in (a weigh-in), Log food (food logged that day). Set per habit under "Ticks itself from". Only fills empty days in the last 3 weeks; never unticks.
+- **Today:** Health card — trend weight + pace, workouts this week /4, food cal vs target, steps.
+- **Exercise step:** shows today's workout (Mon Chest & Triceps … Fri Full Body HIIT) and "Open Workout" opens the Health & Fitness Workout tab with a "✓ Done · back to Life App" bar; Done ticks Exercise.
+- Summary is fetched after each sync, at most every 10 minutes, cached on the phone (`life_hf`).
+
+### Your steps for v3.5.0
+1. Make up a long random read-only key (e.g. 40 letters/numbers). Never paste it in chat.
+2. **Health & Fitness worker:** Cloudflare dashboard → Workers → `health-coach` → Settings → Variables and Secrets → add secret `LIFE_READ_KEY` = that key. Then Edit code → paste the whole new `worker\worker.js` → Deploy.
+3. **life-api:** in `asm-miracle-morning\worker`: `npx wrangler secret put HF_READ_KEY` (same key), then `npx wrangler deploy`.
+4. Push both repos in GitHub Desktop: `health-fitness` (Life App link bar) and `life-app` (v3.5.0).
+5. In Health & Fitness → Settings, set target weight to 85.
+
+### v3.4.0 (10 Nov 2026) — Phase 3: Sharing
+- Bronnia signs in with her own PIN (since v3.1). Areas (Faith, Family, Health, Financial) are shared categories; **each person's vision, affirmations, visualisations and daily standard are now private** (`avision` items `av-<areaId>` in `u:<uid>`). Andrew's words were moved out of the shared area items into his own space on his first sync (`maybeMoveAreaWords`), and the shared copies cleared.
+- Bronnia's first visit to Goals shows a prompt to write her own vision and affirmations; her morning Affirmations/Visualisation steps read hers.
+- Settings → Household lists exactly what's shared and what's private.
+- Shared: shared goals (+ milestones, tasks, updates), habits except private ones (each ticks their own), tonight's Psalm, Subjects for the boys, family discussion note. Private: morning routine/streak, vision & affirmations, Scribing, weekly review, Just me goals, private habits, morning plan, Proverb, White Book, ministry.
+- Scribing gratitude hint is now "One about the family" (works for both).
+- Note: the first-run seed text (goals and affirmations) is inside index.html, which GitHub Pages serves publicly. Once Andrew's data is synced it can be removed — ask Claude.
+
+### Your steps for v3.4.0
+1. Push v3.4.0 in GitHub Desktop.
+2. Open the app on your phone first (so your words move to private), then Bronnia signs in on hers.
 
 ### v3.3.0 (10 Nov 2026) — Goals v2
 - **Levels:** Area → 10-year vision → **Goal** (a result by a date) → **Milestones** (dated checkpoints, with a number where it makes sense) → **Habits** (recurring) and **Tasks** (one-off, dated). Standards live in the area affirmation.
