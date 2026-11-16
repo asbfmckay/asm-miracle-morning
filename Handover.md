@@ -16,7 +16,36 @@ Miracle Morning App\
     worker\worker.js, worker\wrangler.toml   ← the API Worker (deployed separately, see below)
 ```
 
-## Where we are: All 5 spec phases built — v3.7.0 (10 Nov 2026). Waiting on Andrew's testing and feedback. Brighta status to be linked once Brighta is live.
+## Where we are: All 5 spec phases built — v3.8.3 (10 Nov 2026). Waiting on Andrew's testing and feedback (last checked 11 Nov 2026). Brighta status to be linked once Brighta is live.
+
+### v3.8.3 (17 Nov 2026) — renamed to Life
+- App name is now just **Life** (title, home-screen name, header, Settings footer, export file). Replaces "Miracle Life" from v3.8.0.
+
+### v3.8.2 (17 Nov 2026) — Morning Bible ticks carry over to the Bible app
+- Every Bible link now adds `&sync=b:c,…`: the Morning Bible chapters ticked in the Life App in the last 30 days. The Bible app (1.7.1, `LifeLink.sync` in main.js) marks any of those not already read, the moment it opens from a Life App link. Add only, never un-marks. A chapter ticked in the Life App shows in the Bible app the next time you open any reading from the Life App.
+
+### v3.8.1 (17 Nov 2026) — Exercise step reads the real plan; session survives other apps
+- Exercise step "Today:" now comes from the Health & Fitness week plan (H&F stores it as `plan-<Saturday>` in localStorage; both apps are on asbfmckay.github.io so the Life App reads it directly). Shows the session and minutes, "Rest day", or "Nothing planned in Health & Fitness yet". The old hard-coded Mon–Fri split (HF_DAYS) is gone.
+- The morning session is now saved as it runs (`life_session` in localStorage: step, timer, pauses). If the page reloads — e.g. coming back from the Workout or Bible app — it picks up where it was (sessions older than 3 hours are dropped). Coming back with Done from Exercise ticks it and moves to the next step. If two copies of the page are open, the one you return to catches up with the other.
+- Health & Fitness app (its own repo, cache hf-v3): the "Done · back to Life App" bar now leaves a note (`life_return`) in shared storage, tries to close its window so the Life App underneath carries on, and otherwise goes to the Life App, which reads the note.
+
+### v3.8.0 (17 Nov 2026) — renamed to Miracle Life
+- App name is now **Miracle Life**: page title, home-screen name (manifest name/short_name, apple title), header brand, Settings footer, export file. "Miracle Morning" stays as the name of the morning routine inside the app. Repo/URL (life-app) and the worker (life-api) unchanged.
+- Already-installed home-screen icons may keep the old name until removed and re-added.
+
+### v3.7.3 (16 Nov 2026) — Morning Bible read-on
+- Morning Bible looked "stuck" once today's chapter was ticked: by design it shows today's chapters (ticked) until midnight, so a behind plan never moved on. Now, once today's reading is done, the Reading screen offers the next chapter: "Read Matthew 2" (opens the Bible app, ticks on return via rid `am-<book>:<chapter>`) or "Mark Matthew 2 read". If behind, a link sets the pace from today (`rplan.start = today`) to clear the behind count.
+- Build order reminder: 01, 02, 03, 04a, 04b, 05, 06, 07, 08, 04c (books.js is already inside 05).
+
+### v3.7.2 (16 Nov 2026) — review layout fix
+- Weekly and annual review goal rows: the pace pill was being stretched into a tall blob beside the title. Now the title runs full width, with the progress and a small pace pill on the line under it; tighter status buttons and next-step box. `.pace` no longer stretches inside flex rows anywhere.
+
+### v3.7.1 (10 Nov 2026) — data-loss report and safeguard
+- Andrew reported a habit he'd made and his Subjects ticks disappeared. Most likely cause: the Life App, Health & Fitness and PPP all live on the same site (asbfmckay.github.io) and share one browser storage. "Clear site data" (the Health & Fitness handover tells you to do this after its updates) or uninstalling with "clear data" wipes all three. Anything not yet synced to the cloud (not signed in, or the Worker not deployed) is then gone.
+- Safeguard: a red "Heads up" banner on Today whenever the phone isn't backed up (not signed in, signed out, or sync failing).
+- Rule: never clear site data for asbfmckay.github.io. To refresh an app, close and reopen it (all three service workers are network-first).
+- Recovery: if the items had ever synced, the Worker keeps daily snapshots (`snap:<space>:<date>`, 14 days) — Claude can write a restore.
+- 11 Nov 2026: Andrew confirmed it's sorted (no restore needed).
 
 ### v3.7.0 (10 Nov 2026) — all reviews on Monday night, weekly budget check
 - Andrew: "make all reviews on Monday night… a weekly budget review — get our finances up to date in Brighta every week and budget review."

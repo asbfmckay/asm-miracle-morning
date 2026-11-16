@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Miracle Morning">
-<title>Miracle Morning</title>
+<meta name="apple-mobile-web-app-title" content="Life">
+<title>Life</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -405,7 +405,7 @@
   .g-body > span{ display:block; font-size:12.5px; color:var(--ink-dim); font-weight:300; margin-top:2px; }
   .g-body .g-tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
   .g-chev{ color:var(--ink-faint); font-size:20px; }
-  .pace{ display:inline-block; white-space:nowrap; flex-shrink:0; font-size:11.5px; font-weight:500; padding:3px 9px; border-radius:999px; }
+  .pace{ display:inline-block; align-self:flex-start; height:auto; line-height:1.4; white-space:nowrap; flex-shrink:0; font-size:11.5px; font-weight:500; padding:3px 9px; border-radius:999px; }
   .pace.p-g{ background:#E3F1E7; color:#2F7A4C; } .pace.p-a{ background:#F8EBCB; color:#8A6514; } .pace.p-r{ background:#F6E0E0; color:#A3444C; } .pace.p-n{ background:rgba(46,43,40,.06); color:var(--ink-dim); }
   .back{ text-decoration:none; font-size:14px; margin:0 0 8px 2px; padding:4px 0; }
   .g-hero{ padding:16px; margin-bottom:12px; }
@@ -417,9 +417,12 @@
   .g-legend i{ display:inline-block; width:14px; height:3px; border-radius:2px; vertical-align:middle; margin-right:5px; }
   .g-legend i.dash{ background:repeating-linear-gradient(90deg, #ABA59C 0 4px, transparent 4px 7px); }
   .rv-goal{ padding:10px 0; border-top:1px solid var(--line); } .rv-goal:first-of-type{ border-top:none; }
-  .rv-st{ margin-top:8px; } .rv-st button{ padding:8px 0; font-size:13px; }
+  .rv-readon{ margin-top:14px; padding-top:12px; border-top:1px solid var(--line, rgba(0,0,0,.07)); } .rv-readon .chips{ margin:8px 0 6px; } a.chip{ text-decoration:none; color:inherit; display:inline-flex; align-items:center; }
+.rv-gt{ font-weight:500; font-size:15.5px; line-height:1.3; }
+  .rv-gm{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:3px; font-size:13px; color:var(--ink-dim); font-weight:300; }
+  .rv-st{ margin-top:8px; padding:3px; border-radius:12px; } .rv-st button{ padding:7px 0; font-size:13px; border-radius:9px; }
   .rv-st button.s-g{ background:#E3F1E7; } .rv-st button.s-a{ background:#F8EBCB; } .rv-st button.s-r{ background:#F6E0E0; }
-  .rv-next{ margin-top:8px; padding:10px 12px !important; font-size:14px !important; }
+  .rv-next{ margin-top:6px; padding:9px 12px !important; font-size:14px !important; border-radius:12px !important; }
   .area-h{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .area-h h3{ margin:0; font-weight:500; font-size:19px; letter-spacing:-.01em; }
   .area .vision{ font-weight:300; font-size:14.5px; line-height:1.55; color:var(--ink-dim); margin-top:6px; white-space:pre-line; }
@@ -519,7 +522,7 @@
     <div class="hero-top">
       <div class="brand">
         <svg viewBox="0 0 56 40" fill="none"><path d="M12 34a16 16 0 0132 0z" fill="currentColor"/><g stroke="currentColor" stroke-width="4" stroke-linecap="round"><line x1="28" y1="4" x2="28" y2="11"/><line x1="12" y1="10" x2="16" y2="15"/><line x1="44" y1="10" x2="40" y2="15"/><line x1="3" y1="22" x2="9" y2="24"/><line x1="53" y1="22" x2="47" y2="24"/></g></svg>
-        Miracle Morning
+        Life
       </div>
       <div class="hero-right">
         <div class="streak-chip" id="streak-chip" title="Day streak">
@@ -536,6 +539,7 @@
 
   <!-- TODAY (Morning) -->
   <section class="view active" id="view-home">
+    <div class="callout glass" id="backup-warn" style="display:none;margin-bottom:10px;background:#F6E0E0;border-color:#EBC9C9"></div>
     <div class="plan-card glass">
       <div class="seg" id="plan-seg"></div>
       <div class="plan-meta">
@@ -608,7 +612,7 @@
 <script>
 (function(){
   "use strict";
-  var APP_VERSION = "3.7.0";
+  var APP_VERSION = "3.8.3";
   // The API Worker (Cloudflare). Change in Settings → Account if it ever moves.
   var DEFAULT_API = "https://life-api.andrew-bronnia.workers.dev";
 
@@ -830,7 +834,7 @@
 
   /* ================= Sync with the Worker ================= */
   var syncState = "off", pushT = null, syncing = false, lastSync = 0, syncErr = "";
-  function setSyncState(s, msg){ syncState = s; syncErr = msg || ""; var d = document.getElementById("sync-dot"); if(d) d.className = "dot " + ({ ok:"on", wait:"wait", err:"err" }[s] || ""); }
+  function setSyncState(s, msg){ var was = syncState; syncState = s; syncErr = msg || ""; if(was !== s && typeof currentView !== "undefined" && currentView === "home" && !session) try{ renderHome(); }catch(e){} var d = document.getElementById("sync-dot"); if(d) d.className = "dot " + ({ ok:"on", wait:"wait", err:"err" }[s] || ""); }
   function api(path, opt){
     opt = opt || {};
     var ctl = new AbortController(), t = setTimeout(function(){ ctl.abort(); }, 20000);
@@ -1001,6 +1005,12 @@
 
   /* ================= Today (Morning) ================= */
   function renderHome(){
+    var warn = $("backup-warn");
+    if(warn){
+      var lost = !signedIn() ? (cfg.user ? "You're signed out, so changes on this phone aren't backed up. Sign in again (Settings, top right)." : "Not backed up — everything is only on this phone. Sign in (Settings, top right) to save it to the cloud.")
+        : (syncState === "err" ? "Changes aren't reaching the cloud: " + (syncErr || "sync problem") + ". Open Settings → Sync." : "");
+      warn.style.display = lost ? "" : "none"; warn.innerHTML = lost ? '<b>Heads up.</b> ' + esc(lost) : "";
+    }
     var key = getPlanKey();
     $("plan-seg").innerHTML = PLAN_ORDER.map(function(k){ return '<button data-act="plan" data-k="' + k + '" class="' + (k === key ? "active" : "") + '">' + PLANS[k].label + '</button>'; }).join("");
     var steps = getSteps(key), t = total(steps);
@@ -1194,7 +1204,7 @@
       '<div class="section-label">Data</div><div class="card glass">' +
         '<div class="row"><div><div class="row-title">Move habits from Folio</div><div class="row-sub">Brings your habits and their full history across</div></div><button class="btn btn-soft btn-sm" data-act="folio-sheet">Import</button></div>' +
         '<div class="row"><div><div class="row-title">Download a backup</div><div class="row-sub">Everything in the app, as a file</div></div><button class="btn btn-soft btn-sm" data-act="export">Download</button></div></div>' +
-      '<div class="about">Miracle Morning · a great morning starts with a routined night before.<br>' + (signedIn() ? "Saved on this device and in the cloud." : "Saved on this device only.") + ' v' + APP_VERSION + '</div>';
+      '<div class="about">Life · a great morning starts with a routined night before.<br>' + (signedIn() ? "Saved on this device and in the cloud." : "Saved on this device only.") + ' v' + APP_VERSION + '</div>';
     renderInstall(); renderWakeUI();
   }
 
@@ -1300,8 +1310,16 @@
   function bookIdx(name){ for(var i = 0; i < BOOKS.length; i++) if(BOOKS[i][0] === name) return i; return -1; }
   function bibleBase(){ var u = prefs().bibleUrl || BIBLE_DEFAULT; return u.replace(/\/?$/, "/"); }
   // Link into the Holy Bible app. It shows a "Done · back" bar that returns here with #done=<rid>.
+  // Chapters ticked here in the last 30 days, sent along with every Bible link so the Bible app
+  // marks them read too (it only ever adds; it never un-marks).
+  function bibleSync(){
+    var p = typeof rplan === "function" ? rplan() : null; if(!p || !p.done) return "";
+    var from = dayKey(addDays(new Date(), -30));
+    return Object.keys(p.done).filter(function(k){ return p.done[k] >= from; }).join(",");
+  }
   function bibleUrl(b, c, v, v2, rid, mark){
-    var q = "?ret=" + encodeURIComponent(location.origin + location.pathname) + (rid ? "&rid=" + encodeURIComponent(rid) : "") + (v2 ? "&to=" + v2 : "") + (mark ? "&mark=" + mark : "");
+    var sy = bibleSync();
+    var q = "?ret=" + encodeURIComponent(location.origin + location.pathname) + (rid ? "&rid=" + encodeURIComponent(rid) : "") + (v2 ? "&to=" + v2 : "") + (mark ? "&mark=" + mark : "") + (sy ? "&sync=" + sy : "");
     return bibleBase() + q + "#" + encodeURIComponent(BOOKS[b][0]) + "." + c + (v ? "." + v : "");
   }
   function refText(b, c, v, v2){ var n = b === PS ? "Psalm" : BOOKS[b][0]; return n + " " + c + (v ? ":" + v + (v2 && v2 !== v ? "–" + v2 : "") : ""); }
@@ -1349,6 +1367,11 @@
     ss.forEach(function(s){ total += s.list.length; expected += Math.min(s.list.length, s.perDay * el); s.list.forEach(function(x){ if(p.done && p.done[x[0] + ":" + x[1]]) done++; }); });
     var doneBefore = 0; ss.forEach(function(s){ s.list.forEach(function(x){ var d = p.done && p.done[x[0] + ":" + x[1]]; if(d && d < today()) doneBefore++; }); });
     return { total:total, done:done, behind:Math.max(0, expected - doneBefore), pct:total ? Math.round(done / total * 100) : 0 };
+  }
+  function planNext(p){
+    var done = p.done || {}, out = [];
+    planStreams(p).forEach(function(s){ for(var i = 0; i < s.list.length; i++){ var x = s.list[i]; if(!done[x[0] + ":" + x[1]]){ out.push(x); break; } } });
+    return out;
   }
   function morningDone(){ var p = rplan(); if(!p) return false; var tl = planToday(p); return tl.length > 0 && tl.every(function(x){ return (p.done || {})[x[0] + ":" + x[1]]; }); }
   function tickMorning(on){
@@ -1448,6 +1471,14 @@
       '<div class="s-instr" style="margin-top:12px">Tap the book to read in the Holy Bible app. Tap <b>Done</b> there and you\'ll come straight back here, ticked.</div>';
   }
 
+  function readOnHtml(p, st){
+    if(!morningDone()) return "";
+    var nx = planNext(p); if(!nx.length) return "";
+    return '<div class="rv-readon"><div class="muted small">' + (st.behind ? "Today's done. Catch up by reading on:" : "Today's done. Want to read ahead?") + '</div><div class="chips">' +
+      nx.map(function(x){ return '<a class="chip" href="' + esc(bibleUrl(x[0], x[1], 0, 0, "am-" + x[0] + ":" + x[1])) + '">Read ' + esc(chLabel([x])) + '</a><button class="chip" data-act="r-ch" data-k="' + x[0] + ":" + x[1] + '">Mark ' + esc(chLabel([x])) + ' read</button>'; }).join("") + '</div>' +
+      (st.behind ? '<button class="link-btn" data-act="r-plan-repace">Or set the pace from today (clears "' + st.behind + ' behind")</button>' : "") + '</div>';
+  }
+
   /* ---------- Reading screen ---------- */
   var rdShowAllSj = false, rdPlanPick = false;
   function renderReading(){
@@ -1464,7 +1495,7 @@
       var st = planStats(p), tl = planToday(p);
       html += '<div class="area-h"><h3>' + esc(p.name) + '</h3><button class="link-btn" data-act="r-plan-change">Change</button></div>' +
         '<div class="hb-meta"><b>' + st.done + '</b> of ' + st.total + ' chapters · ' + (st.behind ? '<b style="color:var(--danger)">' + st.behind + ' behind</b>' : "on track") + '</div><div class="bar" style="--ac:#6753A6"><i style="width:' + st.pct + '%"></i></div>' +
-        (tl.length ? '<div class="lbl" style="margin-top:12px">Today</div>' + rowMorning() + '<div class="chips">' + tl.map(function(x){ var d = (p.done || {})[x[0] + ":" + x[1]]; return '<button class="chip' + (d ? " on" : "") + '" data-act="r-ch" data-k="' + x[0] + ":" + x[1] + '">' + esc(chLabel([x])) + '</button>'; }).join("") + '</div>' : '<div class="empty">Plan finished. Choose another to keep going.</div>');
+        (tl.length ? '<div class="lbl" style="margin-top:12px">Today</div>' + rowMorning() + '<div class="chips">' + tl.map(function(x){ var d = (p.done || {})[x[0] + ":" + x[1]]; return '<button class="chip' + (d ? " on" : "") + '" data-act="r-ch" data-k="' + x[0] + ":" + x[1] + '">' + esc(chLabel([x])) + '</button>'; }).join("") + '</div>' + readOnHtml(p, st) : '<div class="empty">Plan finished. Choose another to keep going.</div>');
     }
     html += '</div>';
     // Proverb
@@ -1516,11 +1547,13 @@
     var rid = h.indexOf("#done=") === 0 ? decodeURIComponent(h.slice(6)) : "";
     history.replaceState(null, "", location.pathname + location.search);
     if(rid === "am"){ tickMorning(true); toast("Morning reading ticked"); }
+    else if(/^am-\d+:\d+$/.test(rid)){ var rp = rplan(); if(rp){ var dd = Object.assign({}, rp.done || {}); dd[rid.slice(3)] = dd[rid.slice(3)] || today(); patch(rp, { done:dd }); toast("Chapter ticked"); } }
     else if(rid === "pv"){ readActions["r-proverb"](null, true); }
     else if(/^ps-\d+-\d+$/.test(rid)){ var p = rid.split("-"); tickPsalm(+p[1], +p[2], true); toast("Psalm ticked"); }
     else if(rid === "ex"){ markDone("exercise", true); toast("Exercise ticked"); }
     else if(/^sj-\d+$/.test(rid)){ var i = +rid.slice(3); put(Object.assign({}, get("hh", "sj-" + i) || { type:"subject", id:"sj-" + i, space:"hh", idx:i }, { done:true, date:today(), by:myUid() })); toast("Subject ticked"); }
     if(rid) currentView = rid === "am" || rid === "ex" ? "home" : "reading";
+    return rid;
   }
 
   var readActions = {
@@ -1543,6 +1576,7 @@
       if(old && !confirm("Start this plan? Your progress on " + old.name + " is cleared.")) return;
       put(Object.assign({ type:"rplan", id:"rplan", preset:k, start:today(), done:{}, order:"canon" }, o)); rdPlanPick = false; render(); toast("Plan started");
     },
+    "r-plan-repace": function(){ var p = rplan(); if(!p) return; patch(p, { start:today() }); render(); toast("Pace now runs from today"); },
     "r-plan-change": function(){ rdPlanPick = true; renderReading(); },
     "r-plan-cancel": function(){ rdPlanPick = false; renderReading(); },
     "r-wb": function(el){ var w = get(mySpace(), el.dataset.id); if(!w) return; var d = wbToday(w), log = Object.assign({}, w.log || {});
@@ -1797,7 +1831,7 @@
     var gs = goals(); if(!gs.length) return "";
     return '<div class="rv-sec glass"><h3>Goals</h3><div class="muted small" style="margin-bottom:6px">Check each one: how is it really going, and what is the one next step?</div>' + gs.map(function(g){
       var pr = goalProgress(g), pace = goalPace(g), cur = g.status && g.status.d >= mondayOf() ? g.status.s : "";
-      return '<div class="rv-goal"><div class="rv-row" style="border:none;padding-bottom:2px"><span><b style="font-weight:500">' + esc(g.title) + '</b><br><span class="muted small">' + esc(pr.label) + '</span></span>' + pacePill(pace) + '</div>' +
+      return '<div class="rv-goal"><div class="rv-gt">' + esc(g.title) + '</div><div class="rv-gm"><span>' + esc(pr.label) + '</span>' + pacePill(pace) + '</div>' +
         '<div class="seg rv-st" data-goal="' + g.id + '">' + [["g", "On track"], ["a", "At risk"], ["r", "Off track"]].map(function(x){ return '<button type="button" data-act="rv-gs" data-id="' + g.id + '" data-s="' + x[0] + '" class="' + (cur === x[0] ? "active s-" + x[0] : "") + '">' + x[1] + '</button>'; }).join("") + '</div>' +
         '<input type="text" class="rv-next" data-next="' + g.id + '" placeholder="Next step this week (becomes a task)"></div>';
     }).join("") + '</div>';
@@ -1910,7 +1944,6 @@
      - tick habits that are set to "tick themselves" (workout done, weighed in, food logged),
      - show a Health line on Today and today's workout in the Exercise step. */
   var HF_DEFAULT = "https://asbfmckay.github.io/health-fitness/";
-  var HF_DAYS = { 1:"Chest & Triceps", 2:"Shoulders & Arms", 3:"Back & Biceps", 4:"Core & Cardio", 5:"Full Body HIIT" };
   var HF_AUTO = { "hf-train":"Health & Fitness — a workout logged", "hf-weigh":"Health & Fitness — a weigh-in", "hf-food":"Health & Fitness — food logged" };
   var hfData = lsJSON("life_hf", null), hfBusy = false, hfLast = 0;
   function hfOn(){ return signedIn() && myUid() === "andrew"; }
@@ -1951,7 +1984,16 @@
     [["hb-g2-weight-1", "hf-train"], ["hb-g2-weight-2", "hf-weigh"], ["hb-g2-weight-3", "hf-food"]].forEach(function(x){ var h = get("hh", x[0]); if(h && !h.auto) patch(h, { auto:x[1] }); });
     lsSet("life_hf_linked", "1");
   }
-  function hfWorkoutToday(){ return HF_DAYS[new Date().getDay()] || "Rest day — walk or stretch"; }
+  // Today's session from the Health & Fitness app's week plan (Saturday-to-Friday weeks, stored as
+  // "plan-<Saturday>" on this same website, so it can be read directly).
+  function hfWorkoutToday(){
+    var d = new Date(); d.setHours(0, 0, 0, 0); var sat = new Date(d); sat.setDate(d.getDate() - ((d.getDay() + 1) % 7));
+    var plan = null; try{ plan = JSON.parse(localStorage.getItem("plan-" + dayKey(sat)) || "null"); }catch(e){}
+    var row = plan && plan.days ? plan.days[dayKey(d)] : null;
+    if(!plan || !plan.days || !Object.keys(plan.days).some(function(k){ return plan.days[k] && plan.days[k].type; })) return "Nothing planned in Health & Fitness yet";
+    if(!row || !row.type || /^rest$/i.test(row.type)) return "Rest day — walk or stretch";
+    return row.type + (row.amount != null && row.amount !== "" ? " · " + row.amount + (/run|walk|km/i.test(row.type) && +row.amount < 50 ? " km" : " min") : "") + (row.done ? " · done" : "");
+  }
 
   /* Today: a small Health card */
   function renderTodayHealth(){
@@ -2049,7 +2091,7 @@
       return '<div class="sc-entry"><b><span class="dot" style="background:' + esc(a.color || "#999") + ';margin-right:6px"></span>' + esc(a.name) + ' <button class="link-btn" data-act="area-edit" data-id="' + a.id + '">Edit</button></b>' + (v ? '<span style="white-space:pre-line">' + esc(v) + '</span>' : '<span class="muted">Not written yet.</span>') + '</div>'; }).join("") + '</div>';
     html += '<div class="rv-sec glass"><h3>Each goal</h3>' + (gs.length ? gs.map(function(g){
       var pr = goalProgress(g), cur = rvAnnual[g.id] || (saved.choices || {})[g.id] || "";
-      return '<div class="rv-goal"><div class="rv-row" style="border:none;padding-bottom:2px"><span><b style="font-weight:500">' + esc(g.title) + '</b><br><span class="muted small">' + esc(pr.label) + ' · ' + pr.pct + '%' + (g.due ? ' · due ' + fmtShort(g.due) : "") + '</span></span>' + pacePill(goalPace(g)) + '</div>' +
+      return '<div class="rv-goal"><div class="rv-gt">' + esc(g.title) + '</div><div class="rv-gm"><span>' + esc(pr.label) + ' · ' + pr.pct + '%' + (g.due ? ' · due ' + fmtShort(g.due) : "") + '</span>' + pacePill(goalPace(g)) + '</div>' +
         '<div class="seg rv-st">' + [["achieved", "Achieved"], ["carry", "Carry forward"], ["drop", "Let go"]].map(function(x){ return '<button type="button" data-act="ar-pick" data-id="' + g.id + '" data-v="' + x[0] + '" class="' + (cur === x[0] ? "active s-" + ({ achieved:"g", carry:"a", drop:"r" }[x[0]]) : "") + '">' + x[1] + '</button>'; }).join("") + '</div></div>';
     }).join("") : '<div class="muted small">No goals yet.</div>') +
       '<div class="muted small" style="margin-top:8px">Achieved and Let go are archived when you finish. Carry forward moves the due date to 31 Dec ' + (y + 1) + '.</div></div>';
@@ -2162,7 +2204,8 @@
   function visualBlocks(){ return myAreas().filter(function(a){ return !a.anchor && av(a).visualisation; }).map(function(a){ return { name:a.name, visualisation:av(a).visualisation }; }); }
 
   var session = null;
-  function startSession(planKey){
+  function startSession(planKey, resuming){
+    if(!resuming) clearSess();
     var steps = getSteps(planKey);
     session = { planKey:planKey, steps:steps, index:0, endTs:0, remainingMs:0, paused:false, saved:steps.map(function(){ return null; }), startMs:Date.now(), tickH:null, advancing:false, visIdx:-1 };
     $("ov-bar").innerHTML = steps.map(function(s){ return '<div class="ov-seg" style="flex:' + Math.max(s.duration, 30) + '"><i style="background:linear-gradient(90deg,'+HEX[s.id]+'55,'+HEX[s.id]+')"></i></div>'; }).join("");
@@ -2209,19 +2252,43 @@
     } else html += '<div class="s-instr">'+(s.id === "exercise" && hfOn() ? '<b>Today: '+esc(hfWorkoutToday())+'</b><br>' : "")+esc(s.instructions)+'</div>';
     if(s.link){
       if(s.link.soon) html += '<span class="s-link soon glass">'+esc(s.link.label)+' · coming in the next update</span>';
-      else html += '<a class="s-link glass" target="_blank" rel="noopener" href="'+esc(s.link.hf ? hfUrl(s.link.hf, "ex") : s.link.url)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>'+esc(s.link.label)+'</a>';
+      else html += '<a class="s-link glass" target="_blank" href="'+esc(s.link.hf ? hfUrl(s.link.hf, "ex") : s.link.url)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>'+esc(s.link.label)+'</a>';
     }
     var body = $("s-body"); body.classList.remove("enter"); body.innerHTML = html; body.scrollTop = 0; void body.offsetWidth; body.classList.add("enter");
     var saved = session.saved[i];
     if(saved != null && saved > 0){ session.remainingMs = saved; setPaused(true); }
     else { session.remainingMs = s.duration*1000; session.endTs = Date.now() + session.remainingMs; setPaused(false); }
-    sRender();
+    sRender(); saveSess();
+  }
+  /* Keep the running session in storage, so coming back from the Workout or Bible app
+     (which can reload this page) picks up exactly where it was. */
+  var SESS_KEY = "life_session", mySaveAt = 0;
+  function saveSess(){
+    if(!session) return; mySaveAt = Date.now();
+    lsSet(SESS_KEY, JSON.stringify({ planKey:session.planKey, index:session.index, endTs:session.endTs, remainingMs:session.remainingMs, paused:session.paused, saved:session.saved, startMs:session.startMs, at:Date.now() }));
+  }
+  function clearSess(){ try{ localStorage.removeItem(SESS_KEY); }catch(e){} }
+  function resumeSession(rid){
+    if(session) return false;
+    var o = null; try{ o = JSON.parse(lsGet(SESS_KEY) || "null"); }catch(e){}
+    if(!o || Date.now() - (o.at || 0) > 3 * 3600000){ clearSess(); return false; }
+    var steps = getSteps(o.planKey); if(!steps.length || o.index >= steps.length){ clearSess(); return false; }
+    var rem = o.paused ? o.remainingMs : Math.max(0, o.endTs - Date.now());
+    startSession(o.planKey, true);
+    session.startMs = o.startMs || Date.now();
+    session.saved = (o.saved || []).slice(0, steps.length); while(session.saved.length < steps.length) session.saved.push(null);
+    var cur = steps[o.index];
+    if(rid === "ex" && cur && cur.id === "exercise"){ markDone("exercise", true); session.saved[o.index] = null; showStep(o.index + 1); toast("Exercise done — on to " + (steps[o.index + 1] ? steps[o.index + 1].name : "the finish")); return true; }
+    session.saved[o.index] = rem > 0 ? rem : 1;
+    showStep(o.index);
+    if(!o.paused) setPaused(false);
+    return true;
   }
   function setPaused(p){
     if(!session) return;
     if(p && !session.paused) session.remainingMs = Math.max(0, session.endTs - Date.now());
     if(!p) session.endTs = Date.now() + session.remainingMs;
-    session.paused = p;
+    session.paused = p; saveSess();
     $("session").classList.toggle("is-paused", p);
     $("s-play").innerHTML = p ? ICON_PLAY : ICON_PAUSE;
     $("s-play").setAttribute("aria-label", p ? "Resume" : "Pause");
@@ -2284,7 +2351,7 @@
   function renderSoundBtn(){ $("s-sound").innerHTML = getSound() ? ICON_SOUND_ON : ICON_SOUND_OFF; }
   function completeSession(){
     var took = (Date.now() - session.startMs)/1000;
-    clearInterval(session.tickH);
+    clearInterval(session.tickH); clearSess();
     playChime("done"); buzz([100,60,100,60,250]);
     var el = $("session"); el.classList.add("finished"); el.classList.remove("is-paused");
     setAura($("s-aurora"), ["#F7DE85","#F6EFE2","#F8F2E8","#F4ECDD"]); bubbles();
@@ -2305,7 +2372,7 @@
   }
   function endSession(){
     if(session && session.tickH) clearInterval(session.tickH);
-    session = null;
+    session = null; clearSess();
     $("session").classList.remove("active","finished","is-paused");
     document.body.style.overflow = "";
     showView("home");
@@ -2386,7 +2453,7 @@
     "folio-sheet": function(){ folioSheet(); },
     "folio-import": function(){ folioImport(); },
     "export": function(){
-      var data = { app:"Miracle Morning", version:APP_VERSION, exportedAt:new Date().toISOString(), items:Object.keys(store).map(function(k){ return store[k]; }) };
+      var data = { app:"Life", version:APP_VERSION, exportedAt:new Date().toISOString(), items:Object.keys(store).map(function(k){ return store[k]; }) };
       var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type:"application/json" })); a.download = "miracle-morning-backup-" + today() + ".json"; a.click();
     },
     "install": function(){ if(!installEvt) return; installEvt.prompt(); installEvt.userChoice.then(function(){ installEvt = null; renderInstall(); }); },
@@ -2427,9 +2494,28 @@
   migrateV2();
   seedGoals();
   setSyncState(signedIn() ? "wait" : "off");
-  handleReturn();
+  // Coming back from another app: by #done=<rid> in the address, or (Workout app, same site)
+  // by a note it leaves in shared storage before closing its window.
+  function takeNote(){ var n = null; try{ n = JSON.parse(lsGet("life_return") || "null"); localStorage.removeItem("life_return"); }catch(e){} return n && Date.now() - (n.at || 0) < 30 * 60000 ? n : null; }
+  function afterReturn(rid){
+    if(rid === "ex" && session && session.steps[session.index] && session.steps[session.index].id === "exercise"){ markDone("exercise", true); session.saved[session.index] = null; showStep(session.index + 1); return; }
+    if(session) return;
+    if(!resumeSession(rid)) showView(currentView);
+  }
+  var rid0 = handleReturn(), n0 = takeNote();
+  if(n0 && !rid0 && n0.done){ history.replaceState(null, "", location.pathname + location.search + "#done=" + encodeURIComponent(n0.rid)); rid0 = handleReturn(); }
   showView(currentView);
-  window.addEventListener("hashchange", function(){ if(/^#(done=|back)/.test(location.hash)){ handleReturn(); showView(currentView); } });
+  resumeSession(rid0);
+  window.addEventListener("hashchange", function(){ if(/^#(done=|back)/.test(location.hash)){ var r = handleReturn(); afterReturn(r); } });
+  function checkNote(){ var n = takeNote(); if(!n) return; if(n.done){ history.replaceState(null, "", location.pathname + location.search + "#done=" + encodeURIComponent(n.rid)); var r = handleReturn(); afterReturn(r); } else afterReturn(""); }
+  // If another copy of this page moved the session on (e.g. it opened from the Workout app), catch up.
+  function adoptSess(){
+    if(!session) return; var o = null; try{ o = JSON.parse(lsGet(SESS_KEY) || "null"); }catch(e){}
+    if(!o){ if(!$("session").classList.contains("finished")) endSession(); return; }
+    if(o.at > mySaveAt + 500){ clearInterval(session.tickH); session = null; resumeSession(""); }
+  }
+  document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "visible"){ adoptSess(); checkNote(); } });
+  window.addEventListener("storage", function(e){ if(e.key === "life_return" && e.newValue) checkNote(); });
   setInterval(function(){ if(currentView === "home" && !session) renderTodayReading(); }, 5 * 60000);
   syncWake();
   document.addEventListener("pointerdown", function once(){ syncWake(); document.removeEventListener("pointerdown", once); }, {passive:true});
